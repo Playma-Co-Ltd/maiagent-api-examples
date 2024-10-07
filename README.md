@@ -12,6 +12,18 @@ API 文件請參考 [MaiAgent API 文件](https://documenter.getpostman.com/view
 
 ![image](images/get_api_key.png)
 
+## 設定 Webhook 網址
+
+目前請將需要回傳的 `AI 助理` 與 `Webhook 的網址`提供給 MaiAgent窗口，我們將為你設定。
+
+> 未來會開放給客戶自行設定。
+
+## 取得 Web Chat ID
+
+請使用 GET Inboxes API 取得 Web Chat ID。
+
+> 未來會顯示於 `AI 助理` 頁面中。
+
 ## Python 範例
 
 Python 範例請參考 [Python 範例](python/send_messages/README.md)
