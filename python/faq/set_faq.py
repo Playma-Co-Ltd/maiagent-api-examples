@@ -1,15 +1,13 @@
 import requests
 
-# example BASE_URL: 'https://api.maiagent.ai/api/v1/'
-BASE_URL = '<base-api-url>'
+BASE_URL = 'https://api.maiagent.ai/api/v1/'
 API_KEY = '<your-api-key>'
 
-assert BASE_URL != '<base-api-url>', 'Please set your base API URL'
 assert API_KEY != '<your-api-key>', 'Please set your API key'
 
 
-def set_faq(question: str, answer: str, chatbot_id: str) -> int:
-    url = f'{BASE_URL}api/faqs/'
+def add_faq(question: str, answer: str, chatbot_id: str) -> int:
+    url = f'{BASE_URL}faqs/'
 
     try:
         response = requests.post(
@@ -34,5 +32,5 @@ if __name__ == '__main__':
     answer = 'answer'
     chatbot_id = 'chatbot_id'
 
-    result = set_faq(question, answer, chatbot_id)
+    result = add_faq(question, answer, chatbot_id)
     print(result)
