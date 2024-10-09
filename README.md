@@ -27,3 +27,7 @@ API 文件請參考 [MaiAgent API 文件](https://documenter.getpostman.com/view
 ## Python 範例
 
 Python 範例請參考 [Python 範例](python/send_messages/README.md)
+
+
+# Appendix
+- python version: 3.11
