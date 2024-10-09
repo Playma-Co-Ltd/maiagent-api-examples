@@ -1,9 +1,20 @@
+import os
 import requests
+from dotenv import load_dotenv
 
-BASE_URL = 'https://api.maiagent.ai/api/v1/'
-API_KEY = '<your-api-key>'
+from pathlib import Path
 
-assert API_KEY != '<your-api-key>', 'Please set your API key'
+
+ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+
+DOT_ENV_PATH = ROOT_DIR / ".env"
+load_dotenv(DOT_ENV_PATH)
+
+BASE_URL = os.environ.get('BASE_URL', default='https://api.maiagent.ai/api/v1/')
+API_KEY = os.environ.get('API_KEY')
+
+
+assert API_KEY is not None, 'Please set your API key'
 
 
 def add_faq(question: str, answer: str, chatbot_id: str) -> int:
