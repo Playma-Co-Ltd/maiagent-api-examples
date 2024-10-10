@@ -11,8 +11,8 @@ assert API_KEY != '<your-api-key>', 'Please set your API key'
 assert CHATBOT_ID != '<your-chatbot-id>', 'Please set your chatbot id'
 assert FILE_ID != '<your-files-id>', 'Please set your files id'
 
-def delete_knowledge(files_id):
-    url = f'{BASE_URL}chatbots/{CHATBOT_ID}/files/{files_id}/'
+def delete_knowledge(file_id):
+    url = f'{BASE_URL}chatbots/{CHATBOT_ID}/files/{file_id}/'
 
     headers = {
         'Authorization': f'Api-Key {API_KEY}',
@@ -21,7 +21,7 @@ def delete_knowledge(files_id):
     response = requests.delete(url, headers=headers)
 
     if response.status_code == 204:
-        print(f'Successfully deleted knowledge with ID: {files_id}')
+        print(f'Successfully deleted knowledge with ID: {file_id}')
     else:
         print(f'Error: {response.status_code}')
         print(response.text)
