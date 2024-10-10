@@ -21,7 +21,11 @@ def add_faq(chatbot_id: str, question: str, answer: str) -> int:
         response = requests.post(
             url,
             headers={'Authorization': f'Api-Key {API_KEY}'},
-            json={'chatbot': chatbot_id,'question': question, 'answer': answer,},
+            json={
+                'chatbot': chatbot_id,
+                'question': question,
+                'answer': answer,
+            },
         )
     except requests.exceptions.RequestException as e:
         print(response.text)
@@ -35,5 +39,9 @@ def add_faq(chatbot_id: str, question: str, answer: str) -> int:
 
 
 if __name__ == '__main__':
-    result = add_faq(QUESTION, ANSWER, CHATBOT_ID)
+    result = add_faq(
+        chatbot_id=CHATBOT_ID,
+        question=QUESTION,
+        answer=ANSWER,
+    )
     print(result)
