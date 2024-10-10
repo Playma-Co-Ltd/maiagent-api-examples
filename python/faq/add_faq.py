@@ -9,9 +9,9 @@ ANSWER = '<your-answer>'
 
 assert API_KEY != '<your-api-key>', 'Please set your API key'
 
+assert CHATBOT_ID != '<your-chatbot-id>', 'Please set your chatbot id'
 assert QUESTION != '<your-question>', 'Please set your question'
 assert ANSWER != '<your-answer>', 'Please set your answer'
-assert CHATBOT_ID != '<your-chatbot-id>', 'Please set your chatbot id'
 
 
 def add_faq(chatbot_id: str, question: str, answer: str) -> int:
@@ -24,7 +24,7 @@ def add_faq(chatbot_id: str, question: str, answer: str) -> int:
             json={'chatbot': chatbot_id,'question': question, 'answer': answer,},
         )
     except requests.exceptions.RequestException as e:
-        print(response.text)  # type: ignore
+        print(response.text)
         print(e)
         exit(1)
     except Exception as e:
@@ -34,7 +34,6 @@ def add_faq(chatbot_id: str, question: str, answer: str) -> int:
     return response.status_code
 
 
-# Example usage
 if __name__ == '__main__':
     result = add_faq(QUESTION, ANSWER, CHATBOT_ID)
     print(result)
