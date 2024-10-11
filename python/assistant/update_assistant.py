@@ -4,21 +4,20 @@ import json
 BASE_URL = "https://api.maiagent.ai/api/v1/"
 API_KEY = "<your-api-key>"
 
+CHATBOT_ID = "<your-chatbot-id>"
 
 NAME = "<your-assistant-name>"
-
-CHATBOT_ID = "<your-chatbot-id>"
 
 # model default to ID of "GPT-4o 2024-08-06"
 MODEL_ID = "ba7da66a-6f30-414d-98f8-7d681a92d47a"
 # rag default to ID of "MaiAgent RAG"
 RAG_ID = "66261b7a-bd3f-4214-9c48-364c2e122b0f"
-# instructions default to noting(""), if want to set instructions, please set it
-INSTRUCTIONS = ""
+INSTRUCTIONS = "<your-instructions>"
 
 assert API_KEY != "<your-api-key>", "Please set your API key"
 assert CHATBOT_ID != "<your-chatbot-id>", "Please set your chatbot id"
 assert NAME != "<your-assistant-name>", "Please set your assistant name"
+assert INSTRUCTIONS != "<your-instructions>", "Please set your instructions"
 
 
 def update_assistant(chatbot_id, name, model_id, rag_id, instructions):
@@ -59,6 +58,6 @@ if __name__ == "__main__":
     )
     if result:
         print("Assistant updated successfully:")
-        print(json.dumps(result, indent=2))
+        print(json.dumps(result, ensure_ascii=True, indent=4))
     else:
         print("Failed to update assistant")
