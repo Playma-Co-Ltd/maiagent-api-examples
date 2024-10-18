@@ -1,54 +1,43 @@
-import requests
+import os
 
-BASE_URL = 'https://api.maiagent.ai/api/v1/'
+from utils import MaiAgentHelper
+
 API_KEY = '<your-api-key>'
 
-WEBCHAT_ID = '<your-webchat-id>'
+WEB_CHAT_ID = '<your-webchat-id>'
 TEXT_MESSAGE = '<your-text-message>'
+IMAGE_PATH = '<your-image-path>'
 
 assert API_KEY != '<your-api-key>', 'Please set your API key'
-assert WEBCHAT_ID != '<your-webchat-id>', 'Please set your webchat id'
+assert WEB_CHAT_ID != '<your-webchat-id>', 'Please set your webchat id'
 assert TEXT_MESSAGE != '<your-text-message>', 'Please set your text message'
+assert IMAGE_PATH != '<your-image-path>', 'Please set your image path'
 
 
 def main():
-    try:
-        # 建立 conversation
-        response = requests.post(
-            url=f'{BASE_URL}conversations/',
-            headers={'Authorization': f'Api-Key {API_KEY}'},
-            json={
-                'webChat': WEBCHAT_ID,
-            },
-        )
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(response.text)
-        print(e)
-        exit(1)
-    except Exception as e:
-        print(e)
+    maiagent_helper = MaiAgentHelper(API_KEY)
 
-    conversation_id = response.json()['id']
+    # 建立對話
+    create_conversation_response = maiagent_helper.create_conversation(WEB_CHAT_ID)
+    conversation_id = create_conversation_response['id']
 
-    try:
-        # 傳送訊息
-        response = requests.post(
-            url=f'{BASE_URL}messages/',
-            headers={'Authorization': f'Api-Key {API_KEY}'},
-            json={
-                'conversation': conversation_id,
-                'content': TEXT_MESSAGE,
-            },
-        )
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(response.text)
-        print(e)
-        exit(1)
+    # 上傳附件
+    upload_attachment_response = maiagent_helper.upload_attachment(conversation_id, IMAGE_PATH)
+
+    # 發送訊息
+    response = maiagent_helper.send_message(
+        conversation_id,
+        content=TEXT_MESSAGE,
+        attachments=[{
+            'id': upload_attachment_response['id'],
+            'type': 'image',
+            'filename': upload_attachment_response['filename'],
+            'file': upload_attachment_response['file'],
+        }],
+    )
 
     # 此處是直接回傳訊息建立的 response，訊息處理完成後，會以 webhook 通知
-    print(response.text)
+    print(response)
 
     # Webhook 網址請於 MaiAgent 後台「AI 助理」設定
     # 訊息回傳格式如下
