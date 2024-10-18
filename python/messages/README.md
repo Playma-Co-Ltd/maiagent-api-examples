@@ -16,21 +16,15 @@
 npm install -g localtunnel
 ```
 
-2. 安裝所需 Python 套件：
-
-```bash
-pip install -r requirements.txt
-```
-
-3. 在 `send_message.py` 中設定您的 API 金鑰和 WebChat ID：
+2. 在 `send_message.py` 中設定您的 API 金鑰和 WebChat ID：
 
 ```python
 API_KEY = '您的 API 金鑰'
-WEBCHAT_ID = '您的 WebChat ID'
+WEB_CHAT_ID = '您的 WebChat ID'
 TEXT_MESSAGE = '您的文字訊息'
 ```
 
-1. 執行 webhook 伺服器：
+3. 執行 webhook 伺服器：
 
 ```bash
 python webhook_server.py
@@ -38,7 +32,7 @@ python webhook_server.py
 
 這將啟動一個本機伺服器，並提供一個公開 URL 用於接收 webhook 通知。
 
-2. 在 MaiAgent 後台的「AI 助理」設定中配置 webhook URL。
+4. 在 MaiAgent 後台的「AI 助理」設定中配置 webhook URL。
 
 
 ## 使用方式
@@ -46,7 +40,7 @@ python webhook_server.py
 1. 發送訊息：
 
 ```bash
-python send_message.py
+python -m messages.send_message # 在 python 目錄下執行
 ```
 
 此腳本會建立一個對話並發送一則測試訊息。
