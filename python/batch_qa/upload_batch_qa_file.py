@@ -7,11 +7,11 @@ BASE_URL = 'https://api.maiagent.ai/api/v1/'
 STORAGE_URL = 'https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app'
 API_KEY = '<your-api-key>'
 
-WEBCHAT_ID = '<your-webchat-id>'
+WEB_CHAT_ID = '<your-web-chat-id>'
 FILE_PATH = '<your-file-path>'
 
 assert API_KEY != '<your-api-key>', 'Please set your API key'
-assert WEBCHAT_ID != '<your-webchat-id>', 'Please set your webchat id'
+assert WEB_CHAT_ID != '<your-web-chat-id>', 'Please set your web-chat id'
 assert FILE_PATH != '<your-file-path>', 'Please set your file path'
 
 
@@ -70,7 +70,7 @@ def upload_file_to_s3(file_path: str, upload_data: dict[str, str | dict[str, str
 
 
 def upload_batch_qa_file(file_key: str, original_filename: str):
-    url = f'{BASE_URL}web-chats/{WEBCHAT_ID}/batch-qas/'
+    url = f'{BASE_URL}web-chats/{WEB_CHAT_ID}/batch-qas/'
 
     try:
         response = requests.post(
