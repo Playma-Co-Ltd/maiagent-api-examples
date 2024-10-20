@@ -1,7 +1,5 @@
-import json
 import os
 
-import requests
 from utils import MaiAgentHelper
 
 
