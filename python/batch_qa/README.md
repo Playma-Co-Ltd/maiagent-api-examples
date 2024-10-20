@@ -15,6 +15,7 @@
 
 ```python
 API_KEY = '您的 API 金鑰'
+WEB_CHAT_ID = '您的 WebChat ID'
 FILE_PATH = '您的批次 QA 檔案路徑'
 ```
 
