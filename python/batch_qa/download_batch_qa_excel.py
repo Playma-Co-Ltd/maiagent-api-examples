@@ -1,10 +1,7 @@
 import os
-from urllib.parse import urljoin
 
-import requests
 from utils import MaiAgentHelper
 
-BASE_URL = 'https://api.maiagent.ai/api/v1/'
 API_KEY = '<your-api-key>'
 WEB_CHAT_ID = '<your-web-chat-id>'
 BATCH_QA_FILE_ID = '<your-batch-qa-file-id>'

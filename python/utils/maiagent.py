@@ -149,8 +149,8 @@ class MaiAgentHelper:
             print(e)
             exit(1)
 
-    def upload_batch_qa_file(self, webchat_id: str, file_key: str, original_filename: str):
-        url = f'{self.base_url}web-chats/{webchat_id}/batch-qas/'
+    def upload_batch_qa_file(self, web_chat_id: str, file_key: str, original_filename: str):
+        url = f'{self.base_url}web-chats/{web_chat_id}/batch-qas/'
 
         try:
             response = requests.post(
