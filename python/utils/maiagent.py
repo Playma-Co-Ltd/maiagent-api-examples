@@ -1,6 +1,6 @@
 import json
 import os
-
+import sseclient
 import requests
 
 
@@ -208,3 +208,62 @@ class MaiAgentHelper:
             webchat_id = inbox_item['channel']['id']
             webchat_name = inbox_item['channel']['name']
             print(f'Inbox ID: {inbox_id}, Webchat ID: {webchat_id}, Webchat Name: {webchat_name}')
+
+    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None):
+        """
+        Create a completion using the chatbot and receive streaming responses.
+        
+        Args:
+            chatbot_id (str): The ID of the chatbot to create completion with
+            content (str): The prompt content
+            attachments (list, optional): List of attachment objects in the format:
+                [
+                    {
+                        'id': '<attachment-id>',
+                        'type': 'image',
+                        'filename': '<filename>',
+                        'file': '<file-url>'
+                    },
+                    ...
+                ]
+            conversation_id (str, optional): The conversation ID for context. Defaults to None.
+        
+        Yields:
+            dict: The streaming completion data containing content and citations
+        """
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {
+            'conversation': conversation_id,
+            'message': {
+                'content': content,
+                'attachments': attachments or []
+            }
+        }
+
+        try:
+            response = requests.post(
+                f'{self.base_url}chatbots/{chatbot_id}/completions/',
+                headers=headers,
+                json=payload,
+                stream=True
+            )
+            response.raise_for_status()
+            
+            client = sseclient.SSEClient(response)
+            for event in client.events():
+                if event.data:
+                    try:
+                        data = json.loads(event.data)
+                        yield data
+                    except json.JSONDecodeError as e:
+                        print(f"Failed to parse JSON: {event.data}")
+                        continue
+                        
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(e.response.text)
+            raise
