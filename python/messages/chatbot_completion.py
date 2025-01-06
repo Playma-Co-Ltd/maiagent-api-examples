@@ -59,7 +59,20 @@ def handle_streaming_response(data: dict[str, any]):
         sys.stdout.flush()
 
 def test_with_streaming():
-    """測試場景1: 使用串流模式"""
+    """
+    測試場景1: 使用串流模式與聊天機器人對話
+    
+    流程:
+    1. 初始化 MaiAgentHelper
+    2. 調用 create_chatbot_completion API，設置 is_streaming=True
+    3. 逐步接收並顯示串流響應
+    
+    API 調用:
+    - POST /api/v1/chatbots/{chatbot_id}/completions/
+      參數:
+        - is_streaming: true
+        - message.content: 測試提示
+    """
     print_separator("使用串流模式")
     maiagent_helper = get_maiagent_helper()
     
@@ -75,7 +88,20 @@ def test_with_streaming():
         print(f"錯誤: {str(e)}")
 
 def test_without_streaming():
-    """測試場景2: 不使用串流模式"""
+    """
+    測試場景2: 使用非串流模式與聊天機器人對話
+    
+    流程:
+    1. 初始化 MaiAgentHelper
+    2. 調用 create_chatbot_completion API，設置 is_streaming=False
+    3. 一次性接收完整響應
+    
+    API 調用:
+    - POST /api/v1/chatbots/{chatbot_id}/completions/?is_streaming=false
+      參數:
+        - is_streaming: false
+        - message.content: 測試提示
+    """
     print_separator("不使用串流模式")
     maiagent_helper = get_maiagent_helper()
     
@@ -90,7 +116,29 @@ def test_without_streaming():
         print(f"錯誤: {str(e)}")
 
 def test_conversation_flow():
-    """測試場景3: 先無conversation_id對話，再用返回的conversation_id繼續對話"""
+    """
+    測試場景3: 測試對話上下文功能
+    
+    流程:
+    1. 初始化 MaiAgentHelper
+    2. 第一次調用 API 不帶 conversation_id
+    3. 從響應中獲取 conversation_id
+    4. 第二次調用帶上 conversation_id 進行對話
+    
+    API 調用:
+    1. 第一次對話:
+       - POST /api/v1/chatbots/{chatbot_id}/completions/
+         參數:
+           - message.content: 第一個測試提示
+           - conversation: null
+    
+    2. 第二次對話:
+       - POST /api/v1/chatbots/{chatbot_id}/completions/
+         參數:
+           - message.content: 第二個測試提示
+           - conversation: 第一次對話獲取的 conversation_id
+           - is_streaming: true
+    """
     print_separator("對話流程測試")
     maiagent_helper = get_maiagent_helper()
     
@@ -122,7 +170,32 @@ def test_conversation_flow():
         print(f"錯誤: {str(e)}")
 
 def test_ocr_like_usage():
-    """測試場景4: 首次調用就發送附件（類似OCR用途）"""
+    """
+    測試場景4: 測試圖片分析功能
+    
+    流程:
+    1. 初始化 MaiAgentHelper
+    2. 上傳圖片文件獲取附件信息
+    3. 調用 API 進行圖片分析
+    
+    API 調用:
+    1. 上傳圖片:
+       - POST /api/v1/upload-presigned-url/
+         獲取預簽名上傳 URL
+       
+       - POST {storage_url}
+         上傳文件到 S3
+         
+       - POST /api/v1/attachments/
+         註冊附件信息
+    
+    2. 圖片分析:
+       - POST /api/v1/chatbots/{chatbot_id}/completions/
+         參數:
+           - message.content: 圖片分析提示
+           - message.attachments: 包含圖片信息的附件數組
+           - is_streaming: true
+    """
     print_separator("OCR式使用測試")
     maiagent_helper = get_maiagent_helper()
     
