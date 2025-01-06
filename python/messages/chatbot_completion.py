@@ -19,7 +19,7 @@ def main():
         attachments = None
         if IMAGE_PATH:
             # First upload the attachment
-            upload_response = maiagent_helper.upload_attachment(None, IMAGE_PATH)
+            upload_response = maiagent_helper.upload_attachment_v2(IMAGE_PATH)
             # Prepare attachment data
             attachments = [{
                 'id': upload_response['id'],
