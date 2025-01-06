@@ -278,9 +278,9 @@ def test_conversation_with_attachment():
 
 def main():
     """主函數：運行所有測試場景"""
-    # test_with_streaming()
-    # test_without_streaming()
-    # test_conversation_flow()
+    test_with_streaming()
+    test_without_streaming()
+    test_conversation_flow()
     test_conversation_with_attachment()
 
 if __name__ == '__main__':
