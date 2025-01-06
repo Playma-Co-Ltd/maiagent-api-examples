@@ -1,10 +1,14 @@
 from utils import MaiAgentHelper
 from utils.config import API_KEY, BASE_URL, CHATBOT_ID, STORAGE_URL
 import sys
-# API 配置
+import os
 
 # 測試配置
-TEST_IMAGE_PATH = '/Users/haofu/Documents/playma/測試資料/Cat03.jpg'
+TEST_IMAGE_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+    'images', 
+    'cat.jpg'
+)
 TEST_PROMPTS = {
     'streaming': "使用串流模式測試：請給我一個笑話",
     'non_streaming': "不使用串流模式測試：請給我一個笑話",
@@ -66,7 +70,7 @@ def test_with_streaming():
     2. 逐步接收並顯示串流響應
     
     API 調用:
-    POST /api/v1/chatbots/{chatbot_id}/completions/
+    POST /chatbots/{chatbot_id}/completions/
     
     Request Payload:
     {
@@ -100,7 +104,7 @@ def test_without_streaming():
     2. 一次性接收完整響應
     
     API 調用:
-    POST /api/v1/chatbots/{chatbot_id}/completions/?is_streaming=false
+    POST /chatbots/{chatbot_id}/completions/?is_streaming=false
     
     Request Payload:
     {
@@ -135,7 +139,7 @@ def test_conversation_flow():
     
     API 調用:
     1. 第一次對話:
-    POST /api/v1/chatbots/{chatbot_id}/completions/
+    POST /chatbots/{chatbot_id}/completions/
     
     Request Payload:
     {
@@ -147,7 +151,7 @@ def test_conversation_flow():
     }
     
     2. 第二次對話:
-    POST /api/v1/chatbots/{chatbot_id}/completions/
+    POST /chatbots/{chatbot_id}/completions/
     
     Request Payload:
     {
@@ -200,7 +204,7 @@ def test_conversation_with_attachment():
     
     API 調用:
     1. 請求預簽名上傳 URL:
-    POST /api/v1/upload-presigned-url/
+    POST /upload-presigned-url/
     Request Payload:
     {
         "filename": "Cat03.jpg",
@@ -224,7 +228,7 @@ def test_conversation_with_attachment():
     }
     
     3. 註冊附件:
-    POST /api/v1/attachments/
+    POST /attachments/
 
     Request Payload:
     {
@@ -234,7 +238,7 @@ def test_conversation_with_attachment():
     }
     
     2. 圖片分析:
-    POST /api/v1/chatbots/{chatbot_id}/completions/
+    POST /chatbots/{chatbot_id}/completions/
     
     Request Payload:
     {
@@ -274,9 +278,9 @@ def test_conversation_with_attachment():
 
 def main():
     """主函數：運行所有測試場景"""
-    test_with_streaming()
-    test_without_streaming()
-    test_conversation_flow()
+    # test_with_streaming()
+    # test_without_streaming()
+    # test_conversation_flow()
     test_conversation_with_attachment()
 
 if __name__ == '__main__':
