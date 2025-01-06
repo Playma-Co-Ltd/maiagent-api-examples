@@ -128,8 +128,8 @@ class MaiAgentHelper:
 
         return response.json()
     
-    def update_attachment_v2(self, file_id, original_filename):
-        url = f'{self.base_url}/attachments/'
+    def update_attachment_without_conversation(self, file_id, original_filename):
+        url = f'{self.base_url}attachments/'
 
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
@@ -175,17 +175,17 @@ class MaiAgentHelper:
             exit(1)
 
         return response.json()
+    
     def upload_attachment(self, conversation_id, file_path):
         upload_url = self.get_upload_url(file_path, 'attachment')
         file_key = self.upload_file_to_s3(file_path, upload_url)
 
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
 
-    def upload_attachment_v2(self, file_path):
+    def upload_attachment_without_conversation(self, file_path):
         upload_url = self.get_upload_url(file_path, 'attachment')
         file_key = self.upload_file_to_s3(file_path, upload_url)
-
-        return self.update_attachment_v2(file_key, os.path.basename(file_path))
+        return self.update_attachment_without_conversation(file_key, os.path.basename(file_path))
 
     def upload_knowledge_file(self, chatbot_id, file_path):
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
@@ -241,7 +241,7 @@ class MaiAgentHelper:
             webchat_name = inbox_item['channel']['name']
             print(f'Inbox ID: {inbox_id}, Webchat ID: {webchat_id}, Webchat Name: {webchat_name}')
 
-    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None):
+    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None, is_streaming=None):
         """
         Create a completion using the chatbot and receive streaming responses.
         
@@ -263,6 +263,8 @@ class MaiAgentHelper:
         Yields:
             dict: The streaming completion data containing content and citations
         """
+        url = f'{self.base_url}chatbots/{chatbot_id}/completions/'
+
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
@@ -275,11 +277,16 @@ class MaiAgentHelper:
             }
         }
 
+        params = {
+            "is_streaming": str(is_streaming).lower()
+        }
+
         try:
             response = requests.post(
-                f'{self.base_url}chatbots/{chatbot_id}/completions/',
+                url,
                 headers=headers,
                 json=payload,
+                params=params,
                 stream=True
             )
             response.raise_for_status()
