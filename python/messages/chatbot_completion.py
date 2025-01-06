@@ -37,7 +37,7 @@ def print_separator(title: str):
 def create_attachment(maiagent_helper: MaiAgentHelper, image_path: str) -> list[dict]:
     """創建附件數據"""
     if not image_path:
-        return None
+        return []
     
     print(f"正在上傳圖片: {image_path}")
     upload_response = maiagent_helper.upload_attachment_without_conversation(image_path)
