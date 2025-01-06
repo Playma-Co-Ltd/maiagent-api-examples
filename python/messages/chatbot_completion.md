@@ -21,19 +21,19 @@ POST /chatbots/{chatbot_id}/completions/
 
 # Response Stream
 {
+    "conversation_id": "conv_xxx",
     "content": "從前有一隻",     # 第一部分內容
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "小狗在玩球",     # 第二部分內容
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "",              
-    "done": true,              # 結束標記
-    "conversation_id": "conv_xxx"
+    "done": true               # 結束標記
 }
 ```
 
@@ -54,14 +54,14 @@ POST /chatbots/{chatbot_id}/completions/?is_streaming=false
 
 # Response
 {
+    "conversation_id": "conv_xxx",
     "content": "從前有一隻小狗在玩球...",
-    "done": false,              # done 為 false 時代表還有訊息
-    "conversation_id": "conv_xxx"
+    "done": false              # done 為 false 時代表還有訊息
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "",
-    "done": true,
-    "conversation_id": "conv_xxx"
+    "done": true
 }
 ```
 
@@ -82,14 +82,14 @@ POST /chatbots/{chatbot_id}/completions/
 
 # 第一次響應
 {
+    "conversation_id": "conv_xxx",
     "content": "好的，我記住了，你叫小明",
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "",
-    "done": true,
-    "conversation_id": "conv_xxx"
+    "done": true
 }
 
 # 第二次請求
@@ -104,14 +104,14 @@ POST /chatbots/{chatbot_id}/completions/
 
 # 第二次響應
 {
+    "conversation_id": "conv_xxx",
     "content": "你剛才說你叫小明",
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "",
-    "done": true,
-    "conversation_id": "conv_xxx"
+    "done": true
 }
 ```
 
@@ -198,36 +198,22 @@ POST /chatbots/{chatbot_id}/completions/
 
 # Response Stream
 {
+    "conversation_id": "conv_xxx",
     "content": "這張圖片顯示了一隻",
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "可愛的貓咪",
-    "done": false,
-    "conversation_id": "conv_xxx"
+    "done": false
 }
 {
+    "conversation_id": "conv_xxx",
     "content": "",
-    "done": true,
-    "conversation_id": "conv_xxx"
+    "done": true
 }
 ```
 
-## 使用方式
-
-1. 設置環境變數：
-```bash
-cp .env.example .env
-# 編輯 .env 文件，填入您的 API 金鑰和其他配置
-```
-
-2. 運行測試：
-```bash
-python -m messages.chatbot_completion
-```
-
-## 注意事項
 ### 使用須知
 
 1. 對話模式選擇
