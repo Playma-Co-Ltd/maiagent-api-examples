@@ -15,3 +15,6 @@ CHATBOT_ID = os.getenv('MAIAGENT_CHATBOT_ID', '<Please set your chatbot id>')
 
 # Web Chat Configuration
 WEB_CHAT_ID = os.getenv('MAIAGENT_WEB_CHAT_ID', '<Please set your webchat id>')
+
+# Storage Configuration
+STORAGE_URL = os.getenv('MAIAGENT_STORAGE_URL', '<Please set your storage url>')
