@@ -1,6 +1,8 @@
 import json
 import os
 import sseclient
+from urllib.parse import urljoin
+
 import requests
 
 
@@ -148,7 +150,56 @@ class MaiAgentHelper:
             print(e)
             exit(1)
 
+    def upload_batch_qa_file(self, web_chat_id: str, file_key: str, original_filename: str):
+        url = f'{self.base_url}web-chats/{web_chat_id}/batch-qas/'
+
+        try:
+            response = requests.post(
+                url,
+                headers={
+                    'Authorization': f'Api-Key {self.api_key}',
+                },
+                json={
+                    'file': file_key,
+                    'filename': original_filename,
+                },
+            )
+            response.raise_for_status()
+            print('Successfully uploaded batch QA file')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(3)
+        except Exception as e:
+            print(e)
+            exit(3)
+
         return response.json()
+
+    def download_batch_qa_excel(self, webchat_id: str, batch_qa_file_id: str):
+        url = urljoin(self.base_url, f'web-chats/{webchat_id}/batch-qas/{batch_qa_file_id}/export-excel/')
+
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            content_disposition = response.headers.get('Content-Disposition')
+            filename = 'chatbot_records.xlsx'
+            if content_disposition:
+                filename = content_disposition.split('filename=')[1].strip('"')
+
+            with open(filename, 'wb') as f:
+                f.write(response.content)
+            print(f'Successfully downloaded: {filename}')
+            return filename
+        else:
+            print(f'Error: {response.status_code}')
+            print(response.text)
+            return None
+
     def upload_attachment(self, conversation_id, file_path):
         upload_url = self.get_upload_url(file_path, 'attachment')
         file_key = self.upload_file_to_s3(file_path, upload_url)
