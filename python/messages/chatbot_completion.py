@@ -5,7 +5,7 @@ import sys
 STORAGE_URL = 'https://s3.ap-northeast-1.amazonaws.com/autox-media-dev.playma.app'
 
 # 測試配置
-TEST_IMAGE_PATH = '/Users/haofu/Documents/playma/測試資料/Cat03.jpg'
+TEST_IMAGE_PATH = None
 TEST_PROMPTS = {
     'streaming': "使用串流模式測試：請給我一個笑話",
     'non_streaming': "不使用串流模式測試：請給我一個笑話",
