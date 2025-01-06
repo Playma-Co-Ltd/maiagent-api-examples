@@ -127,6 +127,32 @@ class MaiAgentHelper:
             exit(1)
 
         return response.json()
+    
+    def update_attachment_v2(self, file_id, original_filename):
+        url = f'{self.base_url}/attachments/'
+
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+
+        payload = {
+            'file': file_id,
+            'filename': original_filename,
+            'type': 'image',
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+        return response.json()
 
     def update_chatbot_files(self, chatbot_id, file_key, original_filename):
         url = f'{self.base_url}chatbots/{chatbot_id}/files/'
@@ -154,6 +180,12 @@ class MaiAgentHelper:
         file_key = self.upload_file_to_s3(file_path, upload_url)
 
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
+
+    def upload_attachment_v2(self, file_path):
+        upload_url = self.get_upload_url(file_path, 'attachment')
+        file_key = self.upload_file_to_s3(file_path, upload_url)
+
+        return self.update_attachment_v2(file_key, os.path.basename(file_path))
 
     def upload_knowledge_file(self, chatbot_id, file_path):
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
