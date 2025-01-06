@@ -52,3 +52,16 @@ python -m messages.send_message # 在 python 目錄下執行
 - 在發送訊息之前，請確保 webhook 伺服器正在運作，以便接收回應。
 - webhook 伺服器使用 `localtunnel` 將本機伺服器暴露給網際網路。每次重新啟動伺服器時，請務必在 MaiAgent 後台更新 webhook URL。
 - 請確保已安裝 Node.js 和 npm，以便能夠安裝和使用 localtunnel。
+
+## 測試圖片設置
+
+1. 在 `python/images` 目錄下放置測試圖片：
+```bash
+# 確保圖片路徑為
+python/images/cat.jpg
+```
+
+2. 支援的圖片格式：
+   - JPG/JPEG
+   - PNG
+   - GIF (非動態)
