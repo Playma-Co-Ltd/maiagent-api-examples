@@ -78,7 +78,8 @@ def test_with_streaming():
         "message": {
             "content": "使用串流模式測試：請給我一個笑話",
             "attachments": []
-        }
+        },
+        "is_streaming": true
     }
     """
     print_separator("使用串流模式")
@@ -104,7 +105,7 @@ def test_without_streaming():
     2. 一次性接收完整響應
     
     API 調用:
-    POST /chatbots/{chatbot_id}/completions/?is_streaming=false
+    POST /chatbots/{chatbot_id}/completions/
     
     Request Payload:
     {
@@ -112,7 +113,8 @@ def test_without_streaming():
         "message": {
             "content": "不使用串流模式測試：請給我一個笑話",
             "attachments": []
-        }
+        },
+        "is_streaming": false # 可以省略，因為預設為 false
     }
     """
     print_separator("不使用串流模式")
@@ -147,7 +149,8 @@ def test_conversation_flow():
         "message": {
             "content": "你好，請記住我說我叫小明",
             "attachments": []
-        }
+        },
+        "is_streaming": false
     }
     
     2. 第二次對話:
@@ -159,7 +162,8 @@ def test_conversation_flow():
         "message": {
             "content": "我剛才說我叫什麼名字？",
             "attachments": []
-        }
+        },
+        "is_streaming": true
     }
     """
     print_separator("對話流程測試")
@@ -251,7 +255,8 @@ def test_conversation_with_attachment():
                 "filename": "<filename>",
                 "file": "<file_url>"
             }]
-        }
+        },
+        "is_streaming": true
     }
     """
     print_separator("帶附件的對話測試")

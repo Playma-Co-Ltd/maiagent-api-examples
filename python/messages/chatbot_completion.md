@@ -16,7 +16,8 @@ POST /chatbots/{chatbot_id}/completions/
     "message": {
         "content": "使用串流模式測試：請給我一個笑話",
         "attachments": []
-    }
+    },
+    "is_streaming": true
 }
 
 # Response Stream
@@ -43,13 +44,14 @@ POST /chatbots/{chatbot_id}/completions/
 
 ```python
 # Request
-POST /chatbots/{chatbot_id}/completions/?is_streaming=false
+POST /chatbots/{chatbot_id}/completions/
 {
     "conversation": null,
     "message": {
         "content": "不使用串流模式測試：請給我一個笑話",
         "attachments": []
-    }
+    },
+    "is_streaming": false
 }
 
 # Response
@@ -77,7 +79,8 @@ POST /chatbots/{chatbot_id}/completions/
     "message": {
         "content": "你好，請記住我說我叫小明",
         "attachments": []
-    }
+    },
+    "is_streaming": false
 }
 
 # 第一次響應
@@ -99,7 +102,8 @@ POST /chatbots/{chatbot_id}/completions/
     "message": {
         "content": "我剛才說我叫什麼名字？",
         "attachments": []
-    }
+    },
+    "is_streaming": true
 }
 
 # 第二次響應
@@ -193,7 +197,8 @@ POST /chatbots/{chatbot_id}/completions/
             "filename": "<filename>",
             "file": "<file_url>"
         }]
-    }
+    },
+    "is_streaming": true
 }
 
 # Response Stream
@@ -217,8 +222,33 @@ POST /chatbots/{chatbot_id}/completions/
 ### 使用須知
 
 1. 對話模式選擇
-   - 串流模式: 適合需要即時顯示回應的場景
-   - 非串流模式: 適合需要一次性獲取完整回應的場景
+   - 串流模式 (is_streaming=True): 適合需要即時顯示回應的場景
+   - 非串流模式 (is_streaming=False): 適合需要一次性獲取完整回應的場景，這是預設模式
+   - is_streaming 參數需要在請求主體中設置，而不是作為 URL 參數
+
+```python
+# 串流模式請求範例
+POST /chatbots/{chatbot_id}/completions/
+{
+    "conversation": null,
+    "message": {
+        "content": "使用串流模式測試：請給我一個笑話",
+        "attachments": []
+    },
+    "is_streaming": true
+}
+
+# 非串流模式請求範例（預設模式）
+POST /chatbots/{chatbot_id}/completions/
+{
+    "conversation": null,
+    "message": {
+        "content": "不使用串流模式測試：請給我一個笑話",
+        "attachments": []
+    },
+    "is_streaming": false  # 可以省略，因為這是預設值
+}
+```
 
 2. 多輪對話
    - 使用 conversation_id 維持對話上下文
@@ -233,3 +263,8 @@ POST /chatbots/{chatbot_id}/completions/
 4. 響應狀態說明
    - done=true: 對話結束,content 為空字符串
    - done=false: 對話進行中,content 不為空
+
+5. is_streaming 參數說明
+   - 可以不帶此參數,預設為 false
+   - 設為 true 時啟用串流模式
+   - 設為 false 時使用非串流模式
