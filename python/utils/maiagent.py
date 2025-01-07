@@ -292,7 +292,7 @@ class MaiAgentHelper:
             webchat_name = inbox_item['channel']['name']
             print(f'Inbox ID: {inbox_id}, Webchat ID: {webchat_id}, Webchat Name: {webchat_name}')
 
-    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None, is_streaming=None):
+    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None, is_streaming=False):
         """
         Create a completion using the chatbot and receive streaming responses.
         
@@ -310,6 +310,7 @@ class MaiAgentHelper:
                     ...
                 ]
             conversation_id (str, optional): The conversation ID for context. Defaults to None.
+            is_streaming (bool, optional): Whether to stream the response. Defaults to False.
         
         Yields:
             dict: The streaming completion data containing content and citations
@@ -325,11 +326,8 @@ class MaiAgentHelper:
             'message': {
                 'content': content,
                 'attachments': attachments or []
-            }
-        }
-
-        params = {
-            "is_streaming": str(is_streaming).lower()
+            },
+            'is_streaming': is_streaming
         }
 
         try:
@@ -337,7 +335,6 @@ class MaiAgentHelper:
                 url,
                 headers=headers,
                 json=payload,
-                params=params,
                 stream=True
             )
             response.raise_for_status()
