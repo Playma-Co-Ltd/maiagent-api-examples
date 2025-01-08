@@ -17,7 +17,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "使用串流模式測試：請給我一個笑話",
         "attachments": []
     },
-    "is_streaming": true
+    "isStreaming": true
 }
 
 # Response Stream
@@ -51,7 +51,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "不使用串流模式測試：請給我一個笑話",
         "attachments": []
     },
-    "is_streaming": false
+    "isStreaming": false
 }
 
 # Response
@@ -75,7 +75,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "你好，請記住我說我叫小明",
         "attachments": []
     },
-    "is_streaming": false
+    "isStreaming": false
 }
 
 # 第一次響應
@@ -98,7 +98,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "我剛才說我叫什麼名字？",
         "attachments": []
     },
-    "is_streaming": true
+    "isStreaming": true
 }
 
 # 第二次響應
@@ -193,7 +193,7 @@ POST /chatbots/{chatbot_id}/completions/
             "file": "<file_url>"
         }]
     },
-    "is_streaming": true
+    "isStreaming": true
 }
 
 # Response Stream
@@ -217,9 +217,9 @@ POST /chatbots/{chatbot_id}/completions/
 ### 使用須知
 
 1. 對話模式選擇
-   - 串流模式 (is_streaming=True): 適合需要即時顯示回應的場景
-   - 非串流模式 (is_streaming=False): 適合需要一次性獲取完整回應的場景，這是預設模式
-   - is_streaming 參數需要在請求主體中設置，而不是作為 URL 參數
+   - 串流模式 (isStreaming=True): 適合需要即時顯示回應的場景
+   - 非串流模式 (isStreaming=False): 適合需要一次性獲取完整回應的場景，這是預設模式
+   - isStreaming 參數需要在請求主體中設置，而不是作為 URL 參數
 
 ```python
 # 串流模式請求範例
@@ -230,7 +230,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "使用串流模式測試：請給我一個笑話",
         "attachments": []
     },
-    "is_streaming": true
+    "isStreaming": true
 }
 
 # 非串流模式請求範例（預設模式）
@@ -241,7 +241,7 @@ POST /chatbots/{chatbot_id}/completions/
         "content": "不使用串流模式測試：請給我一個笑話",
         "attachments": []
     },
-    "is_streaming": false  # 可以省略，因為這是預設值
+    "isStreaming": false  # 可以省略，因為這是預設值
 }
 ```
 
@@ -259,7 +259,7 @@ POST /chatbots/{chatbot_id}/completions/
    - done=true: 對話結束,content 為空字符串
    - done=false: 對話進行中,content 不為空
 
-5. is_streaming 參數說明
+5. isStreaming 參數說明
    - 可以不帶此參數,預設為 false
    - 設為 true 時啟用串流模式
    - 設為 false 時使用非串流模式
