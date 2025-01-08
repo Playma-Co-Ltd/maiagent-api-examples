@@ -22,17 +22,17 @@ POST /chatbots/{chatbot_id}/completions/
 
 # Response Stream
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "從前有一隻",     # 第一部分內容
     "done": false
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "小狗在玩球",     # 第二部分內容
     "done": false
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "",              
     "done": true               # 結束標記
 }
@@ -56,20 +56,15 @@ POST /chatbots/{chatbot_id}/completions/
 
 # Response
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "從前有一隻小狗在玩球...",
-    "done": false              # done 為 false 時代表還有訊息
-}
-{
-    "conversation_id": "conv_xxx",
-    "content": "",
-    "done": true
+    "done": true               # 非串流模式下永遠為 true
 }
 ```
 
 ### 3. 多輪對話
 
-使用 conversation_id 維持對話上下文。
+使用 conversationId 維持對話上下文。
 
 ```python
 # 第一次請求
@@ -85,12 +80,12 @@ POST /chatbots/{chatbot_id}/completions/
 
 # 第一次響應
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "好的，我記住了，你叫小明",
-    "done": false
+    "done": true
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "",
     "done": true
 }
@@ -98,7 +93,7 @@ POST /chatbots/{chatbot_id}/completions/
 # 第二次請求
 POST /chatbots/{chatbot_id}/completions/
 {
-    "conversation": "conv_xxx", # 延續對話需附上 conversation_id
+    "conversation": "conv_xxx", # 延續對話需附上 conversationId
     "message": {
         "content": "我剛才說我叫什麼名字？",
         "attachments": []
@@ -108,12 +103,12 @@ POST /chatbots/{chatbot_id}/completions/
 
 # 第二次響應
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "你剛才說你叫小明",
     "done": false
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "",
     "done": true
 }
@@ -203,17 +198,17 @@ POST /chatbots/{chatbot_id}/completions/
 
 # Response Stream
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "這張圖片顯示了一隻",
     "done": false
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "可愛的貓咪",
     "done": false
 }
 {
-    "conversation_id": "conv_xxx",
+    "conversationId": "conv_xxx",
     "content": "",
     "done": true
 }
@@ -251,9 +246,9 @@ POST /chatbots/{chatbot_id}/completions/
 ```
 
 2. 多輪對話
-   - 使用 conversation_id 維持對話上下文
-   - conversation=null 開啟新對話
-   - 延續對話需附上 conversation_id
+   - 使用 conversationId 維持對話上下文
+   - 不帶 conversation 或 conversation=null 皆會開啟新對話
+   - 延續對話需附上 conversationId
 
 3. 附件上傳流程
    1. 獲取預簽名 URL

@@ -2,6 +2,7 @@ import json
 import os
 import sseclient
 from urllib.parse import urljoin
+from typing import Union, Generator
 
 import requests
 
@@ -292,28 +293,24 @@ class MaiAgentHelper:
             webchat_name = inbox_item['channel']['name']
             print(f'Inbox ID: {inbox_id}, Webchat ID: {webchat_id}, Webchat Name: {webchat_name}')
 
-    def create_chatbot_completion(self, chatbot_id, content, attachments=None, conversation_id=None, is_streaming=False):
+    def create_chatbot_completion(self, chatbot_id: str, content: str, attachments: list = None, conversation_id: str = None, is_streaming: bool = False) -> Union[dict, Generator]:
         """
-        Create a completion using the chatbot and receive streaming responses.
-        
+        建立聊天機器人回應
+
         Args:
-            chatbot_id (str): The ID of the chatbot to create completion with
-            content (str): The prompt content
-            attachments (list, optional): List of attachment objects in the format:
-                [
-                    {
-                        'id': '<attachment-id>',
-                        'type': 'image',
-                        'filename': '<filename>',
-                        'file': '<file-url>'
-                    },
-                    ...
-                ]
-            conversation_id (str, optional): The conversation ID for context. Defaults to None.
-            is_streaming (bool, optional): Whether to stream the response. Defaults to False.
-        
-        Yields:
-            dict: The streaming completion data containing content and citations
+            chatbot_id: 聊天機器人 ID
+            content: 訊息內容
+            attachments: 附件列表
+            conversation_id: 對話 ID
+            is_streaming: 是否使用串流模式
+
+        Returns:
+            串流模式時回傳 Generator，非串流模式回傳 dict
+            回應格式: {
+                "conversationId": str,
+                "content": str,
+                "done": bool
+            }
         """
         url = f'{self.base_url}chatbots/{chatbot_id}/completions/'
 
@@ -331,26 +328,42 @@ class MaiAgentHelper:
         }
 
         try:
-            response = requests.post(
-                url,
-                headers=headers,
-                json=payload,
-                stream=True
-            )
-            response.raise_for_status()
-            
-            client = sseclient.SSEClient(response)
-            for event in client.events():
-                if event.data:
-                    try:
-                        data = json.loads(event.data)
-                        yield data
-                    except json.JSONDecodeError as e:
-                        print(f"Failed to parse JSON: {event.data}")
-                        continue
-                        
+            if not is_streaming:
+                return self._handle_non_streaming_completion(url, headers, payload)
+            return self._handle_streaming_completion(url, headers, payload)
+                
         except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
+            error_msg = f"請求失敗: {str(e)}"
             if hasattr(e, 'response') and e.response is not None:
-                print(e.response.text)
-            raise
+                error_msg += f"\n回應內容: {e.response.text}"
+            raise RuntimeError(error_msg)
+
+    def _handle_non_streaming_completion(self, url: str, headers: dict, payload: dict) -> dict:
+        """處理非串流模式的回應"""
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def _handle_streaming_completion(self, url: str, headers: dict, payload: dict) -> Generator:
+        """處理串流模式的回應"""
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            stream=True
+        )
+        response.raise_for_status()
+        
+        client = sseclient.SSEClient(response)
+        for event in client.events():
+            if event.data:
+                try:
+                    data = json.loads(event.data)
+                    yield data
+                except json.JSONDecodeError as e:
+                    print(f"JSON 解析失敗: {event.data}")
+                    continue
