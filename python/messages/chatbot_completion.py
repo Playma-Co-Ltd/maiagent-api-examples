@@ -121,12 +121,12 @@ def test_without_streaming():
     maiagent_helper = get_maiagent_helper()
     
     try:
-        response = next(maiagent_helper.create_chatbot_completion(
+        response = maiagent_helper.create_chatbot_completion(
             CHATBOT_ID,
             TEST_PROMPTS['non_streaming'],
             is_streaming=False
-        ))
-        print(f"完整響應: {response}")
+        )
+        print(f"回應: {response}")
     except Exception as e:
         print(f"錯誤: {str(e)}")
 
@@ -135,9 +135,9 @@ def test_conversation_flow():
     測試場景3: 測試對話上下文功能
     
     流程:
-    1. 第一次調用 API 不帶 conversation_id
-    2. 從響應中獲取 conversation_id
-    3. 第二次調用帶上 conversation_id 進行對話
+    1. 第一次調用 API 不帶 conversationId
+    2. 從響應中獲取 conversationId
+    3. 第二次調用帶上 conversationId 進行對話
     
     API 調用:
     1. 第一次對話:
@@ -158,7 +158,7 @@ def test_conversation_flow():
     
     Request Payload:
     {
-        "conversation": "<第一次對話獲取的conversation_id>",
+        "conversation": "<第一次對話獲取的conversationId>",
         "message": {
             "content": "我剛才說我叫什麼名字？",
             "attachments": []
@@ -170,25 +170,34 @@ def test_conversation_flow():
     maiagent_helper = get_maiagent_helper()
     
     try:
-        # 第一次對話，不帶conversation_id
-        print("第一次對話（無conversation_id）:")
-        first_response = next(maiagent_helper.create_chatbot_completion(
+        # 第一次對話，不帶 conversationId
+        print("第一次對話（無 conversationId）:")
+        first_response = maiagent_helper.create_chatbot_completion(
             CHATBOT_ID,
             TEST_PROMPTS['conversation_first'],
             is_streaming=False
-        ))
+        )
+        
+        if not isinstance(first_response, dict):
+            print(f"錯誤：收到非預期的回應類型: {type(first_response)}")
+            return
+            
         print(f"第一次響應: {first_response}")
         
-        # 從響應中獲取conversation_id
-        conversation_id = first_response.get('conversation_id')
-        print(f"\n獲取到的conversation_id: {conversation_id}\n")
+        # 從響應中獲取 conversationId
+        conversationId = first_response.get('conversationId')
+        if not conversationId:
+            print("錯誤：回應中沒有 conversationId")
+            return
+            
+        print(f"\n獲取到的 conversationId: {conversationId}\n")
         
-        # 第二次對話，使用獲取到的conversation_id
-        print("第二次對話（帶conversation_id）:")
+        # 第二次對話，使用獲取到的 conversationId
+        print("第二次對話（帶 conversationId）:")
         for data in maiagent_helper.create_chatbot_completion(
             CHATBOT_ID,
             TEST_PROMPTS['conversation_second'],
-            conversation_id=conversation_id,
+            conversationId=conversationId,
             is_streaming=True
         ):
             handle_streaming_response(data)
