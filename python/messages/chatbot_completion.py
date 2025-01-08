@@ -66,7 +66,7 @@ def test_with_streaming():
     測試場景1: 使用串流模式與聊天機器人對話
     
     流程:
-    1. 調用 create_chatbot_completion API，設置 is_streaming=True
+    1. 調用 create_chatbot_completion API，設置 isStreaming=True
     2. 逐步接收並顯示串流響應
     
     API 調用:
@@ -79,7 +79,7 @@ def test_with_streaming():
             "content": "使用串流模式測試：請給我一個笑話",
             "attachments": []
         },
-        "is_streaming": true
+        "isStreaming": true
     }
     """
     print_separator("使用串流模式")
@@ -101,7 +101,7 @@ def test_without_streaming():
     測試場景2: 使用非串流模式與聊天機器人對話
     
     流程:
-    1. 調用 create_chatbot_completion API，設置 is_streaming=False
+    1. 調用 create_chatbot_completion API，設置 isStreaming=False
     2. 一次性接收完整響應
     
     API 調用:
@@ -114,7 +114,7 @@ def test_without_streaming():
             "content": "不使用串流模式測試：請給我一個笑話",
             "attachments": []
         },
-        "is_streaming": false # 可以省略，因為預設為 false
+        "isStreaming": false # 可以省略，因為預設為 false
     }
     """
     print_separator("不使用串流模式")
@@ -150,7 +150,7 @@ def test_conversation_flow():
             "content": "你好，請記住我說我叫小明",
             "attachments": []
         },
-        "is_streaming": false
+        "isStreaming": false
     }
     
     2. 第二次對話:
@@ -163,7 +163,7 @@ def test_conversation_flow():
             "content": "我剛才說我叫什麼名字？",
             "attachments": []
         },
-        "is_streaming": true
+        "isStreaming": true
     }
     """
     print_separator("對話流程測試")
@@ -185,19 +185,19 @@ def test_conversation_flow():
         print(f"第一次響應: {first_response}")
         
         # 從響應中獲取 conversationId
-        conversationId = first_response.get('conversationId')
-        if not conversationId:
+        conversation_id = first_response.get('conversationId')
+        if not conversation_id:
             print("錯誤：回應中沒有 conversationId")
             return
             
-        print(f"\n獲取到的 conversationId: {conversationId}\n")
+        print(f"\n獲取到的 conversationId: {conversation_id}\n")
         
         # 第二次對話，使用獲取到的 conversationId
         print("第二次對話（帶 conversationId）:")
         for data in maiagent_helper.create_chatbot_completion(
             CHATBOT_ID,
             TEST_PROMPTS['conversation_second'],
-            conversationId=conversationId,
+            conversation_id=conversation_id,
             is_streaming=True
         ):
             handle_streaming_response(data)
@@ -265,7 +265,7 @@ def test_conversation_with_attachment():
                 "file": "<file_url>"
             }]
         },
-        "is_streaming": true
+        "isStreaming": true
     }
     """
     print_separator("帶附件的對話測試")
