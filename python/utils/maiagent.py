@@ -1,6 +1,8 @@
 import json
 import os
+import sseclient
 from urllib.parse import urljoin
+from typing import Union, Generator
 
 import requests
 
@@ -128,6 +130,32 @@ class MaiAgentHelper:
             exit(1)
 
         return response.json()
+    
+    def update_attachment_without_conversation(self, file_id, original_filename):
+        url = f'{self.base_url}attachments/'
+
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+
+        payload = {
+            'file': file_id,
+            'filename': original_filename,
+            'type': 'image',
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+        return response.json()
 
     def update_chatbot_files(self, chatbot_id, file_key, original_filename):
         url = f'{self.base_url}chatbots/{chatbot_id}/files/'
@@ -174,6 +202,7 @@ class MaiAgentHelper:
             exit(3)
 
         return response.json()
+    
 
     def download_batch_qa_excel(self, webchat_id: str, batch_qa_file_id: str):
         url = urljoin(self.base_url, f'web-chats/{webchat_id}/batch-qas/{batch_qa_file_id}/export-excel/')
@@ -204,6 +233,11 @@ class MaiAgentHelper:
         file_key = self.upload_file_to_s3(file_path, upload_url)
 
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
+
+    def upload_attachment_without_conversation(self, file_path):
+        upload_url = self.get_upload_url(file_path, 'attachment')
+        file_key = self.upload_file_to_s3(file_path, upload_url)
+        return self.update_attachment_without_conversation(file_key, os.path.basename(file_path))
 
     def upload_knowledge_file(self, chatbot_id, file_path):
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
@@ -258,3 +292,78 @@ class MaiAgentHelper:
             webchat_id = inbox_item['channel']['id']
             webchat_name = inbox_item['channel']['name']
             print(f'Inbox ID: {inbox_id}, Webchat ID: {webchat_id}, Webchat Name: {webchat_name}')
+
+    def create_chatbot_completion(self, chatbot_id: str, content: str, attachments: list = None, conversation_id: str = None, is_streaming: bool = False) -> Union[dict, Generator]:
+        """
+        建立聊天機器人回應
+
+        Args:
+            chatbot_id: 聊天機器人 ID
+            content: 訊息內容
+            attachments: 附件列表
+            conversation_id: 對話 ID
+            is_streaming: 是否使用串流模式
+
+        Returns:
+            串流模式時回傳 Generator，非串流模式回傳 dict
+            回應格式: {
+                "conversationId": str,
+                "content": str,
+                "done": bool
+            }
+        """
+        url = f'{self.base_url}chatbots/{chatbot_id}/completions/'
+
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {
+            'conversation': conversation_id,
+            'message': {
+                'content': content,
+                'attachments': attachments or []
+            },
+            'is_streaming': is_streaming
+        }
+
+        try:
+            if not is_streaming:
+                return self._handle_non_streaming_completion(url, headers, payload)
+            return self._handle_streaming_completion(url, headers, payload)
+                
+        except requests.exceptions.RequestException as e:
+            error_msg = f"請求失敗: {str(e)}"
+            if hasattr(e, 'response') and e.response is not None:
+                error_msg += f"\n回應內容: {e.response.text}"
+            raise RuntimeError(error_msg)
+
+    def _handle_non_streaming_completion(self, url: str, headers: dict, payload: dict) -> dict:
+        """處理非串流模式的回應"""
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def _handle_streaming_completion(self, url: str, headers: dict, payload: dict) -> Generator:
+        """處理串流模式的回應"""
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            stream=True
+        )
+        response.raise_for_status()
+        
+        client = sseclient.SSEClient(response)
+        for event in client.events():
+            if event.data:
+                try:
+                    data = json.loads(event.data)
+                    yield data
+                except json.JSONDecodeError as e:
+                    print(f"JSON 解析失敗: {event.data}")
+                    continue
