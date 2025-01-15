@@ -1,3 +1,4 @@
+# !python -m messages.chatbot_completion
 from utils import MaiAgentHelper
 from utils.config import API_KEY, BASE_URL, CHATBOT_ID, STORAGE_URL
 import sys
