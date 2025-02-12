@@ -15,6 +15,11 @@
 - [batch_qa](batch_qa/): 發送批次問答的範例
 - [others](others/): 其他有用的範例
 
+# 使用 MaiAgentHelper
+
+MaiAgentHelper 是一個用於與 MaiAgent API 互動的輔助類別，提供了一系列方便的方法來處理對話、訊息、檔案上傳和知識庫管理等功能。
+
+- 請參考 [utils/maiagent.md](utils/maiagent.md) 了解 MaiAgentHelper 的完整功能和使用方法。
 ## 設置步驟
 
 1. 安裝所需 Python 套件：
