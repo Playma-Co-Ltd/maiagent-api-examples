@@ -17,10 +17,11 @@ helper = MaiAgentHelper(
 ### 參數說明
 - `api_key` (str): MaiAgent API 金鑰
 - `base_url` (str, 選填): API 基礎 URL，預設為 'https://api.maiagent.ai/api/v1/'
-- `storage_url` (str, 選填): S3 儲存服務 URL，格式必須為 'https://s3.{region_name}.amazonaws.com/{bucket_name}'
-  - {storage_url}: 請替換為實際的 S3 儲存服務 URL
-  - {bucket_name}: S3 bucket 名稱
-  - 範例：'https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app'
+- `storage_url` (str, 選填): 儲存服務的 URL，用於檔案上傳和存取
+  - 格式: `{storage_url}/{bucket_name}`
+  - `{storage_url}`: 儲存服務的基礎 URL (例如: https://s3.ap-northeast-1.amazonaws.com)
+  - `{bucket_name}`: 儲存桶名稱
+  - 預設值: 'https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app'
 
 ## 主要方法
 
