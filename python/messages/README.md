@@ -7,6 +7,7 @@
 1. [`send_message.py`](send_message.py): 用於向 MaiAgent API 建立對話、發送訊息的程式碼。
 2. [`send_image_message.py`](send_image_message.py): 用於向 MaiAgent API 建立對話、發送圖片訊息的程式碼。
 3. [`webhook_server.py`](webhook_server.py): 用於接收 webhook 通知的 Flask 伺服器。
+4. [`upload_attachment.py`](upload_attachment.py): 用於上傳檔案到 MaiAgent API 的程式碼。
 
 ## 設置步驟
 
