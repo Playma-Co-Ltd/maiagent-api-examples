@@ -1,59 +1,10 @@
-# 檔案上傳功能說明
+# MaiAgent API 檔案上傳功能說明
 
-本文檔說明如何使用 `upload_attachment.py` 腳本上傳檔案附件到 MaiAgent API。
+本文檔說明如何使用 MaiAgent API 的檔案上傳功能。`upload_attachment.py` 腳本提供了一個簡單的示例，展示如何與 API 進行互動。
 
-## 功能概述
+## API 功能概述
 
-`upload_attachment.py` 是一個用於將檔案上傳到 MaiAgent API 的工具。它支援各種類型的檔案，如圖片、音訊、影片和文件等。上傳後，您可以獲取檔案的 ID，用於在訊息中引用該檔案。
-
-## 前置需求
-
-1. 已安裝 Python 3.11 或更高版本
-2. 已安裝必要的依賴套件（可通過 `requirements.txt` 安裝）
-3. 已設定 MaiAgent API 金鑰和基礎 URL（在 `.env` 檔案中）
-
-## 使用方法
-
-### 基本用法
-
-```python
-from messages.upload_attachment import main as upload_attachment
-
-# 上傳檔案並獲取回應
-response = upload_attachment('path/to/your/file.jpg')
-print(response)  # 包含檔案 ID 和其他資訊的字典
-```
-
-### 命令列用法
-
-您也可以直接從命令列執行腳本：
-
-```bash
-# 在 python 目錄下執行
-python -m messages.upload_attachment
-```
-
-預設情況下，腳本會上傳在 `TEST_IMAGE_PATH` 變數中指定的測試檔案（`test_files/天氣真好.mp3`）。
-
-### 自訂檔案路徑
-
-若要上傳自訂檔案，您可以修改腳本中的 `TEST_IMAGE_PATH` 變數，或在程式碼中直接呼叫 `main()` 函數並傳入檔案路徑：
-
-```python
-if __name__ == '__main__':
-    main('path/to/your/custom/file.jpg')
-```
-
-## 程式碼說明
-
-腳本的主要功能由 `main()` 函數提供：
-
-1. 檢查檔案是否存在
-2. 設定 API 請求標頭，包含 API 金鑰
-3. 猜測檔案的 MIME 類型
-4. 開啟檔案並以二進位模式讀取
-5. 使用 `requests` 庫將檔案上傳到 API
-6. 返回 API 的 JSON 回應
+MaiAgent API 的檔案上傳功能允許您將各種類型的檔案（如圖片、音訊、影片和文件等）上傳到 MaiAgent 平台。上傳後，您可以獲取檔案的 ID，用於在訊息中引用該檔案。
 
 ## API 端點
 
@@ -68,7 +19,7 @@ POST {BASE_URL}attachments/
 請求需要包含以下內容：
 
 - **標頭**：
-  - `Authorization`: 包含 API 金鑰的認證標頭
+  - `Authorization`: 包含 API 金鑰的認證標頭，格式為 `Api-Key {YOUR_API_KEY}`
   
 - **檔案**：
   - 使用 multipart/form-data 格式上傳檔案
@@ -81,33 +32,55 @@ POST {BASE_URL}attachments/
 ```json
 {
   "id": "att_f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "type": "audio",
-  "filename": "天氣真好.mp3",
-  "file": "https://storage.example.com/path/to/file.mp3"
+  "type": "text",
+  "filename": "異型介紹.txt",
+  "file": "https://storage.example.com/path/to/file.txt"
 }
 ```
 
 其中：
 - `id`: 檔案的唯一識別碼，可用於後續操作引用此檔案
-- `type`: 檔案類型（如 audio、image、video、document 等）
+- `type`: 檔案類型（如 audio、image、video、document、text 等）
 - `filename`: 原始檔案名稱
 - `file`: 檔案的存取 URL
 
-## 錯誤處理
 
-腳本會處理以下錯誤情況：
+## 使用示例
 
-- 檔案不存在：拋出 `FileNotFoundError` 異常
-- API 請求失敗：返回 API 的錯誤回應
+### Python 使用示例
 
-可能的 API 錯誤回應包括：
-- 401: 未授權（API 金鑰無效）
-- 413: 檔案太大
-- 415: 不支援的檔案類型
-- 500: 伺服器內部錯誤
+```python
+# 使用 API 上傳檔案
+import requests
+import mimetypes
+from pathlib import Path
+
+# 設定 API 認證和端點
+API_KEY = "your_api_key_here"
+BASE_URL = "https://api.maiagent.com/"
+
+# 上傳檔案
+def upload_attachment(file_path):
+    file_path = Path(file_path)
+    
+    headers = {'Authorization': f'Api-Key {API_KEY}'}
+    mime_type, _ = mimetypes.guess_type(file_path)
+
+    with open(file_path, 'rb') as file:
+        files = {'file': (file_path.name, file, mime_type)}
+        response = requests.post(f'{BASE_URL}attachments/', headers=headers, files=files)
+    
+    return response.json()
+
+# 使用範例
+result = upload_attachment('path/to/your/file.jpg')
+print(result)
+```
+
 
 ## 注意事項
 
-1. 確保您的 `.env` 檔案中已正確設定 `MAIAGENT_API_KEY` 和 `MAIAGENT_BASE_URL`
+1. 確保您已獲取有效的 API 金鑰
 2. 檔案大小可能受到 API 限制，請參考 API 文檔了解具體限制
-3. 支援的檔案類型可能有所限制，請參考 API 文檔了解支援的檔案類型 
+3. 支援的檔案類型可能有所限制，請參考 API 文檔了解支援的檔案類型
+4. 上傳的檔案 ID 可用於在發送訊息時引用附件 
