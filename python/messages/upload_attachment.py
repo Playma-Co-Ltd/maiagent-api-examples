@@ -13,8 +13,6 @@ TEST_IMAGE_PATH = os.path.join(
 
 def main(file_path: str | Path) -> dict:
     file_path = Path(file_path)
-    if not file_path.exists():
-        raise FileNotFoundError(f'檔案不存在：{file_path}')
     
     headers = {'Authorization': f'Api-Key {API_KEY}'}
     mime_type, _ = mimetypes.guess_type(file_path)
