@@ -117,7 +117,8 @@ attachment = helper.update_attachment(
 ```python
 attachment = helper.update_attachment_without_conversation(
     file_id='file_key',
-    original_filename='filename.jpg'
+    original_filename='filename.jpg',
+    type='image'
 )
 ```
 
