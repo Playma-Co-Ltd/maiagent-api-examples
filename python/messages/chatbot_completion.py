@@ -12,7 +12,7 @@ TEST_IMAGE_PATH = os.path.join(
 TEST_PDF_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     'inputs',
-    '台灣高鐵FAQ.xlsx',
+    'sample.pdf',
 )
 TEST_PROMPTS = {
     'streaming': "使用串流模式測試：請給我一個笑話",
