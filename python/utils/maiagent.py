@@ -131,7 +131,7 @@ class MaiAgentHelper:
 
         return response.json()
     
-    def update_attachment_without_conversation(self, file_id, original_filename):
+    def update_attachment_without_conversation(self, file_id, original_filename, type):
         url = f'{self.base_url}attachments/'
 
         headers = {
@@ -141,7 +141,7 @@ class MaiAgentHelper:
         payload = {
             'file': file_id,
             'filename': original_filename,
-            'type': 'image',
+            'type': type,
         }
 
         try:
@@ -234,10 +234,10 @@ class MaiAgentHelper:
 
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
 
-    def upload_attachment_without_conversation(self, file_path):
+    def upload_attachment_without_conversation(self, file_path, type):
         upload_url = self.get_upload_url(file_path, 'attachment')
         file_key = self.upload_file_to_s3(file_path, upload_url)
-        return self.update_attachment_without_conversation(file_key, os.path.basename(file_path))
+        return self.update_attachment_without_conversation(file_key, os.path.basename(file_path), type)
 
     def upload_knowledge_file(self, chatbot_id, file_path):
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
