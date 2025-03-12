@@ -6,15 +6,21 @@ import os
 # 測試配置
 TEST_IMAGE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-    'images', 
+    'inputs',
     'cat.jpg'
+)
+TEST_PDF_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    'inputs',
+    '台灣高鐵FAQ.xlsx',
 )
 TEST_PROMPTS = {
     'streaming': "使用串流模式測試：請給我一個笑話",
     'non_streaming': "不使用串流模式測試：請給我一個笑話",
     'conversation_first': "你好，請記住我說我叫小明",
     'conversation_second': "我剛才說我叫什麼名字？",
-    'image_analysis': "請描述這張圖片的內容"
+    'image_analysis': "請描述這張圖片的內容",
+    'pdf_analysis': "請分析這個PDF文件的內容並總結主要信息"
 }
 
 # 輸出格式
@@ -40,7 +46,10 @@ def create_attachment(maiagent_helper: MaiAgentHelper, image_path: str) -> list[
         return []
     
     print(f"正在上傳圖片: {image_path}")
-    upload_response = maiagent_helper.upload_attachment_without_conversation(image_path)
+    upload_response = maiagent_helper.upload_attachment_without_conversation(
+        file_path=image_path,
+        type='image'
+    )
     print(f"上傳響應: {upload_response}")
     
     if not upload_response:
@@ -205,7 +214,7 @@ def test_conversation_flow():
     except Exception as e:
         print(f"錯誤: {str(e)}")
 
-def test_conversation_with_attachment():
+def test_conversation_with_image_attachment():
     """
     測試場景4: 測試帶附件的對話功能
     
@@ -290,12 +299,112 @@ def test_conversation_with_attachment():
     except Exception as e:
         print(f"錯誤: {str(e)}")
 
+def test_conversation_with_pdf_attachment():
+    """
+    測試場景5: 測試帶PDF附件的對話功能
+
+    流程:
+    1. 請求預簽名上傳 URL
+    2. 上傳PDF文件
+    3. 註冊附件
+    4. 進行帶PDF附件的對話
+
+    API 調用:
+    1. 請求預簽名上傳 URL:
+    POST /upload-presigned-url/
+    Request Payload:
+    {
+        "filename": "優勢規格.pdf",
+        "modelName": "attachment",
+        "fieldName": "file",
+        "fileSize": 123456
+    }
+
+    2. 上傳PDF:
+    POST https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app
+
+    Request Payload:
+    {
+        "key": "<file_key>",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "<aws_credential>",
+        "x-amz-date": "<timestamp>",
+        "policy": "<base64_encoded_policy>",
+        "x-amz-signature": "<signature>",
+        "file": "<file_content>"
+    }
+
+    3. 註冊附件:
+    POST /attachments/
+
+    Request Payload:
+    {
+        "file": "<file_key>",
+        "filename": "優勢規格.pdf",
+        "type": "file"
+    }
+
+    4. PDF分析:
+    POST /chatbots/{chatbot_id}/completions/
+
+    Request Payload:
+    {
+        "conversation": null,
+        "message": {
+            "content": "請分析這個PDF文件的內容並總結主要信息",
+            "attachments": [{
+                "id": "<attachment_id>",
+                "type": "file",
+                "filename": "<filename>",
+                "file": "<file_url>"
+            }]
+        },
+        "isStreaming": true
+    }
+    """
+    print_separator("帶PDF附件的對話測試")
+    maiagent_helper = get_maiagent_helper()
+
+    try:
+        # 準備附件
+        print(f"正在上傳PDF文件: {TEST_PDF_PATH}")
+        upload_response = maiagent_helper.upload_attachment_without_conversation(
+            file_path=TEST_PDF_PATH,
+            type='other',
+        )
+        print(f"上傳響應: {upload_response}")
+
+        if not upload_response:
+            print("PDF附件準備失敗")
+            return
+
+        # 創建PDF附件數據
+        attachments = [{
+            'id': upload_response['id'],
+            'type': 'other',  # 注意：PDF使用'other'類型而不是'image'
+            'filename': upload_response['filename'],
+            'file': upload_response['file'],
+        }]
+        print(f"PDF附件數據準備完成: {attachments}")
+
+        print("\n開始分析PDF文件...")
+        response = maiagent_helper.create_chatbot_completion(
+            CHATBOT_ID,
+            TEST_PROMPTS['pdf_analysis'],
+            attachments=attachments,
+            is_streaming=False
+        )
+        print(f"回應: {response}")
+    except Exception as e:
+        print(f"錯誤: {str(e)}")
+
 def main():
     """主函數：運行所有測試場景"""
     test_with_streaming()
     test_without_streaming()
     test_conversation_flow()
-    test_conversation_with_attachment()
+    test_conversation_with_image_attachment()
+    test_conversation_with_pdf_attachment()
 
 if __name__ == '__main__':
     main()
