@@ -7,14 +7,14 @@ import os
 TEST_IMAGE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
     'images', 
-    'cat.jpg'
+    '測試pdf用8頁.pdf'
 )
 TEST_PROMPTS = {
     'streaming': "使用串流模式測試：請給我一個笑話",
     'non_streaming': "不使用串流模式測試：請給我一個笑話",
     'conversation_first': "你好，請記住我說我叫小明",
     'conversation_second': "我剛才說我叫什麼名字？",
-    'image_analysis': "請描述這張圖片的內容"
+    'image_analysis': "這啥"
 }
 
 # 輸出格式
@@ -48,7 +48,7 @@ def create_attachment(maiagent_helper: MaiAgentHelper, image_path: str) -> list[
     
     attachments = [{
         'id': upload_response['id'],
-        'type': 'image',
+        'type': 'other',
         'filename': upload_response['filename'],
         'file': upload_response['file'],
     }]
@@ -292,9 +292,9 @@ def test_conversation_with_attachment():
 
 def main():
     """主函數：運行所有測試場景"""
-    test_with_streaming()
-    test_without_streaming()
-    test_conversation_flow()
+    # test_with_streaming()
+    # test_without_streaming()
+    # test_conversation_flow()
     test_conversation_with_attachment()
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 from typing import Union, Generator
 
 import requests
-
+import mimetypes
 
 class MaiAgentHelper:
     def __init__(
@@ -131,21 +131,18 @@ class MaiAgentHelper:
 
         return response.json()
     
-    def update_attachment_without_conversation(self, file_id, original_filename):
+    def update_attachment_without_conversation(self, file_path):
         url = f'{self.base_url}attachments/'
 
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
 
-        payload = {
-            'file': file_id,
-            'filename': original_filename,
-            'type': 'image',
-        }
-
+        mime_type, _ = mimetypes.guess_type(file_path)
         try:
-            response = requests.post(url, headers=headers, json=payload)
+            with open(file_path, 'rb') as file:
+                files = {'file': (os.path.basename(file_path), file, mime_type)}
+                response = requests.post(url, headers=headers, files=files)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             print(response.text)
@@ -235,9 +232,7 @@ class MaiAgentHelper:
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
 
     def upload_attachment_without_conversation(self, file_path):
-        upload_url = self.get_upload_url(file_path, 'attachment')
-        file_key = self.upload_file_to_s3(file_path, upload_url)
-        return self.update_attachment_without_conversation(file_key, os.path.basename(file_path))
+        return self.update_attachment_without_conversation(file_path)
 
     def upload_knowledge_file(self, chatbot_id, file_path):
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
