@@ -65,11 +65,19 @@ class MaiAgentHelper:
         file_size = os.path.getsize(file_path)
         filename = os.path.basename(file_path)
 
-        url = f'{self.base_url}upload-presigned-url/'
+        url = urljoin(self.base_url, 'upload-presigned-url/')
 
-        headers = {'Authorization': f'Api-Key {self.api_key}', 'Content-Type': 'application/json'}
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+            'Content-Type': 'application/json'
+        }
 
-        payload = {'filename': filename, 'modelName': model_name, 'fieldName': field_name, 'fileSize': file_size}
+        payload = {
+            'filename': filename,
+            'modelName': model_name,
+            'fieldName': field_name,
+            'fileSize': file_size
+        }
 
         response = requests.post(url, headers=headers, data=json.dumps(payload))
 
@@ -157,18 +165,27 @@ class MaiAgentHelper:
 
         return response.json()
 
-    def update_chatbot_files(self, chatbot_id, file_key, original_filename):
+    def update_chatbot_files(self, chatbot_id: str, file_key: str, original_filename: str, parser_id: str = None):
         url = f'{self.base_url}chatbots/{chatbot_id}/files/'
 
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
 
-        payload = {'files': [{'file': file_key, 'filename': original_filename}]}
+        payload = {
+            'files': [{
+                'file': file_key,
+                'filename': original_filename,
+            }]
+        }
+
+        if parser_id:
+            payload['files'][0]['parser'] = parser_id
 
         try:
             response = requests.post(url, headers=headers, json=payload)
             response.raise_for_status()
+            return response.json()
         except requests.exceptions.RequestException as e:
             print(response.text)
             print(e)
@@ -227,11 +244,27 @@ class MaiAgentHelper:
             print(f'Error: {response.status_code}')
             print(response.text)
             return None
+        
+    def get_supported_file_types(self) -> dict:
+        url = urljoin(self.base_url, f'parsers/supported-file-types/')
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            error_msg = f"獲取支援的檔案類型失敗: {str(e)}"
+            if hasattr(e, 'response') and e.response is not None:
+                error_msg += f"\n回應內容: {e.response.text}"
+            raise RuntimeError(error_msg)
 
     def upload_attachment(self, conversation_id, file_path):
         upload_url = self.get_upload_url(file_path, 'attachment')
         file_key = self.upload_file_to_s3(file_path, upload_url)
-
         return self.update_attachment(conversation_id, file_key, os.path.basename(file_path))
 
     def upload_attachment_without_conversation(self, file_path, type):
@@ -239,11 +272,22 @@ class MaiAgentHelper:
         file_key = self.upload_file_to_s3(file_path, upload_url)
         return self.update_attachment_without_conversation(file_key, os.path.basename(file_path), type)
 
-    def upload_knowledge_file(self, chatbot_id, file_path):
+    def upload_knowledge_file(self, chatbot_id: str, file_path: str, parser_id: str = None) -> dict:
+        """上傳知識庫檔案"""
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f'檔案不存在: {file_path}')
+
+        # 上傳檔案到 S3
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
         file_key = self.upload_file_to_s3(file_path, upload_url)
 
-        return self.update_chatbot_files(chatbot_id, file_key, os.path.basename(file_path))
+        # 更新聊天機器人檔案
+        return self.update_chatbot_files(
+            chatbot_id=chatbot_id,
+            file_key=file_key,
+            original_filename=os.path.basename(file_path),
+            parser_id=parser_id
+        )
 
     def delete_knowledge_file(self, chatbot_id, file_id):
         url = f'{self.base_url}chatbots/{chatbot_id}/files/{file_id}/'
