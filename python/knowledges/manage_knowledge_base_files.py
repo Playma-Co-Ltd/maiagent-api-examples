@@ -6,8 +6,8 @@ from utils import MaiAgentHelper
 API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 
-# assert API_KEY != '<your-api-key>', 'Please set your API key'
-# assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
+assert API_KEY != '<your-api-key>', 'Please set your API key'
+assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
 
 
 def main():

@@ -5,7 +5,7 @@ from utils import MaiAgentHelper
 
 API_KEY = '<your-api-key>'
 
-# assert API_KEY != '<your-api-key>', 'Please set your API key'
+assert API_KEY != '<your-api-key>', 'Please set your API key'
 
 
 def main():

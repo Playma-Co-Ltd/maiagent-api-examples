@@ -14,7 +14,7 @@ EMBEDDING_MODEL = None  # 可設定為特定的嵌入模型 ID
 RERANKER_MODEL = None  # 可設定為特定的重新排序模型 ID
 CHATBOTS = None  # 可設定為聊天機器人 ID 列表，例如 [{'id': 'chatbot-id', 'name': 'chatbot-name'}]
 
-# assert API_KEY != '<your-api-key>', 'Please set your API key'
+assert API_KEY != '<your-api-key>', 'Please set your API key'
 
 
 def main():
