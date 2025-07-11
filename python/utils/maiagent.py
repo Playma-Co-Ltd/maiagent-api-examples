@@ -239,26 +239,679 @@ class MaiAgentHelper:
         file_key = self.upload_file_to_s3(file_path, upload_url)
         return self.update_attachment_without_conversation(file_key, os.path.basename(file_path), type)
 
-    def upload_knowledge_file(self, chatbot_id, file_path):
+    def upload_knowledge_file(self, knowledge_base_id, file_path):
+        """上傳檔案到知識庫"""
         upload_url = self.get_upload_url(file_path, 'chatbot-file')
         file_key = self.upload_file_to_s3(file_path, upload_url)
 
-        return self.update_chatbot_files(chatbot_id, file_key, os.path.basename(file_path))
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
 
-    def delete_knowledge_file(self, chatbot_id, file_id):
-        url = f'{self.base_url}chatbots/{chatbot_id}/files/{file_id}/'
+        payload = {'files': [{'file': file_key, 'filename': os.path.basename(file_path)}]}
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def delete_knowledge_file(self, knowledge_base_id, file_id):
+        """刪除知識庫檔案"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/{file_id}/'
 
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
 
-        response = requests.delete(url, headers=headers)
+        try:
+            response = requests.delete(url, headers=headers)
+            
+            if response.status_code == 204:
+                print(f'Successfully deleted knowledge file with ID: {file_id}')
+                return True
+            else:
+                print(f'Error: {response.status_code}')
+                print(response.text)
+                # 拋出異常而不是只打印錯誤
+                response.raise_for_status()
+                
+        except requests.exceptions.RequestException as e:
+            print(f'刪除檔案時發生錯誤：{e}')
+            raise e
+        except Exception as e:
+            print(f'未知錯誤：{e}')
+            raise e
 
-        if response.status_code == 204:
-            print(f'Successfully deleted knowledge with ID: {file_id}')
-        else:
-            print(f'Error: {response.status_code}')
+    # ========== 知識庫 CRUD 操作 ==========
+    
+    def create_knowledge_base(self, name, description=None, embedding_model=None, 
+                            reranker_model=None, number_of_retrieved_chunks=12, 
+                            sentence_window_size=2, enable_hyde=False, 
+                            similarity_cutoff=0.0, enable_rerank=True, chatbots=None):
+        """建立知識庫"""
+        url = f'{self.base_url}knowledge-bases/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {
+            'name': name,
+            'description': description,
+            'embedding_model': embedding_model,
+            'reranker_model': reranker_model,
+            'number_of_retrieved_chunks': number_of_retrieved_chunks,
+            'sentence_window_size': sentence_window_size,
+            'enable_hyde': enable_hyde,
+            'similarity_cutoff': similarity_cutoff,
+            'enable_rerank': enable_rerank,
+            'chatbots': chatbots or []
+        }
+        
+        # 移除 None 值
+        payload = {k: v for k, v in payload.items() if v is not None}
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
             print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def list_knowledge_bases(self):
+        """列出所有知識庫"""
+        url = f'{self.base_url}knowledge-bases/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def get_knowledge_base(self, knowledge_base_id):
+        """獲取知識庫詳情"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base(self, knowledge_base_id, name=None, description=None, 
+                            embedding_model=None, reranker_model=None, 
+                            number_of_retrieved_chunks=None, sentence_window_size=None, 
+                            enable_hyde=None, similarity_cutoff=None, enable_rerank=None, 
+                            chatbots=None):
+        """更新知識庫"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {}
+        if name is not None:
+            payload['name'] = name
+        if description is not None:
+            payload['description'] = description
+        if embedding_model is not None:
+            payload['embedding_model'] = embedding_model
+        if reranker_model is not None:
+            payload['reranker_model'] = reranker_model
+        if number_of_retrieved_chunks is not None:
+            payload['number_of_retrieved_chunks'] = number_of_retrieved_chunks
+        if sentence_window_size is not None:
+            payload['sentence_window_size'] = sentence_window_size
+        if enable_hyde is not None:
+            payload['enable_hyde'] = enable_hyde
+        if similarity_cutoff is not None:
+            payload['similarity_cutoff'] = similarity_cutoff
+        if enable_rerank is not None:
+            payload['enable_rerank'] = enable_rerank
+        if chatbots is not None:
+            payload['chatbots'] = chatbots
+        
+        try:
+            response = requests.put(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def delete_knowledge_base(self, knowledge_base_id):
+        """刪除知識庫"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            response.raise_for_status()
+            print(f'Successfully deleted knowledge base with ID: {knowledge_base_id}')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def search_knowledge_base(self, knowledge_base_id, query):
+        """搜尋知識庫內容"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/search/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {'query': query}
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    # ========== 知識庫標籤 CRUD 操作 ==========
+    
+    def create_knowledge_base_label(self, knowledge_base_id, name):
+        """建立知識庫標籤"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/labels/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {'name': name}
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def list_knowledge_base_labels(self, knowledge_base_id):
+        """列出知識庫標籤"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/labels/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def get_knowledge_base_label(self, knowledge_base_id, label_id):
+        """獲取知識庫標籤詳情"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/labels/{label_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base_label(self, knowledge_base_id, label_id, name):
+        """更新知識庫標籤"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/labels/{label_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {'name': name}
+        
+        try:
+            response = requests.put(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def delete_knowledge_base_label(self, knowledge_base_id, label_id):
+        """刪除知識庫標籤"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/labels/{label_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            response.raise_for_status()
+            print(f'Successfully deleted knowledge base label with ID: {label_id}')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    # ========== 知識庫檔案進階操作 ==========
+    
+    def list_knowledge_base_files(self, knowledge_base_id):
+        """列出知識庫檔案"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def get_knowledge_base_file(self, knowledge_base_id, file_id):
+        """獲取知識庫檔案詳情"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/{file_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base_file_metadata(self, knowledge_base_id, file_id, labels=None, metadata=None):
+        """更新知識庫檔案的標籤和元數據"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/{file_id}/update-metadata/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {}
+        if labels is not None:
+            payload['labels'] = labels
+        if metadata is not None:
+            payload['metadata'] = metadata
+        
+        try:
+            response = requests.patch(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def batch_delete_knowledge_base_files(self, knowledge_base_id, file_ids):
+        """批次刪除知識庫檔案"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/batch-delete/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {'ids': file_ids}
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            print(f'Successfully deleted {len(file_ids)} files')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def batch_reparse_knowledge_base_files(self, knowledge_base_id, file_parsers):
+        """批次重新解析知識庫檔案"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/batch-reparse/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.patch(url, headers=headers, json=file_parsers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    # ========== 知識庫 FAQ CRUD 操作 ==========
+    
+    def create_knowledge_base_faq(self, knowledge_base_id, question, answer, labels=None):
+        """建立知識庫 FAQ"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {
+            'question': question,
+            'answer': answer,
+            'labels': labels or []
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def list_knowledge_base_faqs(self, knowledge_base_id):
+        """列出知識庫 FAQ"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def get_knowledge_base_faq(self, knowledge_base_id, faq_id):
+        """獲取知識庫 FAQ 詳情"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base_faq(self, knowledge_base_id, faq_id, question=None, answer=None, labels=None):
+        """更新知識庫 FAQ"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {}
+        if question is not None:
+            payload['question'] = question
+        if answer is not None:
+            payload['answer'] = answer
+        if labels is not None:
+            payload['labels'] = labels
+        
+        try:
+            response = requests.put(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def delete_knowledge_base_faq(self, knowledge_base_id, faq_id):
+        """刪除知識庫 FAQ"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            response.raise_for_status()
+            print(f'Successfully deleted knowledge base FAQ with ID: {faq_id}')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def batch_delete_knowledge_base_faqs(self, knowledge_base_id, faq_ids=None):
+        """批次刪除知識庫 FAQ"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/batch-delete/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {'ids': faq_ids or []}
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            if faq_ids:
+                print(f'Successfully deleted {len(faq_ids)} FAQs')
+            else:
+                print('Successfully deleted all FAQs')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base_faq_metadata(self, knowledge_base_id, faq_id, labels=None, metadata=None):
+        """更新知識庫 FAQ 的標籤和元數據"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/update-metadata/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {}
+        if labels is not None:
+            payload['labels'] = labels
+        if metadata is not None:
+            payload['metadata'] = metadata
+        
+        try:
+            response = requests.patch(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    # ========== 知識庫文件操作 ==========
+    
+    def list_knowledge_base_documents(self, knowledge_base_id, chatbot_file_id):
+        """列出知識庫文件"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/documents/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        params = {'chatbot_file_id': chatbot_file_id}
+        
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def update_knowledge_base_document(self, knowledge_base_id, document_id, content=None, metadata=None):
+        """更新知識庫文件"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/documents/{document_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        payload = {}
+        if content is not None:
+            payload['content'] = content
+        if metadata is not None:
+            payload['metadata'] = metadata
+        
+        try:
+            response = requests.put(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    def delete_knowledge_base_document(self, knowledge_base_id, document_id):
+        """刪除知識庫文件"""
+        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/documents/{document_id}/'
+        
+        headers = {
+            'Authorization': f'Api-Key {self.api_key}',
+        }
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            response.raise_for_status()
+            print(f'Successfully deleted knowledge base document with ID: {document_id}')
+        except requests.exceptions.RequestException as e:
+            print(response.text)
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(e)
+            exit(1)
 
     def get_inbox_items(self):
         inbox_items = []
