@@ -7,9 +7,11 @@ API_KEY = '<your-api-key>'
 
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 FILE_PATH = '../../inputs/台灣高鐵FAQ.xlsx'  # 使用存在的檔案
-# assert API_KEY != '<your-api-key>', 'Please set your API key'
-# assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
+
+assert API_KEY != '<your-api-key>', 'Please set your API key'
+assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
 # assert FILE_PATH != '<your-file-path>', 'Please set your file path'
+
 def main():
     """
     上傳檔案到知識庫範例

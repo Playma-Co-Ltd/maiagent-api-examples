@@ -7,9 +7,9 @@ API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 SEARCH_QUERY = '高鐵'
 
-# assert API_KEY != '<your-api-key>', 'Please set your API key'
-# assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
-# assert SEARCH_QUERY != '<your-search-query>', 'Please set your search query'
+assert API_KEY != '<your-api-key>', 'Please set your API key'
+assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
+assert SEARCH_QUERY != '<your-search-query>', 'Please set your search query'
 
 
 def main():
