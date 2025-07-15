@@ -1,21 +1,33 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import MaiAgentHelper
 
 API_KEY = '<your-api-key>'
 
-CHATBOT_ID = '<your-chatbot-id>'
-
-FILE_ID = '<your-files-id>'
-
-API_KEY = 'XYwskPyU.EtcwbIFBbrbuLyuH4m9cL3FhXFdRPxOM'
-CHATBOT_ID = '6d5583c0-9c71-4838-bb2d-202ebc6d9075'
-FILE_ID = 'dc307309-f7b8-4ae5-a5d7-927a6af5cbe0'
+KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'  # 你的知識庫 ID
+FILE_ID = '<your-file-id>' # 你先前上傳的檔案 ID
 
 assert API_KEY != '<your-api-key>', 'Please set your API key'
-assert CHATBOT_ID != '<your-chatbot-id>', 'Please set your chatbot id'
-assert FILE_ID != '<your-files-id>', 'Please set your files id'
+assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'
+assert FILE_ID != '<your-file-id>', 'Please set your file id'
 
 
-if __name__ == "__main__":
+def main():
+    """
+    刪除知識庫檔案範例
+    
+    使用新的知識庫 API 刪除檔案
+    """
     maiagent_helper = MaiAgentHelper(API_KEY)
 
-    maiagent_helper.delete_knowledge_file(CHATBOT_ID, FILE_ID)
+    try:
+        result = maiagent_helper.delete_knowledge_file(KNOWLEDGE_BASE_ID, FILE_ID)
+        # 只有當沒有拋出異常時才顯示成功訊息
+        if result:  # delete_knowledge_file 成功時返回 True
+            print(f"檔案刪除成功，檔案 ID: {FILE_ID}")
+    except Exception as e:
+        print(f"檔案刪除失敗：{e}")
+
+if __name__ == "__main__":
+    main()
