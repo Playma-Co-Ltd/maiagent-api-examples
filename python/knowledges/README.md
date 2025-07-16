@@ -111,8 +111,8 @@
 ### 知識庫建立參數
 - `name` (必填): 知識庫名稱
 - `description` (可選): 知識庫描述
-- `embedding_model` (可選): 嵌入模型 ID
-- `reranker_model` (可選): 重新排序模型 ID
+- `embedding_model` (可選): 嵌入模型 ID - **建議設定，否則上傳之檔案將無法正確解析**
+- `reranker_model` (可選): 重新排序模型 ID - **建議設定，才能夠啟用 rerank 模型**
 - `number_of_retrieved_chunks` (可選): 檢索的文件塊數量 (預設: 12)
 - `sentence_window_size` (可選): 句子視窗大小 (預設: 2)
 - `enable_hyde` (可選): 啟用 HyDE (預設: False)
@@ -151,8 +151,10 @@ except Exception as e:
 1. 確保在使用前設定正確的 API Key
 2. 知識庫 ID 和其他 ID 必須是有效的 UUID
 3. 檔案上傳需要指定實際存在的檔案路徑
-4. 批次操作可能需要較長的處理時間
-5. 刪除操作是不可逆的，請謹慎使用
+4. 知識庫需要設定好 EMBEDDING_MODEL 與 RERANKER_MODEL 才能讓模型正確處理上傳之檔案
+5. 批次操作可能需要較長的處理時間
+6. 刪除操作是不可逆的，請謹慎使用
+7. 檔案上傳後需要等待模型處理完成才能進行搜尋
 
 ## 支援的檔案格式
 
@@ -442,7 +444,12 @@ python comprehensive_knowledge_base_example.py
    - 確保知識庫中有已處理完成的檔案
    - 檔案上傳後需要等待處理時間
 
-5. **API 錯誤**：
+5. **檔案解析失敗**：
+   - 檢查是否已設定 EMBEDDING_MODEL
+   - 確認模型 ID 是否正確
+   - 檢查模型是否可用
+
+6. **API 錯誤**：
    - 檢查 API Key 是否正確
    - 確認網路連接正常
    - 查看 API 限制和配額
