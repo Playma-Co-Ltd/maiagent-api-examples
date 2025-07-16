@@ -111,13 +111,13 @@
 ### 知識庫建立參數
 - `name` (必填): 知識庫名稱
 - `description` (可選): 知識庫描述
-- `embedding_model` (可選): 嵌入模型 ID
-- `reranker_model` (可選): 重新排序模型 ID
+- `embedding_model` (⚠️ 重要): 嵌入模型 ID - **強烈建議設定，否則檔案無法正確解析**
+- `reranker_model` (⚠️ 重要): 重新排序模型 ID - **啟用 rerank 時必須設定**
 - `number_of_retrieved_chunks` (可選): 檢索的文件塊數量 (預設: 12)
 - `sentence_window_size` (可選): 句子視窗大小 (預設: 2)
 - `enable_hyde` (可選): 啟用 HyDE (預設: False)
 - `similarity_cutoff` (可選): 相似度門檻 (預設: 0.0)
-- `enable_rerank` (可選): 啟用重新排序 (預設: True)
+- `enable_rerank` (可選): 啟用重新排序 (預設: True) - **啟用時需要設定 reranker_model**
 - `chatbots` (可選): 關聯的聊天機器人列表
 
 ### 搜尋參數
@@ -146,13 +146,29 @@ except Exception as e:
     print(f"操作失敗：{e}")
 ```
 
-## 注意事項
+## ⚠️ 重要注意事項
+
+### 模型設定要求
+**在創建知識庫前，必須確保已正確設定以下模型：**
+
+1. **EMBEDDING_MODEL（嵌入模型）**
+   - 用途：將上傳的文件內容轉換為向量表示，以支援語意搜尋
+   - 影響：若未設定，檔案上傳後將無法正確解析和索引
+   - 設定方式：請在 MaiAgent 平台中配置適當的嵌入模型
+
+2. **RERANKER_MODEL（重新排序模型）**
+   - 用途：對搜尋結果進行重新排序，提高搜尋準確性
+   - 影響：若未設定且啟用了 `enable_rerank=True`，可能導致搜尋功能異常
+   - 設定方式：請在 MaiAgent 平台中配置適當的重排序模型
+
+### 一般注意事項
 
 1. 確保在使用前設定正確的 API Key
 2. 知識庫 ID 和其他 ID 必須是有效的 UUID
 3. 檔案上傳需要指定實際存在的檔案路徑
 4. 批次操作可能需要較長的處理時間
 5. 刪除操作是不可逆的，請謹慎使用
+6. **檔案上傳後需要等待模型處理完成才能進行搜尋**
 
 ## 支援的檔案格式
 
@@ -442,7 +458,12 @@ python comprehensive_knowledge_base_example.py
    - 確保知識庫中有已處理完成的檔案
    - 檔案上傳後需要等待處理時間
 
-5. **API 錯誤**：
+5. **檔案解析失敗**：
+   - **首先檢查是否已設定 EMBEDDING_MODEL**
+   - 確認模型 ID 是否正確
+   - 檢查模型是否可用
+
+6. **API 錯誤**：
    - 檢查 API Key 是否正確
    - 確認網路連接正常
    - 查看 API 限制和配額
@@ -450,11 +471,12 @@ python comprehensive_knowledge_base_example.py
 ## 疑難排解
 
 如果遇到問題，請檢查：
-1. API Key 是否正確
-2. 知識庫 ID 是否存在
-3. 檔案路徑是否正確
-4. 網路連線是否正常
-5. 請求參數是否符合 API 規範
-6. 是否在正確的目錄中執行命令
+1. **EMBEDDING_MODEL 和 RERANKER_MODEL 是否已正確設定**
+2. API Key 是否正確
+3. 知識庫 ID 是否存在
+4. 檔案路徑是否正確
+5. 網路連線是否正常
+6. 請求參數是否符合 API 規範
+7. 是否在正確的目錄中執行命令
 
 如需更多協助，請參考 MaiAgent 官方文檔或聯絡技術支援。 
