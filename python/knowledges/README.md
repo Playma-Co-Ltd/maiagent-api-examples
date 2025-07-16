@@ -146,7 +146,7 @@ except Exception as e:
     print(f"操作失敗：{e}")
 ```
 
-### 注意事項
+## 注意事項
 
 1. 確保在使用前設定正確的 API Key
 2. 知識庫 ID 和其他 ID 必須是有效的 UUID
