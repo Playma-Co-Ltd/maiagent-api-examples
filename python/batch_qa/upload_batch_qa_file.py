@@ -23,11 +23,14 @@ def main():
         field_name='file',
     )
     file_key = maiagent_helper.upload_file_to_s3(FILE_PATH, upload_info)
-    maiagent_helper.upload_batch_qa_file(
+    batch_qa_response = maiagent_helper.upload_batch_qa_file(
         web_chat_id=WEB_CHAT_ID,
         file_key=file_key,
         original_filename=original_filename,
     )
+    
+    if batch_qa_response and 'id' in batch_qa_response:
+        print(f'Batch QA File ID: {batch_qa_response["id"]}')
 
 
 
