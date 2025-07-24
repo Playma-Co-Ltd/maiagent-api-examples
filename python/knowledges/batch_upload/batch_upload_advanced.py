@@ -14,10 +14,9 @@ import signal
 import sys
 import threading
 
-
-API_KEY = 'CU5SHADu.FLs7wkEU79apxgszcXuSVwZQyEfUqB6m'
-KNOWLEDGE_BASE_ID = 'b632cc64-1ef6-40d9-889e-6ab7e668243d'
-FILES_DIRECTORY = '/Users/hgtffue/Downloads/json_files'
+API_KEY = '<your-api-key>'
+KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
+FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄
 
 @dataclass
 class UploadConfig:
@@ -82,7 +81,7 @@ class BatchFileUploaderAdvanced:
         self.api_key = api_key
         self.knowledge_base_id = knowledge_base_id
         self.config = config
-        self.base_url = 'https://autox-api-dev.playma.app/api/v1/'
+        self.base_url = 'https://api.maiagent.ai/api/v1/'
         self.source_directory = source_directory
         
         # 使用線程鎖來防止並發寫入 checkpoint 的問題
@@ -488,7 +487,7 @@ async def main():
     
     config = UploadConfig(
         batch_size=100,
-        max_concurrent_uploads=10,
+        max_concurrent_uploads=20,
         max_retries=3,
         retry_delay=2.0,
         timeout_seconds=300
