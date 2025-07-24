@@ -66,7 +66,6 @@ config = UploadConfig(
     max_retries=3,              # 失敗重試次數
     retry_delay=2.0,            # 重試間隔（秒）
     timeout_seconds=300,        # 請求超時時間
-    checkpoint_interval=1000    # 每處理多少檔案儲存一次 checkpoint ()
 )
 ```
 
@@ -197,7 +196,6 @@ config = UploadConfig(
     max_retries=3,
     retry_delay=1.0,
     timeout_seconds=180,
-    checkpoint_interval=500
 )
 ```
 
@@ -209,7 +207,6 @@ config = UploadConfig(
     max_retries=5,
     retry_delay=2.0,
     timeout_seconds=300,
-    checkpoint_interval=1000
 )
 ```
 
@@ -221,7 +218,6 @@ config = UploadConfig(
     max_retries=5,
     retry_delay=5.0,
     timeout_seconds=600,
-    checkpoint_interval=2000
 )
 ```
 
