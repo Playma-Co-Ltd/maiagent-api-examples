@@ -16,7 +16,7 @@ import sys
 
 API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
-FILES_DIRECTORY = '<your-knowledge-base-id>'    # 你要上傳的檔案目錄
+FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄
 
 @dataclass
 class UploadConfig:
