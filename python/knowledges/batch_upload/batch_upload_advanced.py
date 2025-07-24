@@ -16,7 +16,7 @@ import threading
 
 
 API_KEY = '***REMOVED***'
-KNOWLEDGE_BASE_ID = '94398788-64e7-46a8-8f1e-a8654585960d'
+KNOWLEDGE_BASE_ID = 'b632cc64-1ef6-40d9-889e-6ab7e668243d'
 FILES_DIRECTORY = '/Users/hgtffue/Downloads/json_files'
 
 @dataclass
