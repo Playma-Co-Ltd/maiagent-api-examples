@@ -12,11 +12,12 @@ import logging
 from collections import deque
 import signal
 import sys
+import threading
 
 
-API_KEY = '<your-api-key>'
-KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
-FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄
+API_KEY = 'CU5SHADu.FLs7wkEU79apxgszcXuSVwZQyEfUqB6m'
+KNOWLEDGE_BASE_ID = '94398788-64e7-46a8-8f1e-a8654585960d'
+FILES_DIRECTORY = '/Users/hgtffue/Downloads/json_files'
 
 @dataclass
 class UploadConfig:
@@ -81,8 +82,12 @@ class BatchFileUploaderAdvanced:
         self.api_key = api_key
         self.knowledge_base_id = knowledge_base_id
         self.config = config
-        self.base_url = 'https://api.maiagent.ai/api/v1/'
+        self.base_url = 'https://autox-api-dev.playma.app/api/v1/'
         self.source_directory = source_directory
+        
+        # 使用線程鎖來防止並發寫入 checkpoint 的問題
+        self._checkpoint_lock = threading.Lock()
+        self._completed_lock = threading.Lock()
         
         # 設定輸出資料夾結構 - 使用來源資料夾名稱和知識庫ID組合
         if source_directory:
@@ -160,9 +165,10 @@ class BatchFileUploaderAdvanced:
     
     def save_checkpoint(self):
         """儲存當前進度 - 累積更新已完成檔案"""
-        # 載入現有的 checkpoint（如果存在）
-        existing_completed = set()
-        existing_failed = []
+        with self._checkpoint_lock:
+            # 載入現有的 checkpoint（如果存在）
+            existing_completed = set()
+            existing_failed = []
         
         if os.path.exists(self.checkpoint_file):
             try:
@@ -284,9 +290,12 @@ class BatchFileUploaderAdvanced:
                 task.status = UploadStatus.SUCCESS
                 task.upload_time = time.time() - start_time
                 
-                # 立即將成功的任務添加到完成列表並儲存 checkpoint
-                self.completed_tasks.append(task)
-                self.save_checkpoint()
+                # 使用線程鎖來確保安全地添加到完成列表
+                with self._completed_lock:
+                    # 再次檢查是否已經在完成列表中
+                    if not any(t.file_path == task.file_path for t in self.completed_tasks):
+                        self.completed_tasks.append(task)
+                        self.save_checkpoint()
                 
                 return task
                 
@@ -335,6 +344,40 @@ class BatchFileUploaderAdvanced:
                     self.failed_tasks.append(result)
                     progress.update(success=False)
     
+    async def get_existing_files(self) -> set:
+        """獲取知識庫中已存在的檔案名稱"""
+        existing_files = set()
+        page = 1
+        
+        try:
+            import requests
+            while True:
+                url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page={page}"
+                headers = {'Authorization': f'Api-Key {self.api_key}'}
+                
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+                
+                if 'results' in data:
+                    for file in data['results']:
+                        filename = file.get('filename', '')
+                        if filename:
+                            existing_files.add(filename)
+                    
+                    if not data.get('next'):  # 沒有下一頁
+                        break
+                    page += 1
+                else:
+                    break
+                    
+            self.logger.info(f"Found {len(existing_files)} existing files in knowledge base")
+            return existing_files
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to get existing files: {e}")
+            return existing_files
+    
     async def run_upload(self, directory: str):
         """執行批量上傳主流程"""
         # 如果初始化時沒有設定來源目錄，在這裡更新
@@ -355,6 +398,10 @@ class BatchFileUploaderAdvanced:
         
         self.logger.info(f"Scanning directory: {directory}")
         self.logger.info(f"Output directory: {self.output_dir}")
+        
+        # 獲取知識庫中已存在的檔案
+        existing_files = await self.get_existing_files()
+        
         all_tasks = self.scan_files(directory)
         
         checkpoint = self.load_checkpoint()
@@ -362,6 +409,15 @@ class BatchFileUploaderAdvanced:
             self.logger.info("Found checkpoint, resuming upload...")
             completed_files = set(checkpoint.get('completed_files', []))
             all_tasks = [task for task in all_tasks if task.file_path not in completed_files]
+        
+        # 進一步排除知識庫中已存在的檔案
+        if existing_files:
+            before_count = len(all_tasks)
+            all_tasks = [task for task in all_tasks 
+                         if os.path.basename(task.file_path) not in existing_files]
+            excluded_count = before_count - len(all_tasks)
+            if excluded_count > 0:
+                self.logger.info(f"Excluded {excluded_count} files that already exist in knowledge base")
         
         total_files = len(all_tasks)
         self.logger.info(f"Found {total_files} files to upload")
