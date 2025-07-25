@@ -142,58 +142,50 @@ class BatchFileUploaderAdvanced:
             # 載入現有的 checkpoint（如果存在）
             existing_completed = set()
             existing_failed = []
-        
-        if os.path.exists(self.checkpoint_file):
-            try:
-                with open(self.checkpoint_file, 'r') as f:
-                    existing_data = json.load(f)
-                    existing_completed = set(existing_data.get('completed_files', []))
-                    existing_failed = existing_data.get('failed_files', [])
-            except Exception as e:
-                self.logger.warning(f"Could not read existing checkpoint: {e}")
-        
-        # 合併新的已完成檔案
-        all_completed = existing_completed
-        all_completed.update([task.file_path for task in self.completed_tasks])
-        
-        # 合併失敗檔案（去除重複）
-        failed_paths = set(item[0] if isinstance(item, (list, tuple)) else item for item in existing_failed)
-        for task in self.failed_tasks:
-            if task.file_path not in failed_paths:
-                existing_failed.append((task.file_path, task.error_message))
-                failed_paths.add(task.file_path)
-        
-        # 載入現有的 file_id_mapping（如果存在）
-        existing_file_id_mapping = {}
-        if os.path.exists(self.checkpoint_file):
-            try:
-                with open(self.checkpoint_file, 'r') as f:
-                    existing_data = json.load(f)
-                    existing_file_id_mapping = existing_data.get('file_id_mapping', {})
-            except Exception as e:
-                self.logger.warning(f"Could not read existing file_id_mapping: {e}")
-        
-        # 合併新的 file_id_mapping
-        file_id_mapping = existing_file_id_mapping.copy()
-        for task in self.completed_tasks:
-            if task.knowledge_file_id:
-                file_id_mapping[task.file_path] = task.knowledge_file_id
-        
-        checkpoint_data = {
-            'timestamp': datetime.now().isoformat(),
-            'completed_files': list(all_completed),
-            'file_id_mapping': file_id_mapping,  # 新增：檔案路徑到 knowledge_file_id 的映射
-            'failed_files': existing_failed,
-            'pending_files': [task.file_path for task in self.tasks_queue]
-        }
-        
-        with open(self.checkpoint_file, 'w') as f:
-            json.dump(checkpoint_data, f, indent=2)
-        
-        total_completed = len(all_completed)
-        # 只在整百時顯示日誌，減少輸出
-        if total_completed % 100 == 0:
-            self.logger.info(f"Checkpoint saved with {total_completed} total completed files")
+            existing_file_id_mapping = {}
+            
+            if os.path.exists(self.checkpoint_file):
+                try:
+                    with open(self.checkpoint_file, 'r') as f:
+                        existing_data = json.load(f)
+                        existing_completed = set(existing_data.get('completed_files', []))
+                        existing_failed = existing_data.get('failed_files', [])
+                        existing_file_id_mapping = existing_data.get('file_id_mapping', {})
+                except Exception as e:
+                    self.logger.warning(f"Could not read existing checkpoint: {e}")
+            
+            # 合併新的已完成檔案
+            all_completed = existing_completed
+            all_completed.update([task.file_path for task in self.completed_tasks])
+            
+            # 合併失敗檔案（去除重複）
+            failed_paths = set(item[0] if isinstance(item, (list, tuple)) else item for item in existing_failed)
+            for task in self.failed_tasks:
+                if task.file_path not in failed_paths:
+                    existing_failed.append((task.file_path, task.error_message))
+                    failed_paths.add(task.file_path)
+            
+            # 合併新的 file_id_mapping
+            file_id_mapping = existing_file_id_mapping.copy()
+            for task in self.completed_tasks:
+                if task.knowledge_file_id:
+                    file_id_mapping[task.file_path] = task.knowledge_file_id
+            
+            checkpoint_data = {
+                'timestamp': datetime.now().isoformat(),
+                'completed_files': list(all_completed),
+                'file_id_mapping': file_id_mapping,  # 新增：檔案路徑到 knowledge_file_id 的映射
+                'failed_files': existing_failed,
+                'pending_files': [task.file_path for task in self.tasks_queue]
+            }
+            
+            with open(self.checkpoint_file, 'w') as f:
+                json.dump(checkpoint_data, f, indent=2)
+            
+            total_completed = len(all_completed)
+            # 只在整百時顯示日誌，減少輸出
+            if total_completed % 100 == 0:
+                self.logger.info(f"Checkpoint saved with {total_completed} total completed files")
     
     async def get_upload_url(self, session: aiohttp.ClientSession, file_path: str) -> Dict[str, Any]:
         """獲取預簽名上傳 URL"""
