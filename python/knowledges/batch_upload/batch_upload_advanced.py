@@ -571,9 +571,6 @@ class BatchFileUploaderAdvanced:
         # 取得已完成的檔案數量（如果有 checkpoint）
         if checkpoint:
             completed_files = set(checkpoint.get('completed_files', []))
-            initial_completed = len(completed_files)
-        else:
-            initial_completed = 0
         
         # Process all tasks at once
         # 不要清空 tasks_queue，讓 upload_batch_async 在處理完成後逐個移除
