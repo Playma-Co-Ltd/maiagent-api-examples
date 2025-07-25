@@ -13,14 +13,15 @@ from collections import deque
 import signal
 import sys
 import threading
+from tqdm import tqdm
+
 
 API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
-FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄
+FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄 
 
 @dataclass
 class UploadConfig:
-    batch_size: int = 100
     max_concurrent_uploads: int = 10
     max_retries: int = 3
     retry_delay: float = 2.0
@@ -43,37 +44,10 @@ class FileUploadTask:
     error_message: Optional[str] = None
     upload_time: Optional[float] = None
     retry_count: int = 0
+    knowledge_file_id: Optional[str] = None  # 記錄上傳後的 knowledge file ID
 
 
-class ProgressTracker:
-    def __init__(self, total_files: int):
-        self.total_files = total_files
-        self.completed = 0
-        self.failed = 0
-        self.start_time = time.time()
-        self.last_update = time.time()
-        
-    def update(self, success: bool = True):
-        if success:
-            self.completed += 1
-        else:
-            self.failed += 1
-        
-        current_time = time.time()
-        if current_time - self.last_update >= 1:
-            self.print_progress()
-            self.last_update = current_time
-    
-    def print_progress(self):
-        elapsed = time.time() - self.start_time
-        processed = self.completed + self.failed
-        rate = processed / elapsed if elapsed > 0 else 0
-        eta = (self.total_files - processed) / rate if rate > 0 else 0
-        
-        print(f"\rProgress: {processed}/{self.total_files} "
-              f"({processed/self.total_files*100:.1f}%) | "
-              f"Success: {self.completed} | Failed: {self.failed} | "
-              f"Rate: {rate:.1f} files/s | ETA: {eta:.0f}s", end='')
+# ProgressTracker 已經被 tqdm 取代，不再需要此類別
 
 
 class BatchFileUploaderAdvanced:
@@ -189,9 +163,26 @@ class BatchFileUploaderAdvanced:
                 existing_failed.append((task.file_path, task.error_message))
                 failed_paths.add(task.file_path)
         
+        # 載入現有的 file_id_mapping（如果存在）
+        existing_file_id_mapping = {}
+        if os.path.exists(self.checkpoint_file):
+            try:
+                with open(self.checkpoint_file, 'r') as f:
+                    existing_data = json.load(f)
+                    existing_file_id_mapping = existing_data.get('file_id_mapping', {})
+            except Exception as e:
+                self.logger.warning(f"Could not read existing file_id_mapping: {e}")
+        
+        # 合併新的 file_id_mapping
+        file_id_mapping = existing_file_id_mapping.copy()
+        for task in self.completed_tasks:
+            if task.knowledge_file_id:
+                file_id_mapping[task.file_path] = task.knowledge_file_id
+        
         checkpoint_data = {
             'timestamp': datetime.now().isoformat(),
             'completed_files': list(all_completed),
+            'file_id_mapping': file_id_mapping,  # 新增：檔案路徑到 knowledge_file_id 的映射
             'failed_files': existing_failed,
             'pending_files': [task.file_path for task in self.tasks_queue]
         }
@@ -284,7 +275,11 @@ class BatchFileUploaderAdvanced:
                 file_key = await self.upload_to_s3(session, task.file_path, upload_info)
                 
                 original_filename = os.path.basename(task.file_path)
-                await self.register_file(session, file_key, original_filename)
+                response = await self.register_file(session, file_key, original_filename)
+                
+                # 從響應中提取 knowledge_file_id (響應是一個陣列)
+                if response and isinstance(response, list) and len(response) > 0 and 'id' in response[0]:
+                    task.knowledge_file_id = response[0]['id']
                 
                 task.status = UploadStatus.SUCCESS
                 task.upload_time = time.time() - start_time
@@ -309,13 +304,29 @@ class BatchFileUploaderAdvanced:
         
         return task
     
-    async def upload_batch_async(self, tasks: List[FileUploadTask], progress: ProgressTracker):
-        """異步批量上傳"""
+    async def upload_batch_async(self, tasks: List[FileUploadTask], progress_bar: tqdm):
+        """異步批量上傳，使用 tqdm 顯示進度"""
         semaphore = asyncio.Semaphore(self.config.max_concurrent_uploads)
         
         async def upload_with_semaphore(task):
             async with semaphore:
-                return await self.upload_single_file(session, task)
+                result = await self.upload_single_file(session, task)
+                # 從待處理佇列中移除已處理的任務
+                if result.status == UploadStatus.SUCCESS:
+                    with self._completed_lock:
+                        # 從 tasks_queue 中移除已完成的任務
+                        try:
+                            self.tasks_queue.remove(task)
+                        except ValueError:
+                            pass  # 任務可能已被移除
+                
+                # 更新進度條
+                progress_bar.update(1)
+                if result.status == UploadStatus.SUCCESS:
+                    progress_bar.set_postfix(success=progress_bar.n - len(self.failed_tasks), 
+                                           failed=len(self.failed_tasks), 
+                                           refresh=True)
+                return result
         
         connector = aiohttp.TCPConnector(limit=self.config.max_concurrent_uploads)
         timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
@@ -335,47 +346,188 @@ class BatchFileUploaderAdvanced:
                     tasks[i].status = UploadStatus.FAILED
                     tasks[i].error_message = str(result)
                     self.failed_tasks.append(tasks[i])
-                    progress.update(success=False)
+                    # 從待處理佇列中移除失敗的任務
+                    with self._completed_lock:
+                        try:
+                            self.tasks_queue.remove(tasks[i])
+                        except ValueError:
+                            pass
                 elif result.status == UploadStatus.SUCCESS:
                     # 成功的任務已經在 upload_single_file 中添加到 completed_tasks 並儲存了 checkpoint
-                    progress.update(success=True)
+                    pass
                 else:
                     self.failed_tasks.append(result)
-                    progress.update(success=False)
+                    # 從待處理佇列中移除失敗的任務
+                    with self._completed_lock:
+                        try:
+                            self.tasks_queue.remove(result)
+                        except ValueError:
+                            pass
     
-    async def get_existing_files(self) -> set:
-        """獲取知識庫中已存在的檔案名稱"""
-        existing_files = set()
+    async def get_all_knowledge_files(self) -> Dict[str, Dict[str, Any]]:
+        """獲取知識庫中所有檔案的詳細資訊，返回以 id 為 key 的字典"""
+        all_files = {}
         page = 1
         
         try:
             import requests
-            while True:
-                url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page={page}"
-                headers = {'Authorization': f'Api-Key {self.api_key}'}
-                
-                response = requests.get(url, headers=headers)
-                response.raise_for_status()
-                data = response.json()
-                
-                if 'results' in data:
-                    for file in data['results']:
-                        filename = file.get('filename', '')
-                        if filename:
-                            existing_files.add(filename)
+            from tqdm.contrib.logging import logging_redirect_tqdm
+            import datetime
+            
+            self.logger.info("Fetching knowledge base files...")
+            
+            # 先獲取第一頁來了解總數
+            url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page=1"
+            headers = {'Authorization': f'Api-Key {self.api_key}'}
+            
+            response = requests.get(url, headers=headers, timeout=30)
+            response.raise_for_status()
+            first_page = response.json()
+            
+            # 估算總頁數（如果有 count 欄位）
+            total_count = first_page.get('count', 0)
+            per_page = len(first_page.get('results', []))
+            estimated_pages = (total_count // per_page) + (1 if total_count % per_page > 0 else 0) if per_page > 0 else 1
+            
+            self.logger.info(f"Estimated {total_count} files across {estimated_pages} pages")
+            
+            # 使用 tqdm 顯示分頁進度
+            with logging_redirect_tqdm():
+                with tqdm(total=estimated_pages, desc="Fetching KB pages", unit="pages") as pbar:
                     
-                    if not data.get('next'):  # 沒有下一頁
-                        break
-                    page += 1
-                else:
-                    break
+                    # 處理第一頁
+                    if 'results' in first_page:
+                        for file in first_page['results']:
+                            file_id = file.get('id', '')
+                            filename = file.get('filename', '')
+                            if file_id:
+                                # createdAt 是時間戳，轉換為可讀格式
+                                created_at = file.get('createdAt', '')
+                                if created_at and str(created_at).isdigit():
+                                    created_at = datetime.datetime.fromtimestamp(int(created_at) / 1000).isoformat()
+                                
+                                all_files[file_id] = {
+                                    'id': file_id,
+                                    'filename': filename,
+                                    'created_at': created_at,
+                                    'status': file.get('status', '')
+                                }
+                    pbar.update(1)
                     
-            self.logger.info(f"Found {len(existing_files)} existing files in knowledge base")
-            return existing_files
+                    # 處理後續頁面
+                    page = 2
+                    while first_page.get('next'):
+                        url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page={page}"
+                        response = requests.get(url, headers=headers, timeout=30)
+                        response.raise_for_status()
+                        data = response.json()
+                        
+                        if 'results' in data:
+                            for file in data['results']:
+                                file_id = file.get('id', '')
+                                filename = file.get('filename', '')
+                                if file_id:
+                                    created_at = file.get('createdAt', '')
+                                    if created_at and str(created_at).isdigit():
+                                        created_at = datetime.datetime.fromtimestamp(int(created_at) / 1000).isoformat()
+                                    
+                                    all_files[file_id] = {
+                                        'id': file_id,
+                                        'filename': filename,
+                                        'created_at': created_at,
+                                        'status': file.get('status', '')
+                                    }
+                        
+                        pbar.update(1)
+                        
+                        if not data.get('next'):
+                            break
+                        page += 1
+                        first_page = data  # 更新用於檢查 next
+            
+            self.logger.info(f"Successfully fetched {len(all_files)} files from knowledge base")
+            return all_files
             
         except Exception as e:
-            self.logger.warning(f"Failed to get existing files: {e}")
-            return existing_files
+            self.logger.error(f"Failed to get knowledge base files: {e}")
+            return all_files
+    
+    async def check_upload_integrity(self):
+        """檢查上傳完整性，識別重複和漏傳的檔案"""
+        self.logger.info("Checking upload integrity...")
+        
+        # 獲取知識庫中所有檔案 (以 ID 為 key)
+        kb_files = await self.get_all_knowledge_files()
+        kb_file_ids = set(kb_files.keys())
+        
+        # 從 checkpoint 載入所有已上傳的檔案
+        checkpoint = self.load_checkpoint()
+        if not checkpoint:
+            self.logger.warning("No checkpoint found for integrity check")
+            return
+            
+        uploaded_files = set(checkpoint.get('completed_files', []))
+        file_id_mapping = checkpoint.get('file_id_mapping', {})
+        
+        # 從 checkpoint 中獲取所有上傳的 file IDs
+        uploaded_file_ids = set(file_id_mapping.values())
+        
+        # 檢查漏傳（在 checkpoint 但不在知識庫中的 ID）
+        missing_ids = uploaded_file_ids - kb_file_ids
+        missing_files = []
+        for filepath, file_id in file_id_mapping.items():
+            if file_id in missing_ids:
+                missing_files.append({
+                    'filename': os.path.basename(filepath),
+                    'filepath': filepath,
+                    'knowledge_file_id': file_id
+                })
+        
+        # 檢查額外檔案（在知識庫但不在 checkpoint 記錄中）
+        extra_ids = kb_file_ids - uploaded_file_ids
+        extra_files = []
+        for file_id in extra_ids:
+            if file_id in kb_files:
+                extra_files.append({
+                    'filename': kb_files[file_id]['filename'],
+                    'knowledge_file_id': file_id,
+                    'created_at': kb_files[file_id]['created_at']
+                })
+        
+        # 輸出結果
+        if missing_files:
+            self.logger.warning(f"Found {len(missing_files)} missing files (uploaded but not in KB):")
+            self.logger.warning("These files may have been uploaded but later deleted by user, or upload failed:")
+            for file in missing_files[:10]:  # 只顯示前10個
+                self.logger.warning(f"  - {file['filename']} (ID: {file['knowledge_file_id']})")
+            if len(missing_files) > 10:
+                self.logger.warning(f"  ... and {len(missing_files) - 10} more missing files")
+        
+        if extra_files:
+            self.logger.info(f"Found {len(extra_files)} extra files in KB (not in upload records):")
+            self.logger.info("These files may be duplicates or uploaded by other methods:")
+            for file in extra_files[:10]:
+                self.logger.info(f"  - {file['filename']} (ID: {file['knowledge_file_id']})")
+        
+        # 儲存完整性檢查報告
+        integrity_report = {
+            'timestamp': datetime.now().isoformat(),
+            'summary': {
+                'total_kb_files': len(kb_files),
+                'total_uploaded_files': len(uploaded_files),
+                'total_uploaded_ids': len(uploaded_file_ids),
+                'missing': len(missing_files),
+                'extra': len(extra_files)
+            },
+            'missing_files': missing_files,
+            'extra_files': extra_files
+        }
+        
+        report_file = os.path.join(self.report_dir, f"integrity_check_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+        with open(report_file, 'w') as f:
+            json.dump(integrity_report, f, indent=2)
+        
+        self.logger.info(f"Integrity check report saved to {report_file}")
     
     async def run_upload(self, directory: str):
         """執行批量上傳主流程"""
@@ -398,9 +550,6 @@ class BatchFileUploaderAdvanced:
         self.logger.info(f"Scanning directory: {directory}")
         self.logger.info(f"Output directory: {self.output_dir}")
         
-        # 獲取知識庫中已存在的檔案
-        existing_files = await self.get_existing_files()
-        
         all_tasks = self.scan_files(directory)
         
         checkpoint = self.load_checkpoint()
@@ -409,14 +558,7 @@ class BatchFileUploaderAdvanced:
             completed_files = set(checkpoint.get('completed_files', []))
             all_tasks = [task for task in all_tasks if task.file_path not in completed_files]
         
-        # 進一步排除知識庫中已存在的檔案
-        if existing_files:
-            before_count = len(all_tasks)
-            all_tasks = [task for task in all_tasks 
-                         if os.path.basename(task.file_path) not in existing_files]
-            excluded_count = before_count - len(all_tasks)
-            if excluded_count > 0:
-                self.logger.info(f"Excluded {excluded_count} files that already exist in knowledge base")
+        # 不再在開始時檢查已存在的檔案，改為最後比對
         
         total_files = len(all_tasks)
         self.logger.info(f"Found {total_files} files to upload")
@@ -426,23 +568,40 @@ class BatchFileUploaderAdvanced:
             return
         
         self.tasks_queue = deque(all_tasks)
-        progress = ProgressTracker(total_files)
+        # 取得已完成的檔案數量（如果有 checkpoint）
+        if checkpoint:
+            completed_files = set(checkpoint.get('completed_files', []))
+            initial_completed = len(completed_files)
+        else:
+            initial_completed = 0
         
-        while self.tasks_queue and not self._shutdown:
-            batch_size = min(self.config.batch_size, len(self.tasks_queue))
-            batch_tasks = [self.tasks_queue.popleft() for _ in range(batch_size)]
+        # Process all tasks at once
+        # 不要清空 tasks_queue，讓 upload_batch_async 在處理完成後逐個移除
+        all_upload_tasks = list(self.tasks_queue)
+        
+        if not self._shutdown:
+            # 使用 tqdm 創建進度條，同時設置 logging 以避免衝突
+            import sys
+            from tqdm.contrib.logging import logging_redirect_tqdm
             
-            await self.upload_batch_async(batch_tasks, progress)
-            
-            # checkpoint 現在在每個檔案上傳成功後立即儲存，不需要在這裡處理
-            
-            await asyncio.sleep(0.5)
+            with logging_redirect_tqdm():
+                with tqdm(total=len(all_upload_tasks), 
+                         desc="Uploading files",
+                         unit="files",
+                         ncols=120,
+                         position=0,
+                         leave=True,
+                         file=sys.stdout) as progress_bar:
+                    await self.upload_batch_async(all_upload_tasks, progress_bar)
         
         print()
         self.logger.info("Upload process completed")
         self.logger.info(f"Total files: {total_files}")
         self.logger.info(f"Successfully uploaded: {len(self.completed_tasks)}")
         self.logger.info(f"Failed uploads: {len(self.failed_tasks)}")
+        
+        # 在上傳完成後進行檔案比對
+        await self.check_upload_integrity()
         
         self.save_final_report()
     
@@ -486,8 +645,7 @@ async def main():
     assert FILES_DIRECTORY != '<your-files-directory>', 'Please set your files directory'
     
     config = UploadConfig(
-        batch_size=100,
-        max_concurrent_uploads=20,
+        max_concurrent_uploads=10,
         max_retries=3,
         retry_delay=2.0,
         timeout_seconds=300

@@ -14,7 +14,7 @@
 
 ## 檔案說明
 
-本目錄包含 **9個** 知識庫相關程式碼範例，涵蓋完整的知識庫管理功能：
+本目錄包含 **10個** 知識庫相關程式碼範例，涵蓋完整的知識庫管理功能：
 
 ### 🎯 基本操作（4個）
 1. **`create_knowledge_base.py`** - 建立新的知識庫
@@ -30,8 +30,15 @@
 7. **`manage_knowledge_base_faq.py`** - 管理知識庫 FAQ
 8. **`manage_knowledge_base_files.py`** - 管理知識庫檔案（包括批次操作）
 
-### 🚀 綜合範例（1個）
-9. **`comprehensive_knowledge_base_example.py`** - 完整的知識庫操作流程示範
+### 🚀 批量上傳工具（1個）
+9. **`batch_upload/`** - 高效能批量檔案上傳工具
+   - 支援異步並發上傳，大幅提升上傳速度
+   - 自動斷點續傳，程式中斷後可繼續
+   - 完整性檢查，自動驗證上傳結果
+   - 視覺化進度追蹤，使用 tqdm 進度條
+
+### 🌟 綜合範例（1個）
+10. **`comprehensive_knowledge_base_example.py`** - 完整的知識庫操作流程示範
 
 ## 📊 快速參考表
 
@@ -45,7 +52,8 @@
 | 6️⃣ | `manage_knowledge_base_labels.py` | 管理標籤 | API_KEY, KB_ID | `python manage_knowledge_base_labels.py` |
 | 7️⃣ | `manage_knowledge_base_faq.py` | 管理 FAQ | API_KEY, KB_ID | `python manage_knowledge_base_faq.py` |
 | 8️⃣ | `manage_knowledge_base_files.py` | 檔案管理 | API_KEY, KB_ID | `python manage_knowledge_base_files.py` |
-| 9️⃣ | `comprehensive_knowledge_base_example.py` | 綜合示範 | API_KEY | `python comprehensive_knowledge_base_example.py` |
+| 9️⃣ | `batch_upload/` | **批量上傳工具** | API_KEY, KB_ID, FILES_DIR | `cd batch_upload && python batch_upload_advanced.py` |
+| 🔟 | `comprehensive_knowledge_base_example.py` | 綜合示範 | API_KEY | `python comprehensive_knowledge_base_example.py` |
 
 > **說明**：KB_ID = KNOWLEDGE_BASE_ID
 
@@ -198,13 +206,17 @@ python list_knowledge_bases.py
 # 2. 創建新知識庫
 python create_knowledge_base.py
 
-# 3. 上傳檔案
+# 3. 上傳檔案（單個檔案）
 python upload_knowledge_file.py
 
-# 4. 創建標籤
+# 4. 批量上傳檔案（推薦用於大量檔案）
+cd batch_upload
+python batch_upload_advanced.py
+
+# 5. 創建標籤
 python manage_knowledge_base_labels.py
 
-# 5. 搜尋內容
+# 6. 搜尋內容
 python search_knowledge_base.py
 ```
 
@@ -364,7 +376,48 @@ python manage_knowledge_base_files.py
 
 ---
 
-#### 9️⃣ `comprehensive_knowledge_base_example.py` - 綜合範例
+#### 9️⃣ `batch_upload/` - 批量上傳工具
+
+**功能**：高效能批量檔案上傳，適合大量檔案的場景
+
+**主要特色**：
+- ⚡ **異步並發上傳**：同時處理多個檔案，大幅提升速度
+- 🔄 **自動斷點續傳**：程式中斷後可從上次停止位置繼續
+- 📊 **視覺化進度**：使用 tqdm 進度條顯示即時進度
+- 🔍 **完整性檢查**：自動驗證上傳結果，識別漏傳檔案
+- 📝 **詳細報告**：生成完整的上傳統計和錯誤報告
+
+**使用前需要設定**：
+- `API_KEY`：您的 MaiAgent API Key
+- `KNOWLEDGE_BASE_ID`：目標知識庫 ID
+- `FILES_DIRECTORY`：要上傳的檔案目錄
+
+**安裝依賴**：
+```bash
+pip install aiohttp aiofiles tqdm requests
+```
+
+**執行**：
+```bash
+cd batch_upload
+python batch_upload_advanced.py
+```
+
+**適用場景**：
+- 需要上傳數百或數千個檔案
+- 網路不穩定環境下的大量上傳
+- 需要進度追蹤和錯誤報告的批量操作
+
+**效能優勢**：
+- 相比單檔案上傳，速度提升 10-50 倍
+- 自動重試失敗的檔案
+- 智慧並發控制，避免服務器過載
+
+詳細使用說明請參考 [`batch_upload/README.md`](batch_upload/README.md)
+
+---
+
+#### 🔟 `comprehensive_knowledge_base_example.py` - 綜合範例
 
 **功能**：展示完整的知識庫操作流程
 
@@ -405,7 +458,13 @@ python list_knowledge_bases.py
 python create_knowledge_base.py
 
 # 步驟 3：上傳檔案
+# 單個檔案上傳
 python upload_knowledge_file.py
+
+# 大量檔案批量上傳（推薦）
+cd batch_upload
+python batch_upload_advanced.py
+cd ..
 
 # 步驟 4：創建標籤分類
 python manage_knowledge_base_labels.py

@@ -6,18 +6,26 @@
 
 ### 🚀 高效能上傳
 - **異步並發上傳**：同時處理多個檔案，顯著提升上傳速度
-- **智慧批次處理**：將檔案分批處理，避免記憶體過載
 - **可調整並發數**：可根據網路環境調整同時上傳的檔案數量
+- **智慧速度控制**：自動調整上傳速度以獲得最佳效能
 
 ### 🔄 斷點續傳
 - **自動恢復機制**：程式中斷後可從上次停止的位置繼續
 - **固定 Checkpoint**：使用單一檔案累積記錄，避免重複上傳
+- **Knowledge File ID 追蹤**：記錄每個檔案的知識庫 ID，確保完整性
 - **進度持久化**：定期儲存進度，確保資料不遺失
 
-### 📊 詳細追蹤
-- **即時進度顯示**：顯示完成百分比、成功/失敗數量、上傳速率
+### 📊 視覺化進度追蹤
+- **tqdm 進度條**：美觀的進度條顯示上傳進度
+- **即時統計資訊**：顯示成功/失敗數量、上傳速率
 - **完整日誌記錄**：記錄所有上傳過程和錯誤訊息
 - **詳細報告生成**：產生包含統計資訊的 JSON 報告
+
+### 🔍 完整性檢查
+- **自動完整性驗證**：上傳完成後自動比對知識庫內容
+- **漏傳檔案檢測**：識別可能失敗或被刪除的檔案
+- **重複檔案提醒**：發現可能重複上傳的檔案
+- **詳細分析報告**：產生完整的完整性檢查報告
 
 ### 🛡️ 錯誤處理
 - **自動重試機制**：失敗檔案會自動重試，可設定重試次數
@@ -42,7 +50,8 @@ batch_upload/
         ├── logs/
         │   └── upload_log_YYYYMMDD_HHMMSS.log
         └── reports/
-            └── upload_report_YYYYMMDD_HHMMSS.json
+            ├── upload_report_YYYYMMDD_HHMMSS.json
+            └── integrity_check_YYYYMMDD_HHMMSS.json
 ```
 
 ## 設定說明
@@ -61,7 +70,6 @@ FILES_DIRECTORY = '/path/to/your/files'          # 要上傳的檔案目錄
 
 ```python
 config = UploadConfig(
-    batch_size=100,              # 每批處理的檔案數量
     max_concurrent_uploads=10,   # 最大並發上傳數
     max_retries=3,              # 失敗重試次數
     retry_delay=2.0,            # 重試間隔（秒）
@@ -73,7 +81,7 @@ config = UploadConfig(
 
 ### 1. 安裝依賴套件
 ```bash
-pip install aiohttp aiofiles
+pip install aiohttp aiofiles tqdm requests
 ```
 
 ### 2. 設定參數
@@ -86,9 +94,9 @@ python batch_upload_advanced.py
 ```
 
 ### 4. 監控進度
-程式會顯示即時進度：
+程式會顯示 tqdm 進度條：
 ```
-Progress: 1500/10000 (15.0%) | Success: 1450 | Failed: 50 | Rate: 12.5 files/s | ETA: 680s
+Uploading files: 1500/10000 15% |████▊                     | [02:30<14:10, 8.5files/s]
 ```
 
 ### 5. 處理中斷
@@ -101,14 +109,18 @@ python batch_upload_advanced.py
 ## 輸出檔案說明
 
 ### Checkpoint 檔案 (`upload_checkpoint.json`)
-記錄上傳進度，格式如下：
+記錄上傳進度和檔案 ID 映射，格式如下：
 ```json
 {
-  "timestamp": "2025-07-24T12:00:00.000000",
+  "timestamp": "2025-07-25T12:00:00.000000",
   "completed_files": [
     "/path/to/file1.json",
     "/path/to/file2.json"
   ],
+  "file_id_mapping": {
+    "/path/to/file1.json": "knowledge-file-id-1",
+    "/path/to/file2.json": "knowledge-file-id-2"
+  },
   "failed_files": [
     ["/path/to/failed_file.json", "Connection timeout"]
   ],
@@ -124,9 +136,10 @@ python batch_upload_advanced.py
 - 檔案掃描結果
 - 上傳進度更新
 - 錯誤訊息和重試記錄
+- 完整性檢查結果
 - 最終統計結果
 
-### 報告檔案 (`upload_report_*.json`)
+### 上傳報告檔案 (`upload_report_*.json`)
 完整的上傳統計報告：
 ```json
 {
@@ -153,6 +166,35 @@ python batch_upload_advanced.py
 }
 ```
 
+### 完整性檢查報告 (`integrity_check_*.json`)
+上傳完成後的完整性驗證報告：
+```json
+{
+  "timestamp": "2025-07-25T12:00:00.000000",
+  "summary": {
+    "total_kb_files": 10000,
+    "total_uploaded_files": 9850,
+    "total_uploaded_ids": 9850,
+    "missing": 5,
+    "extra": 150
+  },
+  "missing_files": [
+    {
+      "filename": "missing_file.json",
+      "filepath": "/path/to/missing_file.json",
+      "knowledge_file_id": "missing-id-123"
+    }
+  ],
+  "extra_files": [
+    {
+      "filename": "extra_file.json",
+      "knowledge_file_id": "extra-id-456",
+      "created_at": "2025-07-25T10:30:00"
+    }
+  ]
+}
+```
+
 ## 上傳流程詳解
 
 ### 1. 初始化階段
@@ -167,21 +209,27 @@ python batch_upload_advanced.py
 
 ### 3. 斷點恢復
 - 檢查是否存在 checkpoint
-- 載入已完成檔案列表
+- 載入已完成檔案列表和 ID 映射
 - 排除已上傳的檔案
 
 ### 4. 批量上傳
 每個檔案的上傳包含三個步驟：
 1. **獲取上傳 URL**：向 API 請求預簽名上傳 URL
 2. **上傳到 S3**：使用 multipart/form-data 格式上傳檔案
-3. **註冊到知識庫**：將檔案關聯到指定知識庫
+3. **註冊到知識庫**：將檔案關聯到指定知識庫並記錄 Knowledge File ID
 
 ### 5. 進度管理
-- 即時更新進度顯示
-- 定期儲存 checkpoint
+- tqdm 進度條即時顯示
+- 定期儲存 checkpoint 和 ID 映射
 - 記錄成功和失敗的檔案
 
-### 6. 完成處理
+### 6. 完整性檢查
+- 獲取知識庫中所有檔案
+- 比對 checkpoint 記錄的 Knowledge File ID
+- 識別漏傳和多餘檔案
+- 生成詳細分析報告
+
+### 7. 完成處理
 - 生成最終統計報告
 - 清理暫存資源
 - 顯示完整結果
@@ -191,7 +239,6 @@ python batch_upload_advanced.py
 ### 網路環境良好
 ```python
 config = UploadConfig(
-    batch_size=200,
     max_concurrent_uploads=20,
     max_retries=3,
     retry_delay=1.0,
@@ -202,7 +249,6 @@ config = UploadConfig(
 ### 網路環境一般
 ```python
 config = UploadConfig(
-    batch_size=100,
     max_concurrent_uploads=10,
     max_retries=5,
     retry_delay=2.0,
@@ -213,7 +259,6 @@ config = UploadConfig(
 ### 網路環境較差
 ```python
 config = UploadConfig(
-    batch_size=50,
     max_concurrent_uploads=5,
     max_retries=5,
     retry_delay=5.0,
@@ -224,10 +269,16 @@ config = UploadConfig(
 ## 常見問題
 
 ### Q: 程式運行中可以中斷嗎？
-A: 可以。使用 Ctrl+C 中斷程式會觸發優雅關閉，自動儲存當前進度。
+A: 可以。使用 Ctrl+C 中斷程式會觸發優雅關閉，自動儲存當前進度和檔案 ID 映射。
 
 ### Q: 如何處理大量失敗的檔案？
 A: 檢查日誌檔案了解失敗原因，調整網路設定或重試參數後重新運行。
+
+### Q: 完整性檢查發現 missing files 怎麼辦？
+A: Missing files 可能是上傳後被刪除或上傳失敗。檢查完整性報告中的具體檔案，可以重新上傳這些檔案。
+
+### Q: 如何處理 extra files？
+A: Extra files 可能是重複上傳或透過其他方式上傳的檔案。可以根據檔案名稱和創建時間判斷是否需要刪除。
 
 ### Q: 可以同時上傳到不同的知識庫嗎？
 A: 需要分別執行程式，每次指定不同的知識庫 ID。程式會自動為不同的知識庫創建獨立的輸出目錄。
@@ -241,19 +292,10 @@ A: 檢查 `logs/` 目錄下的日誌檔案，包含所有詳細的錯誤訊息�
 ## 技術規格
 
 - **Python 版本**：3.7+
-- **主要依賴**：aiohttp, aiofiles
+- **主要依賴**：aiohttp, aiofiles, tqdm, requests
 - **並發模型**：異步 I/O (asyncio)
 - **記憶體使用**：低記憶體佔用，適合處理大量檔案
 - **平台支援**：跨平台 (Windows, macOS, Linux)
-
-## 更新日誌
-
-### v1.0.0
-- 初始版本發布
-- 支援異步批量上傳
-- 實現斷點續傳功能
-- 添加詳細進度追蹤
-- 提供完整的錯誤處理機制
 
 ---
 
