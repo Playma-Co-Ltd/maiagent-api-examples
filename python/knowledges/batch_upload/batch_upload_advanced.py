@@ -47,15 +47,19 @@ class FileUploadTask:
     knowledge_file_id: Optional[str] = None  # 記錄上傳後的 knowledge file ID
 
 
-# ProgressTracker 已經被 tqdm 取代，不再需要此類別
-
-
 class BatchFileUploaderAdvanced:
-    def __init__(self, api_key: str, knowledge_base_id: str, config: UploadConfig, source_directory: str = None):
+    def __init__(
+        self,
+        api_key: str,
+        knowledge_base_id: str,
+        config: UploadConfig,
+        base_url: str = 'https://api.maiagent.ai/api/v1/',
+        source_directory: str = None
+    ):
         self.api_key = api_key
         self.knowledge_base_id = knowledge_base_id
         self.config = config
-        self.base_url = 'https://api.maiagent.ai/api/v1/'
+        self.base_url = base_url
         self.source_directory = source_directory
         
         # 使用線程鎖來防止並發寫入 checkpoint 的問題
@@ -640,7 +644,7 @@ async def main():
         timeout_seconds=300
     )
     
-    uploader = BatchFileUploaderAdvanced(API_KEY, KNOWLEDGE_BASE_ID, config, FILES_DIRECTORY)
+    uploader = BatchFileUploaderAdvanced(API_KEY, KNOWLEDGE_BASE_ID, config, source_directory=FILES_DIRECTORY)
     await uploader.run_upload(FILES_DIRECTORY)
 
 
