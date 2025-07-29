@@ -232,8 +232,11 @@ class BatchFileUploaderAdvanced:
                       filename=os.path.basename(file_path),
                       content_type='application/octet-stream')
         
-        # 使用正確的 URL
-        upload_url = upload_info.get('url', self.base_url.replace('/api/v1/', ''))
+        # 檢查是否有有效的上傳 URL
+        if 'url' not in upload_info:
+            raise ValueError("Missing 'url' in upload_info response from presigned URL API. This indicates an API error.")
+        
+        upload_url = upload_info['url']
         
         async with session.post(upload_url, data=data) as response:
             if response.status == 204:
