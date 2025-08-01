@@ -11,7 +11,6 @@ import asyncio
 import aiohttp
 import aiofiles
 from datetime import datetime
-from typing import List
 from tqdm import tqdm
 
 # Configuration - Replace with your actual values

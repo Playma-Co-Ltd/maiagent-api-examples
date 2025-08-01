@@ -18,7 +18,7 @@ API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 
 # Path to your integrity check report - Replace with your actual path
-INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # e.g., 'batch_upload/upload_outputs/json_files_4e9ffa82/reports/integrity_check_20250801_102645.json'
+INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # e.g., 'batch_upload/upload_outputs/json_files_4e9ffa82/reports/....json'
 
 # Validation
 assert API_KEY != '<your-api-key>', 'Please set your API key'
@@ -146,7 +146,7 @@ def delete_duplicate_files(duplicate_files: list):
         'integrity_report_used': INTEGRITY_REPORT_PATH,
         'total_files': len(duplicate_files),
         'successful_deletions': len(deleted_files),
-        'failed_deletions': len(failed_deletions),
+        'failed_deletions_count': len(failed_deletions),
         'deleted_files': deleted_files,
         'failed_deletions': failed_deletions
     }
