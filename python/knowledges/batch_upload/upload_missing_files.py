@@ -17,7 +17,7 @@ from tqdm import tqdm
 API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄
-INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # Path to integrity check report
+INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # Path to integrity check report, e.g., 'upload_outputs/json_files_4e9ffa82/reports/....json'
 
 # Validation
 assert API_KEY != '<your-api-key>', 'Please set your API key'

@@ -10,7 +10,7 @@ import os
 import json
 import time
 from datetime import datetime
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from utils import MaiAgentHelper
 
 # Configuration - Replace with your actual values
@@ -18,7 +18,7 @@ API_KEY = '<your-api-key>'
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
 
 # Path to your integrity check report - Replace with your actual path
-INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # e.g., 'batch_upload/upload_outputs/json_files_4e9ffa82/reports/....json'
+INTEGRITY_REPORT_PATH = '<path-to-your-integrity-check-report>'  # e.g., 'upload_outputs/json_files_4e9ffa82/reports/....json'
 
 # Validation
 assert API_KEY != '<your-api-key>', 'Please set your API key'
