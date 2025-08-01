@@ -376,7 +376,7 @@ class BatchFileUploaderAdvanced:
             self.logger.info("Fetching knowledge base files...")
             
             # 先獲取第一頁來了解總數
-            url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page=1"
+            url = f"{self.base_url}knowledge-bases/{self.knowledge_base_id}/files/?page=1&page_size=100"
             headers = {'Authorization': f'Api-Key {self.api_key}'}
             
             response = requests.get(url, headers=headers, timeout=30)

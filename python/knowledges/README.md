@@ -14,7 +14,7 @@
 
 ## 檔案說明
 
-本目錄包含 **10個** 知識庫相關程式碼範例，涵蓋完整的知識庫管理功能：
+本目錄包含 **17個** 知識庫相關程式碼範例，涵蓋完整的知識庫管理功能：
 
 ### 🎯 基本操作（4個）
 1. **`create_knowledge_base.py`** - 建立新的知識庫
@@ -37,8 +37,22 @@
    - 完整性檢查，自動驗證上傳結果
    - 視覺化進度追蹤，使用 tqdm 進度條
 
+### 📊 檔案狀態管理工具（4個）
+10. **`scan_file_status.py`** - 掃描知識庫檔案狀態
+    - 識別 initial、processing、failed 狀態的檔案
+    - 生成詳細的狀態分析報告
+11. **`delete_duplicate_files.py`** - 刪除重複檔案
+    - 基於完整性檢查報告刪除多餘檔案
+    - 安全確認機制和詳細日誌
+12. **`fix_failed_files.py`** - 修復失敗檔案
+    - 自動刪除失敗狀態的檔案並重新上傳
+    - 異步高效能重新上傳機制
+13. **`upload_missing_files.py`** - 上傳缺失檔案
+    - 補充上傳遺漏的檔案
+    - 智慧檔案路徑查找
+
 ### 🌟 綜合範例（1個）
-10. **`comprehensive_knowledge_base_example.py`** - 完整的知識庫操作流程示範
+14. **`comprehensive_knowledge_base_example.py`** - 完整的知識庫操作流程示範
 
 ## 📊 快速參考表
 
@@ -53,7 +67,11 @@
 | 7️⃣ | `manage_knowledge_base_faq.py` | 管理 FAQ | API_KEY, KB_ID | `python manage_knowledge_base_faq.py` |
 | 8️⃣ | `manage_knowledge_base_files.py` | 檔案管理 | API_KEY, KB_ID | `python manage_knowledge_base_files.py` |
 | 9️⃣ | `batch_upload/` | **批量上傳工具** | API_KEY, KB_ID, FILES_DIR | `cd batch_upload && python batch_upload_advanced.py` |
-| 🔟 | `comprehensive_knowledge_base_example.py` | 綜合示範 | API_KEY | `python comprehensive_knowledge_base_example.py` |
+| 🔟 | `scan_file_status.py` | **檔案狀態掃描** | API_KEY, KB_ID | `python scan_file_status.py` |
+| 1️⃣1️⃣ | `delete_duplicate_files.py` | **刪除重複檔案** | API_KEY, KB_ID, REPORT_PATH | `python delete_duplicate_files.py` |
+| 1️⃣2️⃣ | `fix_failed_files.py` | **修復失敗檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | `python fix_failed_files.py` |
+| 1️⃣3️⃣ | `upload_missing_files.py` | **上傳缺失檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | `python upload_missing_files.py` |
+| 1️⃣4️⃣ | `comprehensive_knowledge_base_example.py` | 綜合示範 | API_KEY | `python comprehensive_knowledge_base_example.py` |
 
 > **說明**：KB_ID = KNOWLEDGE_BASE_ID
 
@@ -417,7 +435,81 @@ python batch_upload_advanced.py
 
 ---
 
-#### 🔟 `comprehensive_knowledge_base_example.py` - 綜合範例
+#### 1️⃣1️⃣ `fix_failed_files.py` - 修復失敗檔案
+
+**功能**：自動修復知識庫中狀態為 'failed' 的檔案
+
+**主要特色**：
+- 🔍 **智慧檢測**：基於狀態掃描報告識別失敗檔案
+- 🗑️ **安全刪除**：自動刪除失敗狀態的檔案
+- ⚡ **異步重新上傳**：使用高效能異步機制重新上傳
+- 📊 **詳細追蹤**：記錄完整的修復過程和結果
+
+**使用前需要設定**：
+- `API_KEY`：您的 MaiAgent API Key
+- `KNOWLEDGE_BASE_ID`：知識庫 ID
+- `FILES_DIRECTORY`：原始檔案所在目錄
+- `STATUS_REPORT_PATH`：狀態掃描報告路徑
+
+**執行**：
+```bash
+python fix_failed_files.py
+```
+
+**工作流程**：
+1. 讀取狀態掃描報告中的失敗檔案
+2. 從知識庫中刪除這些失敗檔案
+3. 從本地目錄重新上傳檔案
+4. 生成詳細的修復日誌
+
+**適用場景**：
+- 批量上傳後有部分檔案狀態為 'failed'
+- 需要自動化修復失敗檔案的流程
+- 確保知識庫中所有檔案都處於正常狀態
+
+---
+
+#### 1️⃣2️⃣ `upload_missing_files.py` - 上傳缺失檔案
+
+**功能**：上傳基於完整性檢查報告識別的缺失檔案
+
+**使用前需要設定**：
+- `API_KEY`：您的 MaiAgent API Key
+- `KNOWLEDGE_BASE_ID`：知識庫 ID
+- `FILES_DIRECTORY`：檔案目錄
+- `INTEGRITY_REPORT_PATH`：完整性檢查報告路徑
+
+**執行**：
+```bash
+python upload_missing_files.py
+```
+
+**輸出**：補充上傳缺失檔案的結果報告
+
+---
+
+#### 1️⃣3️⃣ `delete_duplicate_files.py` - 刪除重複檔案
+
+**功能**：刪除基於完整性檢查報告識別的重複檔案
+
+**使用前需要設定**：
+- `API_KEY`：您的 MaiAgent API Key
+- `KNOWLEDGE_BASE_ID`：知識庫 ID
+- `INTEGRITY_REPORT_PATH`：完整性檢查報告路徑
+
+**執行**：
+```bash
+python delete_duplicate_files.py
+```
+
+**安全特性**：
+- 顯示將要刪除的檔案列表
+- 需要明確確認（輸入 'YES'）才執行
+- 生成詳細的刪除日誌
+
+---
+
+#### 1️⃣4️⃣ `comprehensive_knowledge_base_example.py` - 綜合範例
 
 **功能**：展示完整的知識庫操作流程
 
