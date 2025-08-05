@@ -1,10 +1,3 @@
-"""
-Knowledge Base File Status Scanner
-
-This script scans all files in a knowledge base and reports their status distribution.
-It helps identify files with problematic statuses like 'initial', 'processing', or 'failed'.
-"""
-
 import json
 import requests
 from datetime import datetime

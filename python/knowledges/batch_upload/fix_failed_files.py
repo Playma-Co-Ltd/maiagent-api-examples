@@ -1,10 +1,3 @@
-"""
-Fix Failed Files in Knowledge Base
-
-This script identifies files with 'failed' status, deletes them, and re-uploads them.
-It's designed to clean up and retry failed uploads automatically.
-"""
-
 import sys
 import os
 import json

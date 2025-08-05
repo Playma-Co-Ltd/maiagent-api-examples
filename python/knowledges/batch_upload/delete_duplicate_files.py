@@ -1,10 +1,3 @@
-"""
-Delete Duplicate Files from Knowledge Base
-
-This script helps identify and delete duplicate files in a knowledge base after upload completion.
-It's designed to clean up extra files that were found during integrity checks.
-"""
-
 import sys
 import os
 import json

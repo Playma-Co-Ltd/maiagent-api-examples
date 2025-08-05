@@ -1,10 +1,3 @@
-"""
-Upload Missing Files to Knowledge Base
-
-This script identifies missing files from an integrity check report and uploads them.
-It's designed to upload files that were supposed to be uploaded but are missing from the knowledge base.
-"""
-
 import os
 import json
 import asyncio
