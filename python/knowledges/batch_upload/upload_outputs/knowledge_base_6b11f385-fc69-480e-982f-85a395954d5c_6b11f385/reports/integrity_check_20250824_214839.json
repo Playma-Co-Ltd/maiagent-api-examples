@@ -1,0 +1,953 @@
+{
+  "timestamp": "2025-08-24T21:48:39.112274",
+  "summary": {
+    "total_kb_files": 375,
+    "total_uploaded_files": 187,
+    "total_uploaded_ids": 187,
+    "missing": 0,
+    "extra": 188
+  },
+  "missing_files": [],
+  "extra_files": [
+    {
+      "filename": "Cubi_NUC_13MQ.pdf",
+      "knowledge_file_id": "d0f45a31-36cd-4291-b642-0ef83464122e",
+      "created_at": "2025-04-28T09:58:06"
+    },
+    {
+      "filename": "MSI_FAQ.json",
+      "knowledge_file_id": "732e0ddd-8ac1-41fb-b858-8d6e282e784f",
+      "created_at": "2025-05-06T11:43:18"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_341CQPX_QD-OLED.pdf",
+      "knowledge_file_id": "64ad9a07-e0d6-4cae-8206-f93f6d936e3a",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI-Releases-New-X870-BIOS-Supports-192GB-48GB-x4-Memory-at-6400MT-s.md",
+      "knowledge_file_id": "df4705cc-f420-495b-bc16-8655711edc80",
+      "created_at": "2025-04-21T13:01:35"
+    },
+    {
+      "filename": "MSI_CASE_MAG_FORGE_320_321.pdf",
+      "knowledge_file_id": "fe0321b9-990c-400e-a443-6caa4e164032",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_271QRX_QD-OLED_info-kit_v1.2.pdf",
+      "knowledge_file_id": "22746023-2608-4e6c-92dc-434a1f9c7b58",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_CASE_MAG_FORGE_M100R.pdf",
+      "knowledge_file_id": "bc57305a-1b48-4df9-ba0f-53533c53f3cd",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "The-Minimum-Specs-For-A-Streaming-PC-Build.md",
+      "knowledge_file_id": "a4f9e94b-7663-4df9-86da-79c370952606",
+      "created_at": "2025-04-21T13:01:07"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_Modern_MD342CQP_Infokit_v4.md",
+      "knowledge_file_id": "e0c94c18-4a38-4a3b-a425-6f2248e95a93",
+      "created_at": "2025-04-21T13:08:12"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Infinite_X3_AI_2nd_sale_kit_v1.0.md",
+      "knowledge_file_id": "d77360d2-6986-412d-b699-3589096903da",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MEG_Aegis_Ti5_13th_Datasheet_v.1.1.pdf",
+      "knowledge_file_id": "81844065-3833-402d-b5bd-cc1515ab383a",
+      "created_at": "2025-04-24T13:18:52"
+    },
+    {
+      "filename": "MAG-PANO-100R-PZ.pdf",
+      "knowledge_file_id": "1664d230-488a-472f-bec3-5398586b5840",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "What-do-You-Need-to-Become-a-VTuber.md",
+      "knowledge_file_id": "cdd9e7ea-dbfa-4f52-bbc2-badad35466c3",
+      "created_at": "2025-04-21T13:00:34"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_Modern_MD272UPHW_Infokit_v2.md",
+      "knowledge_file_id": "f416816d-54aa-46f7-b660-98c644ccfeb0",
+      "created_at": "2025-04-21T13:08:12"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM M570.pdf",
+      "knowledge_file_id": "024a8b10-44f9-4501-b25a-13c46467ce88",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MAG-VAMPIRIC-300R.pdf",
+      "knowledge_file_id": "f7f19457-0ff5-4390-8822-96e543ab3c38",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Infinite_S3_14th_Datasheet_v.2.0.pdf",
+      "knowledge_file_id": "2ba956a7-0390-4979-acfe-33117f62dc62",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "Modern-AM272P-1M.pdf",
+      "knowledge_file_id": "6408e943-b984-4dab-8506-96dac51f8cda",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "MSI_MB_AMD_X870.pdf",
+      "knowledge_file_id": "1cc0c973-1982-4514-820b-c941a7fd170b",
+      "created_at": "2025-04-17T15:04:34"
+    },
+    {
+      "filename": "Mastering-the-Art-of-Streaming-Overlays-Sponsors-Emotes-Music-and-Extensions.md",
+      "knowledge_file_id": "2ac8fc88-d936-4267-bb56-569c9677b762",
+      "created_at": "2025-04-21T13:01:15"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_272UP_QD-OLED_X24_Info_kit_v1.pdf",
+      "knowledge_file_id": "8474ee99-1ace-41c7-9b0c-1ee77727acc8",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Infinite_E1(RTX50)_datasheet_v.1.1.pdf",
+      "knowledge_file_id": "87ab92d1-730a-4427-b00f-4183918f00b7",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP243P_Infokit-v2.md",
+      "knowledge_file_id": "d83e65c7-8fbb-4fa3-8763-e60de39b9076",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A1000GLS-PCIE5_datasheet_v2.pdf",
+      "knowledge_file_id": "59943f11-db4e-4af3-afa6-1b66d4d1a2af",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MSI_VGA_NVIDIA_GeForce_RTX_40_SERIES_Part2.md",
+      "knowledge_file_id": "69776f1e-d6b9-4756-807b-855179c542e2",
+      "created_at": "2025-04-21T10:25:45"
+    },
+    {
+      "filename": "MSI_CASE_MPG_VELOX_300R_AIRFLOW_PZ.pdf",
+      "knowledge_file_id": "fc4d43a3-e72b-4088-aed7-8c0fa70d363d",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM M480 PRO.pdf",
+      "knowledge_file_id": "7b7405c1-8900-4486-ae79-1f42906390e8",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A1000GL-PCIE5-II_datasheet_v1.pdf",
+      "knowledge_file_id": "1318c727-f67c-4dd5-b22c-4d5fec5b0460",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_321CUPDF_infokit_v1.pdf",
+      "knowledge_file_id": "81e9ff75-f876-431a-addd-6f185c469c66",
+      "created_at": "2025-04-18T15:07:24"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Codex_6_14th_datasheet_v.1.0.pdf",
+      "knowledge_file_id": "7e97ca82-264f-4b05-a7f9-350b7d5ab88a",
+      "created_at": "2025-04-28T10:49:08"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_Modern_MD272UPHG_Infokit_v1.md",
+      "knowledge_file_id": "5eb74e85-fee8-427f-b7f5-54a738785edb",
+      "created_at": "2025-04-21T13:08:12"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MEG_Vision_X_AI_2nd-Datasheet_V1.2.pdf",
+      "knowledge_file_id": "a9092e84-5cab-4523-8682-6a205880f8d9",
+      "created_at": "2025-04-24T13:18:52"
+    },
+    {
+      "filename": "Cubi_N_ADL_S.pdf",
+      "knowledge_file_id": "35673635-10a2-4f92-9a78-3e1d210a8f99",
+      "created_at": "2025-04-28T09:58:06"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_E240_datasheet_final.pdf",
+      "knowledge_file_id": "ebc561e4-c727-4611-a240-6cab8e893987",
+      "created_at": "2025-04-28T10:45:25"
+    },
+    {
+      "filename": "MSI_VGA_NVIDIA_GeForce_RTX_40_SERIES_Part1.md",
+      "knowledge_file_id": "b671cf9b-c672-4f11-9e25-f534b0562dae",
+      "created_at": "2025-04-21T10:25:45"
+    },
+    {
+      "filename": "Building-the-Mainstream-Streaming-PC-Tips-and-Tricks-for-a-Top-Tier-Setup.md",
+      "knowledge_file_id": "d469a3e5-ca63-4b05-b83f-f8d2d77b4486",
+      "created_at": "2025-04-21T13:01:04"
+    },
+    {
+      "filename": "MSI_MB_AMD_b850_b840-infokit_v1.2.pdf",
+      "knowledge_file_id": "c9ce8d54-c2ab-40b5-a56b-f66af597c4fc",
+      "created_at": "2025-04-17T15:04:34"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MEG_TRIDENT_X2_14th_datasheet_V1.2.pdf",
+      "knowledge_file_id": "5cb85ee5-e221-4602-b398-9383573292cc",
+      "created_at": "2025-04-24T13:53:37"
+    },
+    {
+      "filename": "MSI_MB_MSI_Z790_Motherboard_Infokit_v1.1.pdf",
+      "knowledge_file_id": "ec059184-f66b-46d9-8c89-36892352d550",
+      "created_at": "2025-05-14T10:36:09"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM_SSD-Spec List_v3.1.pdf",
+      "knowledge_file_id": "41b1ebb3-0227-4a3c-b2fa-bb9b20abe9f8",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_MB_Intel_Z890_Series_motherboards_info_kit_v1.8\u6539.pdf",
+      "knowledge_file_id": "ae5cbbf6-10dc-49b7-b28a-7ac35de0ba8a",
+      "created_at": "2025-05-08T14:43:40"
+    },
+    {
+      "filename": "MPG-GUNGNIR-110R-WHITE.pdf",
+      "knowledge_file_id": "447cc514-0452-4967-9fc0-c298e27b6fe0",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MPG-GUNGNIR-300P-AIRFLOW.pdf",
+      "knowledge_file_id": "a692c4db-187e-45c6-aea0-a96ee95f9aff",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "cf00a396_MSI-MPG_Infinite_X3_AI_2nd-Datasheet_V1.pdf",
+      "knowledge_file_id": "5b3870b1-5bd8-4c24-a738-039a739772f8",
+      "created_at": "2025-04-24T11:48:15"
+    },
+    {
+      "filename": "MAG-FORGE-320R-AIRFLOW.pdf",
+      "knowledge_file_id": "356daf37-fc07-47bb-8e42-efd3b45700c9",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Infinite_Z3_9th-Datasheet-V1.pdf",
+      "knowledge_file_id": "700d21b2-b3ab-4f7f-a82d-d23e25dbad6f",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MSI_MPG_Trident_AS_14th_datasheet_V1.1.pdf",
+      "knowledge_file_id": "121491ef-d069-476f-a99d-26d586baaa94",
+      "created_at": "2025-04-24T13:16:34"
+    },
+    {
+      "filename": "MAG-FORGE-M100A.pdf",
+      "knowledge_file_id": "ce6a9da5-432e-4b8b-849e-406026a61f2d",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Infinite_X3_AI_2nd(RTX50)_sale_kitv1.0.md",
+      "knowledge_file_id": "a897974d-f2a5-4f9c-a058-c9a59b327cc7",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_275CQRXF.pdf",
+      "knowledge_file_id": "c7442a29-b13c-46fb-9701-f02c49170d48",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP243XW_Infokit-v3.md",
+      "knowledge_file_id": "fcfbf739-272f-4fa5-aa46-8c3c35807068",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "PRO_AP162T_ADL.pptx",
+      "knowledge_file_id": "6699a711-afd1-48a8-b33f-bc318c7d8eb7",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "827cedc4_MSI-MPG_Infinite_X3_AI_2nd(RTX50)-Datasheet_V1.pdf",
+      "knowledge_file_id": "dad5d9ee-5974-45c7-bfc5-06faf2d5952c",
+      "created_at": "2025-04-24T11:48:15"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP273QV_Infokit-v2.md",
+      "knowledge_file_id": "5dad6e3e-c809-45c0-bed8-8a778398c3ef",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MPG-EZ120-ARGB.pdf",
+      "knowledge_file_id": "b2a6daaf-b007-47f6-aff3-df868243b094",
+      "created_at": "2025-04-28T11:28:15"
+    },
+    {
+      "filename": "MPG-GUNGNIR-110R-EVA-e-PROJECT.pdf",
+      "knowledge_file_id": "505507bd-f473-49a7-a46f-8e97b0aca710",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_M360_v3.pdf",
+      "knowledge_file_id": "8091d176-b4d2-4923-918a-1d0998abca74",
+      "created_at": "2025-04-28T10:45:26"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_321CUP_QD-OLED_info-kit_v2.pdf",
+      "knowledge_file_id": "14ef996b-1af0-4da8-9a50-e3cfbf811be6",
+      "created_at": "2025-04-18T15:13:15"
+    },
+    {
+      "filename": "Modern-AM242-1M.pdf",
+      "knowledge_file_id": "ec895328-8c20-46f4-968e-7ddbdf93b7e9",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM M480 PRO PLAY.pdf",
+      "knowledge_file_id": "caf6675f-be65-42cf-9674-ef437e6a5c44",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_Modern_MD342CQPW_Infokit_v4.md",
+      "knowledge_file_id": "ac8ba706-7df2-4e8c-9bdd-ce819c42bc26",
+      "created_at": "2025-04-21T13:08:12"
+    },
+    {
+      "filename": "MPG-GUNGNIR-300-MONSTER-HUNTER-EDITION.pdf",
+      "knowledge_file_id": "9395430e-7388-414c-a90a-51fd121510d8",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_infinite_s3_14th_info_kit_ver_2.0.md",
+      "knowledge_file_id": "0f44d737-555d-49fa-a7c1-73c0e1bdff72",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_PSU_MAG_A1250GL-A1000GL_PCIE5.pdf",
+      "knowledge_file_id": "37668a65-f2f6-45de-bcf7-357f089d25bb",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A650GLS-PCIE5_datasheet_v1.pdf",
+      "knowledge_file_id": "f1afc152-5851-40c4-b983-7894ae6a7936",
+      "created_at": "2025-04-25T17:13:08"
+    },
+    {
+      "filename": "Bare-Minimum-Streaming-Setup-for-VTubers.md",
+      "knowledge_file_id": "62ecd572-d954-4b82-8421-0319ae379c98",
+      "created_at": "2025-04-21T13:01:04"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A850GN-PCIE5_datasheet_v2.pdf",
+      "knowledge_file_id": "cd1b8d75-8cbc-4e8e-aebf-0547738a4eff",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "Elevate-Your-Streaming-Game-with-These-Must-Have-Peripherals.md",
+      "knowledge_file_id": "8ab772ca-66ea-4ebb-938d-17e86137a6a3",
+      "created_at": "2025-04-21T13:01:10"
+    },
+    {
+      "filename": "PRO_AP272P_14MQ.pdf",
+      "knowledge_file_id": "95111935-c72d-4378-abf9-dfc67f8687c7",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP243XP_Infokit-v3.md",
+      "knowledge_file_id": "c0239ed1-f9f8-45fa-92c3-0886ba5bffc6",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MPG-VELOX-300R-AIRFLOW-PZ.pdf",
+      "knowledge_file_id": "b7b53339-669d-447a-9963-37f576aefc84",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "PRO_AP272P_14M.pdf",
+      "knowledge_file_id": "c0b8802b-cde0-4543-aa02-33d056a7045c",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_322URX_QD-OLED_info-kit_v4.pdf",
+      "knowledge_file_id": "448c34ce-30f8-48a4-9284-79964bbbd1c0",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_272URDF_E16_Info_Kit_v1.pdf",
+      "knowledge_file_id": "8386b2ba-2c22-4d3e-9f6b-cf86f4d2559a",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "msi_product_generations.txt.txt",
+      "knowledge_file_id": "95250efc-345e-4051-89c0-54abf7c6fa35",
+      "created_at": "2025-05-16T14:32:31"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A750GLS-PCIE5_datasheet_v1.pdf",
+      "knowledge_file_id": "35858d28-0f80-461d-88fa-89cb7b3722b9",
+      "created_at": "2025-04-25T17:13:08"
+    },
+    {
+      "filename": "MPG-SEKIRA-100R.pdf",
+      "knowledge_file_id": "19074185-3b7f-445a-be67-fba70dfe571c",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MPG-VELOX-100R.pdf",
+      "knowledge_file_id": "79accee4-351a-404a-9b72-6dd3786f1a9b",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "ChatGPT-Everything-you-need-to-know-about-the-AI-powered-chatbot.md",
+      "knowledge_file_id": "5ac6cd0b-4cb3-4c4b-a4bb-1e89a4c96b7c",
+      "created_at": "2025-04-22T12:29:23"
+    },
+    {
+      "filename": "Build an AI PC with MSI Z890 motherboard.md",
+      "knowledge_file_id": "97553cc6-84ca-45da-b614-be4183d11364",
+      "created_at": "2025-04-25T09:55:21"
+    },
+    {
+      "filename": "MSI_PSU_MPG_a1250gs_a1000gs_a850gs_pcie5_infokit_v1.6.pdf",
+      "knowledge_file_id": "ea619e34-64ca-44c2-978c-ba7a4b1047e3",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_491CQPX_QD-OLED.pdf",
+      "knowledge_file_id": "11a303ac-6060-446f-a172-1a82ad343490",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "Compatibility_\u8aaa\u660e\u7248.docx",
+      "knowledge_file_id": "0b2c8f6d-febd-4335-bb55-93a1ce1fec7c",
+      "created_at": "2025-05-14T11:09:36"
+    },
+    {
+      "filename": "\u7522\u54c1\u898f\u683c.xlsx",
+      "knowledge_file_id": "67cc3da8-5d75-45c3-9ca3-e0089b8dc8d1",
+      "created_at": "2025-08-14T16:11:39"
+    },
+    {
+      "filename": "PRO_AP272P_12MA.pdf",
+      "knowledge_file_id": "d5202a16-abbd-4b29-b36a-e05806ee09a6",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A850GL-PCIE5-II_datasheet.pdf",
+      "knowledge_file_id": "b4ef4f19-edb9-4b3f-b161-49c726e98b81",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MPG-QUIETUDE-100S.pdf",
+      "knowledge_file_id": "d2e1b03c-1c7b-4d02-b261-eb9656983be3",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Infinite_X2_14th_Datasheet_v1.0.pdf",
+      "knowledge_file_id": "e63bdebd-4944-423f-a21b-0cbeb7d24bd8",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "Cubi_NUC_1MG.pdf",
+      "knowledge_file_id": "3cfb5f83-725c-4226-8da3-3e847751cfca",
+      "created_at": "2025-04-28T09:58:06"
+    },
+    {
+      "filename": "MSI_CASE_SEKIRA_100P.pdf",
+      "knowledge_file_id": "2f6a0602-695e-4497-b220-63ffc6069105",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "MSI_MB_Intel_B860_Series_motherboards_info_kit_v1.0.pdf",
+      "knowledge_file_id": "9add3ffa-dca1-4315-b385-0473c7fa5129",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "CND PI Segment.md",
+      "knowledge_file_id": "7175b87f-ccf9-49ad-bfda-f3ff44152d8b",
+      "created_at": "2025-04-16T10:27:57"
+    },
+    {
+      "filename": "MAG-SHIELD-M301.pdf",
+      "knowledge_file_id": "534bacf7-2888-4883-8c47-9cc707a582f0",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MAG-FORGE-M100R.pdf",
+      "knowledge_file_id": "c06ba099-4632-468b-ab5d-190d57a5de19",
+      "created_at": "2025-04-28T13:23:13"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MEG_Trident_X2_14th_info_kit_V_1.3.md",
+      "knowledge_file_id": "cc9a849d-2f3d-4e57-b9c0-2a10b7ad7099",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_274QF_Info_kit_v2.pdf",
+      "knowledge_file_id": "eee893d4-05d1-447b-8add-32f107ac17d1",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MSI_MPG_Trident_AS_AI_2nd_datasheet_V1.0.pdf",
+      "knowledge_file_id": "dfd453c2-74a8-4abb-8b3f-68159a63f9ee",
+      "created_at": "2025-04-24T13:16:34"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_325CQRXF.md",
+      "knowledge_file_id": "37346221-9ec1-439c-820e-f1350d959b63",
+      "created_at": "2025-04-18T16:55:16"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_321URX_QD-OLED_info-kit_v1.3.pdf",
+      "knowledge_file_id": "1f7212b7-a94d-4abf-a379-3b8bbfc75cbb",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "PRO_AP242P_14M.pdf",
+      "knowledge_file_id": "5888fb90-a069-4c34-a346-117b3ad7cd2d",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP251L_E2_Infokit.md",
+      "knowledge_file_id": "3aa1df81-e46d-41dc-b804-54a93356048b",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI Brand Story.md",
+      "knowledge_file_id": "b3cbf438-229a-45b7-9dbe-d0b8520f15ba",
+      "created_at": "2025-04-25T10:44:07"
+    },
+    {
+      "filename": "MAG_FORGE_121A_AIRFLOW.pdf",
+      "knowledge_file_id": "2a08c81b-e820-4084-94c9-b05c997be291",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI-Memory-Extension-Mode-Boosts-Intel-Core-Ultra-9-285-Gaming-Performance.md",
+      "knowledge_file_id": "148d5d4d-7913-429f-b534-e38fb73fbff5",
+      "created_at": "2025-04-21T13:17:53"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A750BE_datasheet_v1.pdf",
+      "knowledge_file_id": "04382e25-5760-47fe-a076-957647110201",
+      "created_at": "2025-04-25T17:13:08"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Infinite_E1_datasheet_v.1.1.pdf",
+      "knowledge_file_id": "2c065cef-e1c5-4f9a-8f11-1e4eaca31682",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "A-Comparison-of-the-Top-Streaming-Platforms-Which-One-is-Right-for-You.md",
+      "knowledge_file_id": "2ea5a961-a298-495a-b5c6-5a55c640f527",
+      "created_at": "2025-04-21T13:01:03"
+    },
+    {
+      "filename": "Modern-AM242P-1M.pdf",
+      "knowledge_file_id": "9e07a890-7e99-4a4a-b036-2134897f0ce1",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "5-Things-Beginners-Should-Know-Before-Starting-as-a-Streamer.md",
+      "knowledge_file_id": "57ee8dc9-7818-47e4-bc4b-318a7683f96e",
+      "created_at": "2025-04-21T13:01:02"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_272URX_QD-OLED_info-kit_v4.pdf",
+      "knowledge_file_id": "cc8de42c-d80e-4b45-8cbf-78fc5c601c4f",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_E360_WHITE_datasheet_final.pdf",
+      "knowledge_file_id": "fe5afd3f-44db-4ae0-a27a-cbbe470a7465",
+      "created_at": "2025-04-28T10:45:26"
+    },
+    {
+      "filename": "MSI_CASE_SEKIRA_100R.pdf",
+      "knowledge_file_id": "684574e5-f6de-4465-96c4-832f2ec74b36",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "How-to-Boost-AMD-Ryzen-9-9950X3D-Gaming-Performance.md",
+      "knowledge_file_id": "bd453a1c-2ed3-4a6f-b0e2-c1b896003141",
+      "created_at": "2025-04-21T13:01:20"
+    },
+    {
+      "filename": "PRO_AP242P_14MQ.pdf",
+      "knowledge_file_id": "dce7b8e1-340e-4385-b31b-011ae2db5891",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI Message from the Chairman and President.md",
+      "knowledge_file_id": "04ab08d5-8750-459a-a10e-597df1a459c4",
+      "created_at": "2025-04-25T10:44:07"
+    },
+    {
+      "filename": "MEG-Z890-ACE.pdf",
+      "knowledge_file_id": "955ade83-edb2-458b-84ab-859d1fe44566",
+      "created_at": "2025-04-16T10:32:24"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A850GLS-PCIE5_datasheet_v1.pdf",
+      "knowledge_file_id": "559c55ea-6894-429a-811f-b8cd23c77b1f",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MSI_MB_MSI_B760_Motherboard_Infokit_v1.0.pdf",
+      "knowledge_file_id": "ccc2e375-bb53-4db6-8822-bb37c22d2f90",
+      "created_at": "2025-05-14T10:37:34"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_274UPDF_E16M_Info_Kit_v1.pdf",
+      "knowledge_file_id": "762e72d8-a99b-4a4e-b19b-c7602425c35e",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_PSU_MPG-A1000GS-PCIE5_datasheet_v1.pdf",
+      "knowledge_file_id": "1cffc313-b02d-429a-affb-cc1935d734f5",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "Modern-AM242TP-1M.pdf",
+      "knowledge_file_id": "6efc004c-96d9-41e8-8431-0602afafdd95",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Trident_AS_14th_Infokit_V_1.0.md",
+      "knowledge_file_id": "d0372859-99b9-42cf-b8cc-4e19652296a4",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_275UPD_E14_Info_Kit_v1.pdf",
+      "knowledge_file_id": "f91f78b5-9f68-4b62-8049-dee3df1efe96",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MAG-FORGE-112R.pdf",
+      "knowledge_file_id": "207ccc40-576a-4baa-9467-7a3d387d9f7a",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_VGA_NVIDIA_GeForce_RTX_50_Series_InfoKit.md",
+      "knowledge_file_id": "aacc4ee7-a0e2-4586-b12d-210b4016c87b",
+      "created_at": "2025-04-21T10:53:43"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM S270.pdf",
+      "knowledge_file_id": "b586c164-0556-4849-9b78-8198cf67ac3d",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MEG_SILENT_GALE_P12.pdf",
+      "knowledge_file_id": "421ab845-e0d1-4f67-9e9d-b93ebaf8822a",
+      "created_at": "2025-04-28T11:28:15"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP242A_Infokit-v4.md",
+      "knowledge_file_id": "371a4e90-410e-43f6-a088-74f152afe9a3",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Infinite_S3_14th(RTX50)_Datasheet_v.1.0.pdf",
+      "knowledge_file_id": "ebfe688a-6bd3-4d3e-80e1-45cc1e86a809",
+      "created_at": "2025-04-24T13:12:49"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MEG_Vision_X_AI_2nd_Cleaned.md",
+      "knowledge_file_id": "9e197e43-b5ae-4078-93ab-6aa6917d406f",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_321URXW_QD-OLED_info-kit_v2.pdf",
+      "knowledge_file_id": "2a02f824-d1ae-43de-a726-697c25a30aac",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "Modern-AM273Q-AI-1UM.pdf",
+      "knowledge_file_id": "0f750b80-a277-4fbd-accd-52232c942c8a",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_275QPF_X30_infokit_v1.pdf",
+      "knowledge_file_id": "8d5e8923-7748-473a-b07e-428d2f04c9c2",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MPG-VELOX-100P-AIRFLOW.pdf",
+      "knowledge_file_id": "03386707-d66e-4d4a-bb47-79ec57f50c11",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_PSU_MAG_A850GL_PCIE5.A750GL_PCIE5.A650GL_infokit_v2.pdf",
+      "knowledge_file_id": "d31fac1b-197e-417d-984a-dfb6bb287cc8",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "PRO_AP242P_12MA.pdf",
+      "knowledge_file_id": "c79d310c-d24b-4e35-bf68-0fb88b9bae04",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP243X_Infokit_Cleaned.md",
+      "knowledge_file_id": "e0fd9db5-7dbc-40ea-bc05-b879d6125d4d",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_325CQRF_QD_E2.md",
+      "knowledge_file_id": "3006e4ec-1638-4952-9d74-b551a1ea2411",
+      "created_at": "2025-04-18T16:55:16"
+    },
+    {
+      "filename": "AMD Motherboard Chipsets X870 vs X670 vs B650.md",
+      "knowledge_file_id": "fb2b515f-38a7-4822-90de-0ca2d34bbd32",
+      "created_at": "2025-04-25T09:55:20"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A750GN-PCIE5_datasheet_v2.pdf",
+      "knowledge_file_id": "4720431b-72f5-47d3-bff3-65e5549497b9",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MAG-PANO-100L-PZ.pdf",
+      "knowledge_file_id": "996118d3-a66f-4b50-b871-7db8dfdddfad",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "RECOMMENDED PSU TABLE FOR NVIDIA 304050 SERIES.md",
+      "knowledge_file_id": "42186354-9317-4549-883e-523c47808f2e",
+      "created_at": "2025-04-25T09:55:21"
+    },
+    {
+      "filename": "Modern-AM273QP-AI-1UM.pdf",
+      "knowledge_file_id": "62aa6456-15c2-4485-98ab-b6a7401cfafd",
+      "created_at": "2025-04-28T09:20:08"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A750GL-PCIE5-II_datasheet.pdf",
+      "knowledge_file_id": "d0fa6ee4-8700-402a-b133-142346066769",
+      "created_at": "2025-04-25T17:13:08"
+    },
+    {
+      "filename": "MPG-SEKIRA-100P.pdf",
+      "knowledge_file_id": "a36ac37c-6fec-4cd6-9af7-b20d1bd89f91",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_PSU_MAG-A650BE_datasheet_v1.pdf",
+      "knowledge_file_id": "269f3df5-889d-4b7c-bed4-84812a9c6dc7",
+      "created_at": "2025-04-25T17:13:08"
+    },
+    {
+      "filename": "MSI_CASE_MAG_FORGE_M100A.pdf",
+      "knowledge_file_id": "3de511ea-cb49-463f-86c3-fcc52d335073",
+      "created_at": "2025-04-17T15:47:55"
+    },
+    {
+      "filename": "MSI_PSU_MPG-A1250GS-PCIE5-datasheet_v0.91.pdf",
+      "knowledge_file_id": "46f65f7f-3283-4e5e-9382-f9135a6bb047",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MAG-PANO-M100R-PZ.pdf",
+      "knowledge_file_id": "a57b8efe-71b4-48e6-ae27-5a072606ddd2",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_Codex_6_14th_Cleaned.md",
+      "knowledge_file_id": "2022ebaf-d873-433e-bfe1-fa1c076f961e",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MAG_272F_infokit_v1.pdf",
+      "knowledge_file_id": "28ff9e7f-4e9f-4073-8d1a-604079e8b5f1",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_PSU_MEG_ai1600t_pcie5_infokit_v10.pdf",
+      "knowledge_file_id": "0bd88efd-6955-4dc5-a539-7bd7c31ef810",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP271A_Infokit-v2.md",
+      "knowledge_file_id": "e51937ca-d5c9-40d9-ab14-d4c06156c1e2",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MPG-GUNGNIR-300R-AIRFLOW.pdf",
+      "knowledge_file_id": "20d7ff0b-5746-4cad-856d-0056282b59ff",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MEG_342C_QD-OLED.pdf",
+      "knowledge_file_id": "cae0c8cf-2ec7-4303-89af-c89352326a13",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_PSU_MPG-A850GS-PCIE5_datasheet_v1.pdf",
+      "knowledge_file_id": "7b0b1489-8067-42d7-88d1-51918eff3256",
+      "created_at": "2025-04-25T17:13:09"
+    },
+    {
+      "filename": "MEG-PROSPECT-700R.pdf",
+      "knowledge_file_id": "4ffa0c90-464c-48ab-92b7-6d218e8a3836",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MAG_infinite_e1_14th_info_kit.md",
+      "knowledge_file_id": "31f25014-6c79-4d4a-8b6d-fd2992252c22",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "Cubi_NUC_1M.pdf",
+      "knowledge_file_id": "cd63fafe-e60f-43f9-b85e-a7a9ee885807",
+      "created_at": "2025-04-28T09:58:06"
+    },
+    {
+      "filename": "tech_synonyms.txt",
+      "knowledge_file_id": "18592a9d-d042-4580-825b-555cbacba636",
+      "created_at": "2025-05-08T12:26:38"
+    },
+    {
+      "filename": "MSI_Storage_SPATIUM M580 FROZR.pdf",
+      "knowledge_file_id": "778d2d29-e09e-410e-83e6-c7e769f933a2",
+      "created_at": "2025-04-16T10:26:51"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_321CURX_QD-OLED.pdf",
+      "knowledge_file_id": "465b3ebe-aad1-432f-bb3d-35bbcae61f65",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MAG-FORGE-111R.pdf",
+      "knowledge_file_id": "41dff63c-d765-496a-8a54-957d97ed132b",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "MSI-Memory-Extension-Mode-Boosts-Intel-Core-Ultra-9-285-Gaming-Performance.md",
+      "knowledge_file_id": "17801589-2cd4-40d9-b318-92b3e5965d58",
+      "created_at": "2025-04-21T13:01:31"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_Modern_MD272UPSW_Info_kit_v2.md",
+      "knowledge_file_id": "d25d2cce-afc6-4701-8fa5-ecac49bc4ffb",
+      "created_at": "2025-04-21T13:08:12"
+    },
+    {
+      "filename": "MAG-Z890-TOMAHAWK-WIFI.pdf",
+      "knowledge_file_id": "46c91382-0dac-4551-82c3-aefef81ea611",
+      "created_at": "2025-04-16T10:32:24"
+    },
+    {
+      "filename": "PRO_AP272P_13MA.pdf",
+      "knowledge_file_id": "46633955-a664-4a6c-935a-342a82530227",
+      "created_at": "2025-04-28T09:30:04"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_325CQRFQD.md",
+      "knowledge_file_id": "6cef10eb-506c-49c6-9559-d0228b0e2a66",
+      "created_at": "2025-04-18T16:55:16"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_491CQP_QD-OLED.pdf",
+      "knowledge_file_id": "1b8f8fb5-aaa5-4234-b9f1-30e5ee1f866a",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_274URF_QD__info-kit_v1.1.pdf",
+      "knowledge_file_id": "4c2bbbcd-1f21-4369-b804-aff77aaba915",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_I240_I360(BW)_datasheet_finalV2.pdf",
+      "knowledge_file_id": "64aeb5be-402a-485e-8571-70a0e8ecdeff",
+      "created_at": "2025-04-28T10:45:26"
+    },
+    {
+      "filename": "msi-company-profile-english.md",
+      "knowledge_file_id": "615c8cfe-517d-4e5d-89ef-5da3aec462ca",
+      "created_at": "2025-04-25T10:48:33"
+    },
+    {
+      "filename": "MAG-FORGE-321R-AIRFLOW.pdf",
+      "knowledge_file_id": "f5b40dc5-98ae-4d82-afc4-c754ce472bbd",
+      "created_at": "2025-04-25T16:57:42"
+    },
+    {
+      "filename": "AMD-Ryzen-9950X3D-9900X3D-and-9800X3D-Best-X870-Picks-MSI.md",
+      "knowledge_file_id": "6347c4cb-20d5-4c85-9980-c18eaee6b344",
+      "created_at": "2025-04-21T13:01:25"
+    },
+    {
+      "filename": "MSI_Monitor_Gaming_MPG_325CQRXF.pdf",
+      "knowledge_file_id": "f6f9ae10-a6d4-4484-beb5-d1fe8bf10014",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP243W_Infokit-v2.md",
+      "knowledge_file_id": "bd27dfea-bc75-4ba8-bf06-e8e2018997f6",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI_RX_7000_InfoKit_tagged.md",
+      "knowledge_file_id": "362050ef-1d5d-4bd4-a76b-f476877b9e71",
+      "created_at": "2025-04-21T11:09:15"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP273QP_Infokit-v3.md",
+      "knowledge_file_id": "865c338c-5f84-4fd3-a04d-d9b87b030960",
+      "created_at": "2025-04-21T11:36:21"
+    },
+    {
+      "filename": "MSI_MB_MSI_Z790_MAX_Motherboard_Infokit_v1.2.pdf",
+      "knowledge_file_id": "0ff9835b-4ee6-44ee-b0a7-86796a5ec497",
+      "created_at": "2025-05-14T10:36:09"
+    },
+    {
+      "filename": "MEG_MAESTRO_700L_PZ.pdf",
+      "knowledge_file_id": "441987d3-6859-4b11-9379-60a18f8e4379",
+      "created_at": "2025-04-25T16:57:41"
+    },
+    {
+      "filename": "MPG Monitor QD-OLED Spec List.xlsx",
+      "knowledge_file_id": "6a24cccb-e9c8-43ab-9d2a-2464ab78c8d6",
+      "created_at": "2025-04-16T10:38:34"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_E360_datasheet_final.pdf",
+      "knowledge_file_id": "2d7a6aaa-26c4-40da-b1ff-7cbd0e38c918",
+      "created_at": "2025-04-28T10:45:25"
+    },
+    {
+      "filename": "MSI_LC_MAG_CORELIQUID_M240_v3.pdf",
+      "knowledge_file_id": "e063d68b-6dcf-4314-bceb-52acb78fdeec",
+      "created_at": "2025-04-28T10:45:26"
+    },
+    {
+      "filename": "\u7522\u54c1\u7c21\u8868.xlsx",
+      "knowledge_file_id": "72f603d7-69ce-4a4b-b0ff-eeed0a8acdb9",
+      "created_at": "2025-08-14T16:11:40"
+    },
+    {
+      "filename": "How-to-Start-Streaming-on-Twitch-PC-Guide.md",
+      "knowledge_file_id": "cff2457d-e359-4e30-8690-01f12147a0cb",
+      "created_at": "2025-04-21T13:01:04"
+    },
+    {
+      "filename": "MEG-Z890-GODLIKE.pdf",
+      "knowledge_file_id": "8b3c6bc1-652a-438d-b8d4-e7ef6aca5de5",
+      "created_at": "2025-04-16T10:32:24"
+    },
+    {
+      "filename": "MSI_DT_Gaming_MPG_Infinite_X2_14th_Infokit.md",
+      "knowledge_file_id": "803d1c7e-f9ca-42b8-8509-8e3cfcde3f65",
+      "created_at": "2025-04-23T14:15:27"
+    },
+    {
+      "filename": "MSI_Monitor_Commercial_PRO_MP161_E2U.md",
+      "knowledge_file_id": "0368de10-afdc-40c6-81b3-d45b39e423fb",
+      "created_at": "2025-04-21T13:11:24"
+    }
+  ]
+}

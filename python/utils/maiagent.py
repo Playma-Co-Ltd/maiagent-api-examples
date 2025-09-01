@@ -1,10 +1,10 @@
 import json
 import os
-import sseclient
+from typing import Generator, Union
 from urllib.parse import urljoin
-from typing import Union, Generator
 
 import requests
+import sseclient
 
 
 class MaiAgentHelper:
@@ -724,6 +724,53 @@ class MaiAgentHelper:
             print(e)
             exit(1)
 
+    def list_all_knowledge_base_faqs(self, knowledge_base_id, page_size=100):
+        """列出知識庫所有 FAQ（支持分頁自動獲取）"""
+        all_faqs = []
+        page = 1
+        
+        while True:
+            url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/'
+            params = {
+                'page': page,
+                'page_size': page_size
+            }
+            
+            headers = {
+                'Authorization': f'Api-Key {self.api_key}',
+            }
+            
+            try:
+                response = requests.get(url, headers=headers, params=params)
+                response.raise_for_status()
+                data = response.json()
+                
+                # 獲取當前頁的結果
+                results = data.get('results', [])
+                all_faqs.extend(results)
+                
+                print(f"正在獲取第 {page} 頁，已獲取 {len(all_faqs)} 個 FAQ...")
+                
+                # 檢查是否還有下一頁
+                if not data.get('next') or len(results) < page_size:
+                    break
+                    
+                page += 1
+                
+            except requests.exceptions.RequestException as e:
+                print(f"獲取第 {page} 頁時發生錯誤: {e}")
+                if hasattr(response, 'text'):
+                    print(response.text)
+                break
+            except Exception as e:
+                print(f"處理第 {page} 頁時發生錯誤: {e}")
+                break
+        
+        return {
+            'count': len(all_faqs),
+            'results': all_faqs
+        }
+
     def get_knowledge_base_faq(self, knowledge_base_id, faq_id):
         """獲取知識庫 FAQ 詳情"""
         url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/'
@@ -912,6 +959,211 @@ class MaiAgentHelper:
         except Exception as e:
             print(e)
             exit(1)
+
+    # ========== 知識庫檔案下載操作 ==========
+    
+    def download_knowledge_base_file(self, knowledge_base_id, file_id, download_dir="downloads"):
+        """下載知識庫檔案"""
+        # 先獲取檔案詳情
+        file_detail = self.get_knowledge_base_file(knowledge_base_id, file_id)
+        filename = file_detail.get('filename', f'file_{file_id}')
+        file_url = file_detail.get('file')
+        
+        if not file_url:
+            print(f'檔案 {filename} 沒有有效的下載連結')
+            return None
+            
+        # 確保下載目錄存在
+        os.makedirs(download_dir, exist_ok=True)
+        
+        try:
+            # 下載檔案
+            response = requests.get(file_url)
+            response.raise_for_status()
+            
+            # 處理檔案名衝突
+            file_path = os.path.join(download_dir, filename)
+            original_filename = filename
+            counter = 1
+            
+            while os.path.exists(file_path):
+                # 檔案已存在，加編號
+                name, ext = os.path.splitext(original_filename)
+                filename = f"{name}_{counter}{ext}"
+                file_path = os.path.join(download_dir, filename)
+                counter += 1
+            
+            # 儲存檔案
+            with open(file_path, 'wb') as f:
+                f.write(response.content)
+            
+            print(f'成功下載檔案: {file_path}')
+            return file_path
+            
+        except requests.exceptions.RequestException as e:
+            print(f'下載檔案 {filename} 時發生錯誤：{e}')
+            return None
+        except Exception as e:
+            print(f'儲存檔案 {filename} 時發生錯誤：{e}')
+            return None
+
+    def download_all_knowledge_base_files(self, knowledge_base_id, download_dir="downloads", page_size=100):
+        """下載知識庫中的所有檔案 (支持分頁)"""
+        try:
+            # 確保下載目錄存在
+            os.makedirs(download_dir, exist_ok=True)
+            
+            downloaded_files = []
+            failed_files = []
+            
+            print("正在獲取檔案列表...")
+            
+            # 獲取第一頁來了解總數
+            headers = {'Authorization': f'Api-Key {self.api_key}'}
+            url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/?page=1&page_size={page_size}'
+            
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            first_page = response.json()
+            
+            # 計算總頁數和檔案數
+            total_count = first_page.get('count', 0)
+            if total_count == 0:
+                print('知識庫中沒有檔案')
+                return {
+                    'downloaded': [],
+                    'failed': [],
+                    'total': 0,
+                    'download_dir': os.path.abspath(download_dir)
+                }
+            
+            per_page = len(first_page.get('results', []))
+            total_pages = (total_count // per_page) + (1 if total_count % per_page > 0 else 0) if per_page > 0 else 1
+            
+            print(f'找到 {total_count} 個檔案，分佈在 {total_pages} 頁')
+            print('開始下載...')
+            
+            all_files_dict = {}  # 使用字典去重，key為file_id
+            page = 1
+            
+            # 收集所有檔案資訊
+            print(f"正在收集所有檔案資訊 (共 {total_pages} 頁)...")
+            while True:
+                try:
+                    if page == 1:
+                        # 第一頁已經獲取
+                        data = first_page
+                    else:
+                        url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/?page={page}&page_size={page_size}'
+                        response = requests.get(url, headers=headers)
+                        response.raise_for_status()
+                        data = response.json()
+                    
+                    if 'results' in data:
+                        # 使用檔案ID去重
+                        for file_info in data['results']:
+                            file_id = file_info.get('id')
+                            if file_id and file_id not in all_files_dict:
+                                all_files_dict[file_id] = file_info
+                        
+                        print(f"  已收集第 {page}/{total_pages} 頁，累計 {len(all_files_dict)} 個唯一檔案")
+                    
+                    if not data.get('next'):
+                        break
+                        
+                    page += 1
+                    
+                except Exception as e:
+                    print(f"獲取第 {page} 頁時發生錯誤：{e}")
+                    break
+            
+            # 轉換為列表
+            all_files = list(all_files_dict.values())
+            
+            if not all_files:
+                print('無法獲取檔案列表')
+                return None
+            
+            print(f'\n開始下載 {len(all_files)} 個檔案...')
+            print('='*60)
+            
+            # 逐個下載檔案
+            for i, file_info in enumerate(all_files, 1):
+                file_id = file_info.get('id')
+                filename = file_info.get('filename', f'file_{file_id}')
+                
+                print(f'({i}/{len(all_files)}) 下載檔案: {filename}')
+                
+                try:
+                    file_path = self.download_knowledge_base_file(knowledge_base_id, file_id, download_dir)
+                    if file_path:
+                        downloaded_files.append({
+                            'id': file_id,
+                            'filename': filename,
+                            'path': file_path,
+                            'size': file_info.get('file_size', 0)
+                        })
+                    else:
+                        failed_files.append({
+                            'id': file_id,
+                            'filename': filename,
+                            'error': '下載失敗'
+                        })
+                        
+                except Exception as e:
+                    failed_files.append({
+                        'id': file_id,
+                        'filename': filename,
+                        'error': str(e)
+                    })
+            
+            # 驗證實際檔案數量
+            actual_files = []
+            if os.path.exists(download_dir):
+                for filename in os.listdir(download_dir):
+                    file_path = os.path.join(download_dir, filename)
+                    if os.path.isfile(file_path):
+                        actual_files.append(filename)
+            
+            # 顯示下載結果
+            print('\n' + '='*50)
+            print(f'下載統計:')
+            print(f'  知識庫檔案總數: {len(all_files)}')
+            print(f'  程式記錄成功: {len(downloaded_files)}')
+            print(f'  程式記錄失敗: {len(failed_files)}')
+            print(f'  實際檔案數量: {len(actual_files)}')
+            
+            # 檢查數量一致性
+            if len(downloaded_files) != len(actual_files):
+                print(f'  ⚠️  警告：程式統計({len(downloaded_files)})與實際檔案數量({len(actual_files)})不一致！')
+                if len(downloaded_files) > len(actual_files):
+                    print(f'     可能原因：檔案名衝突導致覆蓋')
+            else:
+                print(f'  ✅ 統計一致')
+            
+            if downloaded_files:
+                print(f'\n成功下載的檔案 ({len(downloaded_files)})：')
+                for file in downloaded_files[:10]:  # 只顯示前10個
+                    print(f'  ✓ {file["filename"]} -> {os.path.basename(file["path"])}')
+                if len(downloaded_files) > 10:
+                    print(f'  ... 還有 {len(downloaded_files) - 10} 個檔案')
+            
+            if failed_files:
+                print(f'\n下載失敗的檔案 ({len(failed_files)})：')
+                for file in failed_files:
+                    print(f'  ✗ {file["filename"]}: {file["error"]}')
+            
+            return {
+                'downloaded': downloaded_files,
+                'failed': failed_files,
+                'total': len(all_files),
+                'actual_file_count': len(actual_files),
+                'download_dir': os.path.abspath(download_dir)
+            }
+            
+        except Exception as e:
+            print(f'下載過程中發生錯誤：{e}')
+            return None
 
     def get_inbox_items(self):
         inbox_items = []

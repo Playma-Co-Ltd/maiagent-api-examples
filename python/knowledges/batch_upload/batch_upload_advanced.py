@@ -1,24 +1,24 @@
-import os
-import time
-import json
 import asyncio
-import aiohttp
-import aiofiles
-from datetime import datetime
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
-from enum import Enum
+import json
 import logging
-from collections import deque
+import os
 import signal
 import sys
 import threading
+import time
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import aiofiles
+import aiohttp
 from tqdm import tqdm
 
-
-API_KEY = '<your-api-key>'
-KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
-FILES_DIRECTORY = '<your-files-directory>'    # 你要上傳的檔案目錄 
+API_KEY = '0yZD0JZY.PhUtANQUat5X5sWEav2GQgVkXJ2uR34D'
+KNOWLEDGE_BASE_ID = '1491857c-aefc-464b-a4c6-b6494a8172d9'   # 你的知識庫 ID
+FILES_DIRECTORY = './downloads/knowledge_base_6b11f385-fc69-480e-982f-85a395954d5c'    # 你要上傳的檔案目錄 
 
 @dataclass
 class UploadConfig:
@@ -369,9 +369,10 @@ class BatchFileUploaderAdvanced:
         page = 1
         
         try:
+            import datetime
+
             import requests
             from tqdm.contrib.logging import logging_redirect_tqdm
-            import datetime
             
             self.logger.info("Fetching knowledge base files...")
             
@@ -578,6 +579,7 @@ class BatchFileUploaderAdvanced:
         if not self._shutdown:
             # 使用 tqdm 創建進度條，同時設置 logging 以避免衝突
             import sys
+
             from tqdm.contrib.logging import logging_redirect_tqdm
             
             with logging_redirect_tqdm():
@@ -651,5 +653,7 @@ async def main():
     await uploader.run_upload(FILES_DIRECTORY)
 
 
+if __name__ == '__main__':
+    asyncio.run(main())
 if __name__ == '__main__':
     asyncio.run(main())
