@@ -48,16 +48,27 @@ def main():
         if file_list and len(file_list) > 0:
             file_id = file_list[0].get('id')
             print(f"\n3. 更新檔案元數據 (ID: {file_id})...")
+
+            # 先獲取知識庫的標籤列表
+            labels_response = maiagent_helper.list_knowledge_base_labels(KNOWLEDGE_BASE_ID)
+            labels_list = labels_response.get('results', [])
+
+            # 如果有標籤，使用第一個標籤；否則不設定標籤
+            labels_to_set = [{"id": labels_list[0]['id']}] if labels_list else None
+
             updated_file = maiagent_helper.update_knowledge_base_file_metadata(
                 knowledge_base_id=KNOWLEDGE_BASE_ID,
                 file_id=file_id,
-                labels=[{"id": "label-id", "name": "重要文件"}],
-                metadata={"category": "documentation", "priority": "high"}
+                labels=labels_to_set,
+                raw_user_define_metadata={"category": "documentation", "priority": "high"}
             )
             print("檔案元數據更新成功")
+            if labels_to_set:
+                print(f"  已設定標籤: {updated_file.get('labels', [])}")
+            print(f"  已設定自定義元數據: {updated_file.get('rawUserDefineMetadata', {})}")
         
         # 4. 批次操作範例
-        print("\n4. 批次操作範例...")
+        #print("\n4. 批次操作範例...")
         
         # 批次刪除檔案 (可選，取消註解以執行)
         # if file_list and len(file_list) > 0:
