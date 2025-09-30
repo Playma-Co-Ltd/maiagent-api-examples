@@ -608,19 +608,19 @@ class MaiAgentHelper:
             print(e)
             exit(1)
 
-    def update_knowledge_base_file_metadata(self, knowledge_base_id, file_id, labels=None, metadata=None):
+    def update_knowledge_base_file_metadata(self, knowledge_base_id, file_id, labels=None, raw_user_define_metadata=None):
         """更新知識庫檔案的標籤和元數據"""
         url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/files/{file_id}/update-metadata/'
-        
+
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
-        
+
         payload = {}
         if labels is not None:
             payload['labels'] = labels
-        if metadata is not None:
-            payload['metadata'] = metadata
+        if raw_user_define_metadata is not None:
+            payload['rawUserDefineMetadata'] = raw_user_define_metadata
         
         try:
             response = requests.patch(url, headers=headers, json=payload)
@@ -817,19 +817,19 @@ class MaiAgentHelper:
             print(e)
             exit(1)
 
-    def update_knowledge_base_faq_metadata(self, knowledge_base_id, faq_id, labels=None, metadata=None):
+    def update_knowledge_base_faq_metadata(self, knowledge_base_id, faq_id, labels=None, raw_user_define_metadata=None):
         """更新知識庫 FAQ 的標籤和元數據"""
         url = f'{self.base_url}knowledge-bases/{knowledge_base_id}/faqs/{faq_id}/update-metadata/'
-        
+
         headers = {
             'Authorization': f'Api-Key {self.api_key}',
         }
-        
+
         payload = {}
         if labels is not None:
             payload['labels'] = labels
-        if metadata is not None:
-            payload['metadata'] = metadata
+        if raw_user_define_metadata is not None:
+            payload['rawUserDefineMetadata'] = raw_user_define_metadata
         
         try:
             response = requests.patch(url, headers=headers, json=payload)
