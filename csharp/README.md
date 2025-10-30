@@ -1,200 +1,88 @@
 # C# 範例
 
-此資料夾包含 C# 範例，展示如何使用 MaiAgent API 管理助理、發送訊息、管理知識庫和處理常見問題。
+這個範例展示如何使用 MaiAgent API 管理助理、發送訊息、管理知識庫、管理常見問題。
 
 ## 範例資料夾說明
 
 - [assistants](assistants/): 管理助理的範例
 - [messages](messages/): 發送訊息的範例
-  - `send_message.cs`: 發送訊息範例
-  - `send_image_message.cs`: 發送圖片訊息範例
-  - `webhook_server.cs`: Webhook 伺服器範例
-  - `chatbot_completion.cs`: 聊天機器人 API 使用範例
+  - chatbot_completion.md: 聊天機器人 API 使用說明
+  - [send_message.cs](messages/send_message.cs): 發送訊息範例
+  - [send_image_message.cs](messages/send_image_message.cs): 發送圖片訊息範例
+  - [webhook_server.cs](messages/webhook_server.cs): Webhook 伺服器範例
 - [knowledges](knowledges/): 管理知識庫的範例
 - [faqs](faqs/): 管理常見問題的範例
-- [batch_qa](batch_qa/): 批次問答處理範例
-- [others](others/): 其他實用範例
-- [utils](utils/): MaiAgent API 互動的輔助類別
+- [batch_qa](batch_qa/): 發送批次問答的範例
+- [others](others/): 其他有用的範例
 
-## 使用 MaiAgentHelper
+# 使用 MaiAgentHelper
 
-`MaiAgentHelper` 是用於與 MaiAgent API 互動的輔助類別，提供處理對話、訊息、檔案上傳和知識庫管理的便利方法。
+MaiAgentHelper 是一個用於與 MaiAgent API 互動的輔助類別，提供了一系列方便的方法來處理對話、訊息、檔案上傳和知識庫管理等功能。
+
+- 請參考 [utils/maiagent.md](utils/maiagent.md) 了解 MaiAgentHelper 的完整功能和使用方法。
 
 ## 設置步驟
 
-### 1. 前置需求
+1. 安裝 .NET SDK：
 
-- .NET 8.0 SDK 或更新版本
-- Visual Studio 2022、Visual Studio Code 或 JetBrains Rider（推薦）
-
-### 2. 安裝 .NET SDK
-
-從 [https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download) 下載並安裝
-
-### 3. 還原相依套件
+建議使用 .NET 8.0 或更新版本
 
 ```bash
-cd csharp
-dotnet restore
+# Windows (使用 winget)
+winget install Microsoft.DotNet.SDK.8
+
+# macOS (使用 Homebrew)
+brew install dotnet
+
+# Linux (請參考官方文檔)
+# https://learn.microsoft.com/dotnet/core/install/linux
 ```
 
-### 4. 設定組態
-
-編輯 `appsettings.Development.json` 並填入您的 API 金鑰和設定：
-
-```json
-{
-  "MaiAgent": {
-    "BaseUrl": "https://api.maiagent.ai/api/v1/",
-    "ApiKey": "your-api-key-here",
-    "ChatbotId": "your-chatbot-id-here",
-    "WebChatId": "your-webchat-id-here"
-  }
-}
-```
-
-**⚠️ 安全提醒：** 永遠不要將含有真實憑證的 `appsettings.Development.json` 提交至版本控制。
-
-### 5. 建置專案
+2. 安裝所需 NuGet 套件（如果需要）：
 
 ```bash
-dotnet build
+# 如需要讀寫 Excel 檔案
+dotnet add package EPPlus
+
+# 如需要 .env 檔案支援
+dotnet add package DotNetEnv
+
+# 如需要額外的 JSON 處理
+dotnet add package Newtonsoft.Json
 ```
 
-### 6. 執行範例
+3. 設置環境變數：
 
 ```bash
-# 執行特定範例
-dotnet run --project MaiAgentExamples.csproj
-
-# 或執行個別檔案（如果設置為獨立專案）
-cd messages
-dotnet run send_message.cs
+cp .env.example .env
+# 編輯 .env 文件，填入您的 API 金鑰和其他配置
 ```
 
-## 專案結構
+4. 編譯和運行範例：
 
-```
-csharp/
-├── MaiAgentExamples.sln          # 方案檔
-├── MaiAgentExamples.csproj       # 專案檔（含相依套件）
-├── appsettings.json              # 組態（範本）
-├── appsettings.Development.json  # 開發環境組態（本機，不納入 git）
-├── assistants/                   # 助理管理範例
-├── messages/                     # 訊息範例
-├── knowledges/                   # 知識庫範例
-├── faqs/                         # 常見問題管理範例
-├── batch_qa/                     # 批次問答範例
-├── others/                       # 其他工具
-└── utils/                        # 輔助類別
-```
-
-## 使用的 NuGet 套件
-
-此專案使用以下 NuGet 套件（相當於 Python 的 requirements.txt）：
-
-| Python 套件 | C# 對應套件 | 用途 |
-|------------|------------|------|
-| `requests` | `RestSharp` 或 `HttpClient` | HTTP 請求 |
-| `Flask` | `ASP.NET Core` | Web 框架 |
-| `python-dotenv` | `Microsoft.Extensions.Configuration` | 組態管理 |
-| `sseclient-py` | `Sse.Client` | Server-Sent Events |
-| `black` | 內建 `dotnet format` | 程式碼格式化 |
-| `pre-commit` | Git hooks | 程式碼品質檢查 |
-
-## 組態管理
-
-### Python vs C#
-
-**Python (`.env`)：**
 ```bash
-MAIAGENT_API_KEY=your-api-key
-MAIAGENT_BASE_URL=https://api.maiagent.ai/api/v1/
-```
+# 編譯單一檔案
+csc messages/send_message.cs utils/maiagent.cs
 
-**C# (`appsettings.json`)：**
-```json
-{
-  "MaiAgent": {
-    "ApiKey": "your-api-key",
-    "BaseUrl": "https://api.maiagent.ai/api/v1/"
-  }
-}
-```
+# 或使用 dotnet 腳本運行（需要 .csproj 檔案）
+dotnet run messages/send_message.cs
 
-### 在 C# 中讀取組態
-
-```csharp
-using Microsoft.Extensions.Configuration;
-
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false)
-    .AddJsonFile("appsettings.Development.json", optional: true)
-    .AddEnvironmentVariables()
-    .Build();
-
-string apiKey = configuration["MaiAgent:ApiKey"];
-string baseUrl = configuration["MaiAgent:BaseUrl"];
-```
-
-## 常見任務
-
-### 格式化程式碼
-```bash
-dotnet format
-```
-
-### 執行測試（如有新增）
-```bash
-dotnet test
-```
-
-### 建置發行版本
-```bash
-dotnet build --configuration Release
-```
-
-### 發行獨立執行檔
-```bash
-dotnet publish -c Release -r win-x64 --self-contained
+# 直接使用 C# 腳本模式（如果支援）
+dotnet script messages/send_message.cs
 ```
 
 ## 注意事項
 
-1. **需要 API 金鑰：** 執行範例前請確保已取得 MaiAgent API 金鑰
-2. **先完成組態：** 執行前請先在 `appsettings.Development.json` 中完成組態設定
-3. **程式碼調整：** 轉換後的 C# 程式碼可能需要手動調整：
-   - 型別推斷（許多變數為 `object` 型別）
-   - Async/await 模式
-   - 例外處理
-   - LINQ 最佳化
-4. **非同步程式碼：** 含有 Python `async with` 陳述式的檔案無法自動轉換，需要手動翻譯
+1. 請確保您已經取得 MaiAgent API 金鑰
+2. 運行範例前請先完成環境變數設置
+3. 這些範例檔案是從 Python 轉換而來，可能需要調整類型和引用才能成功編譯
+4. 某些範例（如 batch_upload_advanced.cs）包含複雜的異步邏輯，已標記為需要手動實作
 
-## 轉換說明
+## Python 與 C# 對照
 
-這些檔案使用 pytocs 轉換。已知限制：
-- 不支援 Python 的 `async with` 陳述式
-- 型別推斷有限（大多數型別為 `object`）
-- 某些 Python 慣用語法可能無法完美轉換為 C#
+本專案包含 Python 和 C# 兩種語言的範例：
 
-正式環境使用時，請考慮：
-- 加入適當的型別註解
-- 正確實作 async/await 模式
-- 新增例外處理
-- 建立適當的類別結構
-- 新增單元測試
+- Python 範例位於 `python/` 資料夾
+- C# 範例位於 `csharp/` 資料夾（本資料夾）
 
-## 資源
-
-- [MaiAgent API 文件](https://maiagent.ai/docs)
-- [.NET 文件](https://docs.microsoft.com/zh-tw/dotnet/)
-- [pytocs GitHub](https://github.com/uxmal/pytocs)
-
-## 取得協助
-
-如果遇到問題：
-1. 檢查 `appsettings.Development.json` 中的組態
-2. 驗證您的 API 金鑰是否有效
-3. 查看 [MaiAgent API 文件](https://maiagent.ai/docs)
-4. 檢視轉換後的程式碼，確認是否需要調整
+兩者功能相同，可根據您的開發需求選擇使用。

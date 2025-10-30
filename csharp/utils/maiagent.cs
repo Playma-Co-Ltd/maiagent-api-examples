@@ -7,8 +7,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-public class MaiAgentHelper
+namespace Utils
 {
+    public class MaiAgentHelper
+    {
     private readonly string _apiKey;
     private readonly string _baseUrl;
     private readonly string _storageUrl;
@@ -274,5 +276,6 @@ public class MaiAgentHelper
             
             Console.WriteLine($"Inbox ID: {inboxId}, Webchat ID: {webchatId}, Webchat Name: {webchatName}");
         }
+    }
     }
 }

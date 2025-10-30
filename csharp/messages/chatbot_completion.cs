@@ -1,13 +1,13 @@
 
-using MaiAgentHelper = utils.MaiAgentHelper;
+using Utils;
 
-using API_KEY = utils.config.API_KEY;
+using Utils;
 
-using BASE_URL = utils.config.BASE_URL;
 
-using CHATBOT_ID = utils.config.CHATBOT_ID;
 
-using STORAGE_URL = utils.config.STORAGE_URL;
+
+
+
 
 using sys;
 
@@ -45,7 +45,7 @@ public static class chatbot_completion {
     
     // 獲取 MaiAgent 幫助器實例
     public static object get_maiagent_helper() {
-        return MaiAgentHelper(api_key: API_KEY, base_url: BASE_URL, storage_url: STORAGE_URL);
+        return MaiAgentHelper(api_key: Config.API_KEY, base_url: Config.BASE_URL, storage_url: Config.STORAGE_URL);
     }
     
     // 打印分隔線和標題
@@ -117,7 +117,7 @@ public static class chatbot_completion {
         print_separator("使用串流模式");
         var maiagent_helper = get_maiagent_helper();
         try {
-            foreach (var data in maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["streaming"], is_streaming: true)) {
+            foreach (var data in maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["streaming"], is_streaming: true)) {
                 handle_streaming_response(data);
             }
             Console.WriteLine();
@@ -150,7 +150,7 @@ public static class chatbot_completion {
         print_separator("不使用串流模式");
         var maiagent_helper = get_maiagent_helper();
         try {
-            var response = maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["non_streaming"], is_streaming: false);
+            var response = maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["non_streaming"], is_streaming: false);
             Console.WriteLine($"回應: {response}");
         } catch (Exception) {
             Console.WriteLine($"錯誤: {str(e)}");
@@ -198,7 +198,7 @@ public static class chatbot_completion {
         try {
             // 第一次對話，不帶 conversationId
             Console.WriteLine("第一次對話（無 conversationId）:");
-            var first_response = maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["conversation_first"], is_streaming: false);
+            var first_response = maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["conversation_first"], is_streaming: false);
             if (!(first_response is dict)) {
                 Console.WriteLine($"錯誤：收到非預期的回應類型: {type(first_response)}");
                 return;
@@ -213,7 +213,7 @@ public static class chatbot_completion {
             Console.WriteLine($"\n獲取到的 conversationId: {conversation_id}\n");
             // 第二次對話，使用獲取到的 conversationId
             Console.WriteLine("第二次對話（帶 conversationId）:");
-            foreach (var data in maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["conversation_second"], conversation_id: conversation_id, is_streaming: true)) {
+            foreach (var data in maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["conversation_second"], conversation_id: conversation_id, is_streaming: true)) {
                 handle_streaming_response(data);
             }
             Console.WriteLine();
@@ -295,7 +295,7 @@ public static class chatbot_completion {
                 return;
             }
             Console.WriteLine("\n開始分析圖片...");
-            foreach (var data in maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["image_analysis"], attachments: attachments, is_streaming: true)) {
+            foreach (var data in maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["image_analysis"], attachments: attachments, is_streaming: true)) {
                 handle_streaming_response(data);
             }
             Console.WriteLine();
@@ -396,7 +396,7 @@ public static class chatbot_completion {
             };
             Console.WriteLine($"PDF附件數據準備完成: {attachments}");
             Console.WriteLine("\n開始分析PDF文件...");
-            var response = maiagent_helper.create_chatbot_completion(CHATBOT_ID, TEST_PROMPTS["pdf_analysis"], attachments: attachments, is_streaming: false);
+            var response = maiagent_helper.create_chatbot_completion(Config.CHATBOT_ID, TEST_PROMPTS["pdf_analysis"], attachments: attachments, is_streaming: false);
             Console.WriteLine($"回應: {response}");
         } catch (Exception) {
             Console.WriteLine($"錯誤: {str(e)}");

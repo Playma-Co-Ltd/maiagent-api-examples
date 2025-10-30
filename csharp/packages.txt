@@ -1,0 +1,31 @@
+# C# NuGet Package Dependencies
+# Install these packages using: dotnet add package <PackageName>
+
+# HTTP Client (built-in with .NET)
+# System.Net.Http
+
+# JSON Serialization (built-in with .NET Core 3.0+)
+# System.Text.Json
+
+# Alternative JSON library (if needed)
+# Newtonsoft.Json
+
+# Environment Variables (.env file support)
+# DotNetEnv
+
+# HTTP Server / Web Framework (equivalent to Flask)
+# Microsoft.AspNetCore.App (built-in with ASP.NET Core)
+
+# Excel file handling (for .xlsx files)
+# EPPlus or ClosedXML
+# EPPlus >= 5.0.0
+# ClosedXML >= 0.95.0
+
+# Progress bar / console UI (equivalent to tqdm)
+# ShellProgressBar
+
+# Async HTTP Client
+# Built-in: System.Net.Http.HttpClient with async/await
+
+# Note: Most of these are built-in with .NET 6.0+
+# Only install third-party packages if needed for specific functionality

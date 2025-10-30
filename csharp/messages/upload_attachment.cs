@@ -7,9 +7,9 @@ using requests;
 
 using os;
 
-using API_KEY = utils.config.API_KEY;
+using Utils;
 
-using BASE_URL = utils.config.BASE_URL;
+
 
 using System.Collections.Generic;
 
@@ -24,14 +24,14 @@ public static class upload_attachment {
         var headers = new Dictionary<object, object> {
             {
                 "Authorization",
-                $"Api-Key {API_KEY}"}};
+                $"Api-Key {Config.API_KEY}"}};
         (mime_type, _) = mimetypes.guess_type(file_path);
         using (var file = open(file_path, "rb")) {
             files = new Dictionary<object, object> {
                 {
                     "file",
                     (file_path.name, file, mime_type)}};
-            response = requests.post($"{BASE_URL}attachments/", headers: headers, files: files);
+            response = requests.post($"{Config.BASE_URL}attachments/", headers: headers, files: files);
         }
         Console.WriteLine(response.json());
     }
