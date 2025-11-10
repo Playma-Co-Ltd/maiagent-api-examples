@@ -8,7 +8,7 @@ public static class upload_knowledge_file {
     public static string API_KEY = "<your-api-key>";
 
     public static string KNOWLEDGE_BASE_ID = "<your-knowledge-base-id>";   // 你的知識庫 ID
-    public static string FILE_PATH = "../../inputs/台灣高鐵FAQ.xlsx";  // 使用存在的檔案
+    public static string FILE_PATH = "../../../inputs/台灣高鐵FAQ.xlsx";  // 使用存在的檔案
 
     public static void main() {
         // 上傳檔案到知識庫範例

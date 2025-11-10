@@ -6,7 +6,11 @@ from utils import MaiAgentHelper
 API_KEY = '<your-api-key>'
 
 KNOWLEDGE_BASE_ID = '<your-knowledge-base-id>'   # 你的知識庫 ID
-FILE_PATH = '../../inputs/台灣高鐵FAQ.xlsx'  # 使用存在的檔案
+FILE_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    'inputs',
+    '台灣高鐵FAQ.xlsx'
+)  # 使用存在的檔案
 
 assert API_KEY != '<your-api-key>', 'Please set your API key'
 assert KNOWLEDGE_BASE_ID != '<your-knowledge-base-id>', 'Please set your knowledge base id'

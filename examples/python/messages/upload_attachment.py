@@ -7,8 +7,8 @@ from utils.config import API_KEY, BASE_URL
 
 TEST_IMAGE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-    'test_files', 
-    '異型介紹.txt'
+    'inputs', 
+    'cat.jpg'
 )
 
 def main(file_path: str | Path) -> dict:
