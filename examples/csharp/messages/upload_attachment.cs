@@ -17,7 +17,7 @@ using System;
 
 public static class upload_attachment {
     
-    public static string TEST_IMAGE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(@__file__))), "test_files", "異型介紹.txt");
+    public static string TEST_IMAGE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(@__file__))), "inputs", "cat.jpg");
     
     public static object main(object file_path) {
         file_path = Path(file_path);
