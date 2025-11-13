@@ -15,5 +15,5 @@
 
 ## 程式碼範例
 
-Python 範例請參考 [Python 範例](examples/python)
-C# 範例請參考 [C# 範例](examples/csharp)
+- Python 範例請參考 [Python 範例](examples/python)  
+- C# 範例請參考 [C# 範例](examples/csharp)
