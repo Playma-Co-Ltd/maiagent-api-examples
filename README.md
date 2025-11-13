@@ -10,7 +10,10 @@
 ## 快速上手
 
 - [拿取 API Key](https://docs.maiagent.ai/tech/api-integration/quickstart)
+- [HTTP 狀態碼回應](https://docs.maiagent.ai/api/preparation/status-code)
+- [所有 API 端點](https://docs.maiagent.ai/api)
 
-## Python 範例
+## 程式碼範例
 
-Python 範例請參考 [Python 範例](python)
+Python 範例請參考 [Python 範例](examples/python)
+C# 範例請參考 [C# 範例](examples/csharp)
