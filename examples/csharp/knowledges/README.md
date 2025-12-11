@@ -58,20 +58,20 @@
 
 | 編號 | 檔案名稱 | 主要功能 | 必要參數 | 執行命令 |
 |------|---------|---------|----------|----------|
-| 1️⃣ | `create_knowledge_base.cs` | 創建知識庫 | API_KEY | `csharp create_knowledge_base.cs` |
-| 2️⃣ | `list_knowledge_bases.cs` | 列出知識庫 | API_KEY | `csharp list_knowledge_bases.cs` |
-| 3️⃣ | `upload_knowledge_file.cs` | 上傳檔案 | API_KEY, KB_ID, FILE_PATH | `csharp upload_knowledge_file.cs` |
-| 4️⃣ | `delete_knowledge_file.cs` | 刪除檔案 | API_KEY, KB_ID, FILE_ID | `csharp delete_knowledge_file.cs` |
-| 5️⃣ | `search_knowledge_base.cs` | 搜尋內容 | API_KEY, KB_ID, QUERY | `csharp search_knowledge_base.cs` |
-| 6️⃣ | `manage_knowledge_base_labels.cs` | 管理標籤 | API_KEY, KB_ID | `csharp manage_knowledge_base_labels.cs` |
-| 7️⃣ | `manage_knowledge_base_faq.cs` | 管理 FAQ | API_KEY, KB_ID | `csharp manage_knowledge_base_faq.cs` |
-| 8️⃣ | `manage_knowledge_base_files.cs` | 檔案管理 | API_KEY, KB_ID | `csharp manage_knowledge_base_files.cs` |
-| 9️⃣ | `batch_upload/` | **批量上傳工具** | API_KEY, KB_ID, FILES_DIR | `cd batch_upload && csharp batch_upload_advanced.cs` |
-| 🔟 | `scan_file_status.cs` | **檔案狀態掃描** | API_KEY, KB_ID | `csharp scan_file_status.cs` |
-| 1️⃣1️⃣ | `delete_duplicate_files.cs` | **刪除重複檔案** | API_KEY, KB_ID, REPORT_PATH | `csharp delete_duplicate_files.cs` |
-| 1️⃣2️⃣ | `fix_failed_files.cs` | **修復失敗檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | `csharp fix_failed_files.cs` |
-| 1️⃣3️⃣ | `upload_missing_files.cs` | **上傳缺失檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | `csharp upload_missing_files.cs` |
-| 1️⃣4️⃣ | `comprehensive_knowledge_base_example.cs` | 綜合示範 | API_KEY | `csharp comprehensive_knowledge_base_example.cs` |
+| 1️⃣ | `create_knowledge_base.cs` | 創建知識庫 | API_KEY | 修改 Program.cs 後執行 `dotnet run` |
+| 2️⃣ | `list_knowledge_bases.cs` | 列出知識庫 | API_KEY | 修改 Program.cs 後執行 `dotnet run` |
+| 3️⃣ | `upload_knowledge_file.cs` | 上傳檔案 | API_KEY, KB_ID, FILE_PATH | 修改 Program.cs 後執行 `dotnet run` |
+| 4️⃣ | `delete_knowledge_file.cs` | 刪除檔案 | API_KEY, KB_ID, FILE_ID | 修改 Program.cs 後執行 `dotnet run` |
+| 5️⃣ | `search_knowledge_base.cs` | 搜尋內容 | API_KEY, KB_ID, QUERY | 修改 Program.cs 後執行 `dotnet run` |
+| 6️⃣ | `manage_knowledge_base_labels.cs` | 管理標籤 | API_KEY, KB_ID | 修改 Program.cs 後執行 `dotnet run` |
+| 7️⃣ | `manage_knowledge_base_faq.cs` | 管理 FAQ | API_KEY, KB_ID | 修改 Program.cs 後執行 `dotnet run` |
+| 8️⃣ | `manage_knowledge_base_files.cs` | 檔案管理 | API_KEY, KB_ID | 修改 Program.cs 後執行 `dotnet run` |
+| 9️⃣ | `batch_upload/` | **批量上傳工具** | API_KEY, KB_ID, FILES_DIR | 修改 Program.cs 後執行 `dotnet run` |
+| 🔟 | `scan_file_status.cs` | **檔案狀態掃描** | API_KEY, KB_ID | 修改 Program.cs 後執行 `dotnet run` |
+| 1️⃣1️⃣ | `delete_duplicate_files.cs` | **刪除重複檔案** | API_KEY, KB_ID, REPORT_PATH | 修改 Program.cs 後執行 `dotnet run` |
+| 1️⃣2️⃣ | `fix_failed_files.cs` | **修復失敗檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | 修改 Program.cs 後執行 `dotnet run` |
+| 1️⃣3️⃣ | `upload_missing_files.cs` | **上傳缺失檔案** | API_KEY, KB_ID, FILES_DIR, REPORT_PATH | 修改 Program.cs 後執行 `dotnet run` |
+| 1️⃣4️⃣ | `comprehensive_knowledge_base_example.cs` | 綜合示範 | API_KEY | 修改 Program.cs 後執行 `dotnet run` |
 
 > **說明**：KB_ID = KNOWLEDGE_BASE_ID
 
@@ -79,57 +79,62 @@
 
 1. **設定 API Key**
    ```csharp
-   API_KEY = '<your-api-key>'
+   public static string API_KEY = "<your-api-key>";
    ```
 
 2. **建立知識庫**
    ```csharp
-   from utils import MaiAgentHelper
-   
-   maiagent_helper = MaiAgentHelper(API_KEY)
-   response = maiagent_helper.create_knowledge_base(
-       name="我的知識庫",
-       description="知識庫描述",
-       number_of_retrieved_chunks=12,
-       sentence_window_size=2,
-       enable_hyde=False,
-       similarity_cutoff=0.0,
-       enable_rerank=True
-   )
+   using Utils;
+
+   var maiagentHelper = new MaiAgentHelper(API_KEY);
+   var response = await maiagentHelper.create_knowledge_base(
+       name: "我的知識庫",
+       description: "知識庫描述",
+       numberOfRetrievedChunks: 12,
+       sentenceWindowSize: 2,
+       enableHyde: false,
+       similarityCutoff: 0.0,
+       enableRerank: true
+   );
    ```
 
 3. **上傳檔案**
    ```csharp
-   response = maiagent_helper.upload_knowledge_file(
-       knowledge_base_id=KB_ID,
-       file_path="path/to/your/file.pdf"
-   )
+   var uploadResponse = await maiagentHelper.upload_knowledge_file(
+       knowledgeBaseId: KB_ID,
+       filePath: "path/to/your/file.pdf"
+   );
    ```
 
 4. **創建標籤**
    ```csharp
-   response = maiagent_helper.create_knowledge_base_label(
-       knowledge_base_id=KB_ID,
-       name="技術文檔"
-   )
+   var labelResponse = await maiagentHelper.create_knowledge_base_label(
+       knowledgeBaseId: KB_ID,
+       name: "技術文檔"
+   );
    ```
 
 5. **創建 FAQ**
    ```csharp
-   response = maiagent_helper.create_knowledge_base_faq(
-       knowledge_base_id=KB_ID,
-       question="常見問題",
-       answer="問題的答案",
-       labels=[{"id": "label-id", "name": "標籤名稱"}]
-   )
+   var labels = new List<Dictionary<string, string>>
+   {
+       new Dictionary<string, string> { { "id", "label-id" }, { "name", "標籤名稱" } }
+   };
+
+   var faqResponse = await maiagentHelper.create_knowledge_base_faq(
+       knowledgeBaseId: KB_ID,
+       question: "常見問題",
+       answer: "問題的答案",
+       labels: labels
+   );
    ```
 
 6. **搜尋內容**
    ```csharp
-   results = maiagent_helper.search_knowledge_base(
-       knowledge_base_id=KB_ID,
-       query="搜尋關鍵字"
-   )
+   var results = await maiagentHelper.search_knowledge_base(
+       knowledgeBaseId: KB_ID,
+       query: "搜尋關鍵字"
+   );
    ```
 
 ## API 參數說明
@@ -165,11 +170,15 @@
 所有範例都包含了適當的錯誤處理：
 
 ```csharp
-try:
-    response = maiagent_helper.create_knowledge_base(...)
-    print(f"操作成功：{response}")
-except Exception as e:
-    print(f"操作失敗：{e}")
+try
+{
+    var response = await maiagentHelper.create_knowledge_base(...);
+    Console.WriteLine($"操作成功：{response}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"操作失敗：{ex.Message}");
+}
 ```
 
 ## 注意事項
@@ -215,27 +224,38 @@ except Exception as e:
 **第一次使用建議順序：**
 
 ```bash
-# 進入 knowledges 目錄
-cd maiagent-api-examples/csharp/knowledges
+# 進入 csharp 目錄
+cd maiagent-api-examples/examples/csharp
 
 # 1. 查看現有知識庫
-csharp list_knowledge_bases.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ListKnowledgeBases.Main(args);
+dotnet run
 
 # 2. 創建新知識庫
-csharp create_knowledge_base.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.CreateKnowledgeBase.Main(args);
+dotnet run
 
 # 3. 上傳檔案（單個檔案）
-csharp upload_knowledge_file.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.UploadKnowledgeFile.Main(args);
+dotnet run
 
 # 4. 批量上傳檔案（推薦用於大量檔案）
-cd batch_upload
-csharp batch_upload_advanced.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.BatchUpload.BatchUploadAdvanced.Main(args);
+dotnet run
 
 # 5. 創建標籤
-csharp manage_knowledge_base_labels.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ManageKnowledgeBaseLabels.Main(args);
+dotnet run
 
 # 6. 搜尋內容
-csharp search_knowledge_base.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.SearchKnowledgeBase.Main(args);
+dotnet run
 ```
 
 ### 📝 各檔案詳細說明
@@ -250,8 +270,13 @@ csharp search_knowledge_base.cs
 - `KNOWLEDGE_BASE_DESCRIPTION`：知識庫描述
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.CreateKnowledgeBase.Main(args);
+```
 ```bash
-csharp create_knowledge_base.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：知識庫 ID、名稱、描述等資訊
@@ -266,8 +291,13 @@ csharp create_knowledge_base.cs
 - `API_KEY`：您的 MaiAgent API Key
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.ListKnowledgeBases.Main(args);
+```
 ```bash
-csharp list_knowledge_bases.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：所有知識庫的詳細資訊列表
@@ -284,8 +314,13 @@ csharp list_knowledge_bases.cs
 - `FILE_PATH`：要上傳的檔案路徑
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.UploadKnowledgeFile.Main(args);
+```
 ```bash
-csharp upload_knowledge_file.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：上傳成功的檔案資訊
@@ -302,8 +337,13 @@ csharp upload_knowledge_file.cs
 - `FILE_ID`：要刪除的檔案 ID
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.DeleteKnowledgeFile.Main(args);
+```
 ```bash
-csharp delete_knowledge_file.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：刪除操作的成功或失敗訊息
@@ -320,8 +360,13 @@ csharp delete_knowledge_file.cs
 - `SEARCH_QUERY`：搜尋關鍵字
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.SearchKnowledgeBase.Main(args);
+```
 ```bash
-csharp search_knowledge_base.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：搜尋結果列表，包含相似度分數
@@ -337,8 +382,13 @@ csharp search_knowledge_base.cs
 - `KNOWLEDGE_BASE_ID`：知識庫 ID
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.ManageKnowledgeBaseLabels.Main(args);
+```
 ```bash
-csharp manage_knowledge_base_labels.cs
+cd examples/csharp
+dotnet run
 ```
 
 **功能包含**：
@@ -359,8 +409,13 @@ csharp manage_knowledge_base_labels.cs
 - `KNOWLEDGE_BASE_ID`：知識庫 ID
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.ManageKnowledgeBaseFaq.Main(args);
+```
 ```bash
-csharp manage_knowledge_base_faq.cs
+cd examples/csharp
+dotnet run
 ```
 
 **功能包含**：
@@ -381,8 +436,13 @@ csharp manage_knowledge_base_faq.cs
 - `KNOWLEDGE_BASE_ID`：知識庫 ID
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.ManageKnowledgeBaseFiles.Main(args);
+```
 ```bash
-csharp manage_knowledge_base_files.cs
+cd examples/csharp
+dotnet run
 ```
 
 **功能包含**：
@@ -411,14 +471,17 @@ csharp manage_knowledge_base_files.cs
 - `FILES_DIRECTORY`：要上傳的檔案目錄
 
 **安裝依賴**：
-```bash
-pip install aiohttp aiofiles tqdm requests
-```
+
+本專案已在 [MaiAgentExamples.csproj](../../MaiAgentExamples.csproj) 中包含所有必要的 NuGet 套件。
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.BatchUpload.BatchUploadAdvanced.Main(args);
+```
 ```bash
-cd batch_upload
-csharp batch_upload_advanced.cs
+cd examples/csharp
+dotnet run
 ```
 
 **適用場景**：
@@ -452,8 +515,13 @@ csharp batch_upload_advanced.cs
 - `STATUS_REPORT_PATH`：狀態掃描報告路徑
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.BatchUpload.FixFailedFiles.Main(args);
+```
 ```bash
-csharp fix_failed_files.cs
+cd examples/csharp
+dotnet run
 ```
 
 **工作流程**：
@@ -480,8 +548,13 @@ csharp fix_failed_files.cs
 - `INTEGRITY_REPORT_PATH`：完整性檢查報告路徑
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.BatchUpload.UploadMissingFiles.Main(args);
+```
 ```bash
-csharp upload_missing_files.cs
+cd examples/csharp
+dotnet run
 ```
 
 **輸出**：補充上傳缺失檔案的結果報告
@@ -498,8 +571,13 @@ csharp upload_missing_files.cs
 - `INTEGRITY_REPORT_PATH`：完整性檢查報告路徑
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.BatchUpload.DeleteDuplicateFiles.Main(args);
+```
 ```bash
-csharp delete_duplicate_files.cs
+cd examples/csharp
+dotnet run
 ```
 
 **安全特性**：
@@ -517,8 +595,13 @@ csharp delete_duplicate_files.cs
 - `API_KEY`：您的 MaiAgent API Key
 
 **執行**：
+```csharp
+// 編輯 Program.cs，在 Main 方法中呼叫：
+await MaiAgentExamples.Knowledges.ComprehensiveKnowledgeBaseExample.Main(args);
+```
 ```bash
-csharp comprehensive_knowledge_base_example.cs
+cd examples/csharp
+dotnet run
 ```
 
 **流程包含**：
@@ -543,44 +626,64 @@ csharp comprehensive_knowledge_base_example.cs
 **完整工作流程**：
 
 ```bash
+# 進入 csharp 目錄
+cd maiagent-api-examples/examples/csharp
+
 # 步驟 1：查看現有資源
-csharp list_knowledge_bases.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ListKnowledgeBases.Main(args);
+dotnet run
 
 # 步驟 2：創建新知識庫（可選）
-csharp create_knowledge_base.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.CreateKnowledgeBase.Main(args);
+dotnet run
 
 # 步驟 3：上傳檔案
 # 單個檔案上傳
-csharp upload_knowledge_file.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.UploadKnowledgeFile.Main(args);
+dotnet run
 
 # 大量檔案批量上傳（推薦）
-cd batch_upload
-csharp batch_upload_advanced.cs
-cd ..
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.BatchUpload.BatchUploadAdvanced.Main(args);
+dotnet run
 
 # 步驟 4：創建標籤分類
-csharp manage_knowledge_base_labels.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ManageKnowledgeBaseLabels.Main(args);
+dotnet run
 
 # 步驟 5：添加 FAQ
-csharp manage_knowledge_base_faq.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ManageKnowledgeBaseFaq.Main(args);
+dotnet run
 
 # 步驟 6：等待檔案處理完成後搜尋
-csharp search_knowledge_base.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.SearchKnowledgeBase.Main(args);
+dotnet run
 
 # 步驟 7：檔案管理
-csharp manage_knowledge_base_files.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ManageKnowledgeBaseFiles.Main(args);
+dotnet run
 
 # 步驟 8：綜合測試
-csharp comprehensive_knowledge_base_example.cs
+# 編輯 Program.cs，在 Main 方法中呼叫：
+# await MaiAgentExamples.Knowledges.ComprehensiveKnowledgeBaseExample.Main(args);
+dotnet run
 ```
 
 ### 🚨 常見問題
 
-1. **模組找不到錯誤**：
+1. **編譯錯誤**：
    ```bash
-   # 確保在 csharp 目錄中執行
-   cd maiagent-api-examples/csharp
-   csharp your_script.cs
+   # 確保在 examples/csharp 目錄中執行
+   cd maiagent-api-examples/examples/csharp
+   dotnet restore
+   dotnet build
    ```
 
 2. **知識庫 ID 不一致**：
