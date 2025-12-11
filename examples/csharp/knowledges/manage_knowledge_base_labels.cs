@@ -29,8 +29,7 @@ namespace MaiAgentExamples.Knowledges
                 var labelName = $"測試標籤_{DateTimeOffset.Now.ToUnixTimeSeconds()}";  // 使用時間戳避免重複
                 var newLabelResponse = await maiagentHelper.create_knowledge_base_label(
                     knowledgeBaseId: KNOWLEDGE_BASE_ID,
-                    name: labelName,
-                    color: "#FF5733"
+                    name: labelName
                 );
 
                 var newLabel = JsonSerializer.Deserialize<JsonElement>(newLabelResponse.ToString()!);
@@ -62,8 +61,7 @@ namespace MaiAgentExamples.Knowledges
                     var updatedLabelResponse = await maiagentHelper.update_knowledge_base_label(
                         knowledgeBaseId: KNOWLEDGE_BASE_ID,
                         labelId: labelId,
-                        name: updatedName,
-                        color: "#00FF00"
+                        name: updatedName
                     );
                     Console.WriteLine("標籤更新成功");
                 }

@@ -26,10 +26,15 @@ namespace MaiAgentExamples.Knowledges
             {
                 // 1. 創建 FAQ
                 Console.WriteLine("1. 創建 FAQ...");
+                var labels = new List<Dictionary<string, string>>
+                {
+                    new Dictionary<string, string> { {"id", "label-id"}, {"name", "general"} }
+                };
                 var newFaqResponse = await maiagentHelper.create_knowledge_base_faq(
                     knowledgeBaseId: KNOWLEDGE_BASE_ID,
                     question: "什麼是 MaiAgent？",
-                    answer: "MaiAgent 是一個強大的 AI 助手平台，幫助您建立智能聊天機器人。"
+                    answer: "MaiAgent 是一個強大的 AI 助手平台，幫助您建立智能聊天機器人。",
+                    labels: labels  // 可選標籤
                 );
 
                 var newFaq = JsonSerializer.Deserialize<JsonElement>(newFaqResponse.ToString()!);

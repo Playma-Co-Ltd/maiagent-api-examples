@@ -461,20 +461,38 @@ namespace Utils
     }
 
     // Knowledge Base methods
-    public async Task<object> create_knowledge_base(string name, string description = "", string language = "")
+    public async Task<object> create_knowledge_base(
+        string name,
+        string description = null,
+        string embeddingModel = null,
+        string rerankerModel = null,
+        int? numberOfRetrievedChunks = 12,
+        int? sentenceWindowSize = 2,
+        bool? enableHyde = false,
+        double? similarityCutoff = 0.0,
+        bool? enableRerank = true,
+        List<string> chatbots = null)
     {
         var url = $"{_baseUrl}knowledge-bases/";
-        var payload = new
-        {
-            name = name,
-            description = description,
-            language = language
-        };
+
+        // 建立 payload，只包含非 null 的值
+        var payloadDict = new Dictionary<string, object>();
+        payloadDict["name"] = name;
+
+        if (description != null) payloadDict["description"] = description;
+        if (embeddingModel != null) payloadDict["embedding_model"] = embeddingModel;
+        if (rerankerModel != null) payloadDict["reranker_model"] = rerankerModel;
+        if (numberOfRetrievedChunks.HasValue) payloadDict["number_of_retrieved_chunks"] = numberOfRetrievedChunks.Value;
+        if (sentenceWindowSize.HasValue) payloadDict["sentence_window_size"] = sentenceWindowSize.Value;
+        if (enableHyde.HasValue) payloadDict["enable_hyde"] = enableHyde.Value;
+        if (similarityCutoff.HasValue) payloadDict["similarity_cutoff"] = similarityCutoff.Value;
+        if (enableRerank.HasValue) payloadDict["enable_rerank"] = enableRerank.Value;
+        if (chatbots != null) payloadDict["chatbots"] = chatbots;
 
         try
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(payload),
+                JsonSerializer.Serialize(payloadDict),
                 Encoding.UTF8,
                 "application/json");
 
@@ -527,15 +545,79 @@ namespace Utils
         }
     }
 
+    public async Task<object> update_knowledge_base(
+        string knowledgeBaseId,
+        string name = null,
+        string description = null,
+        string embeddingModel = null,
+        string rerankerModel = null,
+        int? numberOfRetrievedChunks = null,
+        int? sentenceWindowSize = null,
+        bool? enableHyde = null,
+        double? similarityCutoff = null,
+        bool? enableRerank = null,
+        List<string> chatbots = null)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/";
+
+        var payloadDict = new Dictionary<string, object>();
+        if (name != null) payloadDict["name"] = name;
+        if (description != null) payloadDict["description"] = description;
+        if (embeddingModel != null) payloadDict["embedding_model"] = embeddingModel;
+        if (rerankerModel != null) payloadDict["reranker_model"] = rerankerModel;
+        if (numberOfRetrievedChunks.HasValue) payloadDict["number_of_retrieved_chunks"] = numberOfRetrievedChunks.Value;
+        if (sentenceWindowSize.HasValue) payloadDict["sentence_window_size"] = sentenceWindowSize.Value;
+        if (enableHyde.HasValue) payloadDict["enable_hyde"] = enableHyde.Value;
+        if (similarityCutoff.HasValue) payloadDict["similarity_cutoff"] = similarityCutoff.Value;
+        if (enableRerank.HasValue) payloadDict["enable_rerank"] = enableRerank.Value;
+        if (chatbots != null) payloadDict["chatbots"] = chatbots;
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payloadDict),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PutAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task delete_knowledge_base(string knowledgeBaseId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/";
+
+        try
+        {
+            var response = await _httpClient.DeleteAsync(url);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine($"Successfully deleted knowledge base with ID: {knowledgeBaseId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
     public async Task delete_knowledge_file(string chatbotId, string fileId)
     {
         await DeleteKnowledgeFileAsync(chatbotId, fileId);
     }
 
-    public async Task<object> create_knowledge_base_label(string knowledgeBaseId, string name, string color)
+    public async Task<object> create_knowledge_base_label(string knowledgeBaseId, string name)
     {
         var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/";
-        var payload = new { name = name, color = color };
+        var payload = new { name = name };
 
         try
         {
@@ -593,10 +675,10 @@ namespace Utils
         }
     }
 
-    public async Task<object> update_knowledge_base_label(string knowledgeBaseId, string labelId, string name, string color)
+    public async Task<object> update_knowledge_base_label(string knowledgeBaseId, string labelId, string name)
     {
         var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/{labelId}/";
-        var payload = new { name = name, color = color };
+        var payload = new { name = name };
 
         try
         {
@@ -618,15 +700,38 @@ namespace Utils
         }
     }
 
-    public async Task<object> create_knowledge_base_faq(string knowledgeBaseId, string question, string answer)
+    public async Task delete_knowledge_base_label(string knowledgeBaseId, string labelId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/{labelId}/";
+
+        try
+        {
+            var response = await _httpClient.DeleteAsync(url);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine($"Successfully deleted knowledge base label with ID: {labelId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> create_knowledge_base_faq(string knowledgeBaseId, string question, string answer, List<Dictionary<string, string>> labels = null)
     {
         var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/";
-        var payload = new { question = question, answer = answer };
+
+        var payloadDict = new Dictionary<string, object>
+        {
+            ["question"] = question,
+            ["answer"] = answer,
+            ["labels"] = labels ?? new List<Dictionary<string, string>>()
+        };
 
         try
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(payload),
+                JsonSerializer.Serialize(payloadDict),
                 Encoding.UTF8,
                 "application/json");
 
@@ -679,15 +784,19 @@ namespace Utils
         }
     }
 
-    public async Task<object> update_knowledge_base_faq(string knowledgeBaseId, string faqId, string question, string answer)
+    public async Task<object> update_knowledge_base_faq(string knowledgeBaseId, string faqId, string question = null, string answer = null, List<Dictionary<string, string>> labels = null)
     {
         var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/{faqId}/";
-        var payload = new { question = question, answer = answer };
+
+        var payloadDict = new Dictionary<string, object>();
+        if (question != null) payloadDict["question"] = question;
+        if (answer != null) payloadDict["answer"] = answer;
+        if (labels != null) payloadDict["labels"] = labels;
 
         try
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(payload),
+                JsonSerializer.Serialize(payloadDict),
                 Encoding.UTF8,
                 "application/json");
 
@@ -696,6 +805,23 @@ namespace Utils
 
             var responseString = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task delete_knowledge_base_faq(string knowledgeBaseId, string faqId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/{faqId}/";
+
+        try
+        {
+            var response = await _httpClient.DeleteAsync(url);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine($"Successfully deleted knowledge base FAQ with ID: {faqId}");
         }
         catch (Exception ex)
         {
@@ -740,15 +866,66 @@ namespace Utils
         }
     }
 
-    public async Task<object> update_knowledge_base_file_metadata(string knowledgeBaseId, string fileId, List<string> labels)
+    public async Task<object> update_knowledge_base_file_metadata(string knowledgeBaseId, string fileId, List<string> labels = null, object rawUserDefineMetadata = null)
     {
-        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/{fileId}/";
-        var payload = new { labels = labels };
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/{fileId}/update-metadata/";
+
+        var payloadDict = new Dictionary<string, object>();
+        if (labels != null) payloadDict["labels"] = labels;
+        if (rawUserDefineMetadata != null) payloadDict["rawUserDefineMetadata"] = rawUserDefineMetadata;
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payloadDict),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PatchAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task batch_delete_knowledge_base_files(string knowledgeBaseId, List<string> fileIds)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/batch-delete/";
+
+        var payload = new { ids = fileIds };
 
         try
         {
             var content = new StringContent(
                 JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine($"Successfully deleted {fileIds.Count} files");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> batch_reparse_knowledge_base_files(string knowledgeBaseId, object fileParsers)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/batch-reparse/";
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(fileParsers),
                 Encoding.UTF8,
                 "application/json");
 
@@ -767,10 +944,17 @@ namespace Utils
 
     public async Task<object> search_knowledge_base(string knowledgeBaseId, string query)
     {
-        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/search/?query={Uri.EscapeDataString(query)}";
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/search/";
+        var payload = new { query = query };
+
         try
         {
-            var response = await _httpClient.GetAsync(url);
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();

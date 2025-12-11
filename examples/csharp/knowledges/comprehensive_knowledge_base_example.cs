@@ -50,8 +50,7 @@ namespace MaiAgentExamples.Knowledges
 
                 var labelResponseObj = await maiagentHelper.create_knowledge_base_label(
                     knowledgeBaseId: kbId!,
-                    name: "技術文檔",
-                    color: "#4CAF50"
+                    name: "技術文檔"
                 );
 
                 var labelResponse = JsonSerializer.Deserialize<JsonElement>(labelResponseObj.ToString()!);
