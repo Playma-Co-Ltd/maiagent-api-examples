@@ -55,9 +55,9 @@ namespace MaiAgentExamples.Knowledges
                         Console.WriteLine($"  ID: {(faq.TryGetProperty("id", out var id) ? id.GetString() : "N/A")}");
                         Console.WriteLine($"  問題: {(faq.TryGetProperty("question", out var q) ? q.GetString() : "N/A")}");
                         Console.WriteLine($"  答案: {(faq.TryGetProperty("answer", out var a) ? a.GetString() : "N/A")}");
-                        if (faq.TryGetProperty("labels", out var labels))
+                        if (faq.TryGetProperty("labels", out var labelsProperty))
                         {
-                            Console.WriteLine($"  標籤: {labels}");
+                            Console.WriteLine($"  標籤: {labelsProperty}");
                         }
                         Console.WriteLine(new string('-', 30));
                     }

@@ -35,8 +35,7 @@ namespace MaiAgentExamples.Knowledges
 
                 var kbResponseObj = await maiagentHelper.create_knowledge_base(
                     name: "測試知識庫",
-                    description: "這是一個用於測試的知識庫",
-                    language: "zh-TW"
+                    description: "這是一個用於測試的知識庫"
                 );
 
                 var kbResponse = JsonSerializer.Deserialize<JsonElement>(kbResponseObj.ToString()!);

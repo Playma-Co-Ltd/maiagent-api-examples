@@ -13,7 +13,6 @@ namespace MaiAgentExamples.Knowledges
         // 知識庫基本資訊
         public static string KNOWLEDGE_BASE_NAME = "My Knowledge Base";
         public static string KNOWLEDGE_BASE_DESCRIPTION = "This is a sample knowledge base for testing purposes.";
-        public static string KNOWLEDGE_BASE_LANGUAGE = "zh-TW";
 
         public static async Task Main(string[] args)
         {
@@ -30,8 +29,7 @@ namespace MaiAgentExamples.Knowledges
                 // 創建知識庫
                 var createResponse = await maiagentHelper.create_knowledge_base(
                     name: KNOWLEDGE_BASE_NAME,
-                    description: KNOWLEDGE_BASE_DESCRIPTION,
-                    language: KNOWLEDGE_BASE_LANGUAGE
+                    description: KNOWLEDGE_BASE_DESCRIPTION
                 );
 
                 var response = JsonSerializer.Deserialize<JsonElement>(createResponse.ToString()!);
