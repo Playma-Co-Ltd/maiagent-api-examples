@@ -273,9 +273,519 @@ namespace Utils
             var inboxId = item.GetProperty("id").GetString();
             var webchatId = item.GetProperty("channel").GetProperty("id").GetString();
             var webchatName = item.GetProperty("channel").GetProperty("name").GetString();
-            
+
             Console.WriteLine($"Inbox ID: {inboxId}, Webchat ID: {webchatId}, Webchat Name: {webchatName}");
         }
+    }
+
+    // Batch QA methods
+    public async Task<JsonElement> UploadBatchQAFileAsync(string webChatId, string fileKey, string originalFilename)
+    {
+        var url = $"{_baseUrl}web-chats/{webChatId}/batch-qa-files/";
+
+        var payload = new
+        {
+            file = fileKey,
+            filename = originalFilename
+        };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<string> DownloadBatchQAExcelAsync(string webChatId, string batchQaFileId)
+    {
+        var url = $"{_baseUrl}web-chats/{webChatId}/batch-qa-files/{batchQaFileId}/download/";
+
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var fileName = $"batch_qa_{batchQaFileId}.xlsx";
+            using var fileStream = File.Create(fileName);
+            await response.Content.CopyToAsync(fileStream);
+
+            Console.WriteLine($"File downloaded: {fileName}");
+            return fileName;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    // Attachment methods
+    public async Task<JsonElement> UploadAttachmentWithoutConversationAsync(string filePath, string type = "image")
+    {
+        var uploadUrl = await GetUploadUrlAsync(filePath, "attachment");
+        var fileKey = await UploadFileToS3Async(filePath, uploadUrl.Value);
+
+        var url = $"{_baseUrl}attachments/";
+        var payload = new
+        {
+            file = fileKey,
+            filename = Path.GetFileName(filePath),
+            type = type
+        };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    // Chatbot Completion methods
+    public async Task<JsonElement> CreateChatbotCompletionAsync(
+        string chatbotId,
+        string message,
+        string? conversationId = null,
+        List<Dictionary<string, string>>? attachments = null)
+    {
+        var url = $"{_baseUrl}chatbots/{chatbotId}/completions/";
+
+        var payload = new
+        {
+            conversation = conversationId,
+            message = new
+            {
+                content = message,
+                attachments = attachments ?? new List<Dictionary<string, string>>()
+            },
+            isStreaming = false
+        };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async IAsyncEnumerable<JsonElement> CreateChatbotCompletionStreamAsync(
+        string chatbotId,
+        string message,
+        string? conversationId = null,
+        List<Dictionary<string, string>>? attachments = null)
+    {
+        var url = $"{_baseUrl}chatbots/{chatbotId}/completions/";
+
+        var payload = new
+        {
+            conversation = conversationId,
+            message = new
+            {
+                content = message,
+                attachments = attachments ?? new List<Dictionary<string, string>>()
+            },
+            isStreaming = true
+        };
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json");
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = content
+        };
+
+        using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        response.EnsureSuccessStatusCode();
+
+        using var stream = await response.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(stream);
+
+        while (!reader.EndOfStream)
+        {
+            var line = await reader.ReadLineAsync();
+            if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data: "))
+                continue;
+
+            var jsonData = line.Substring(6);
+            if (jsonData == "[DONE]")
+                break;
+
+            JsonElement element;
+            if (JsonSerializer.Deserialize<JsonElement>(jsonData).ValueKind != JsonValueKind.Undefined)
+            {
+                element = JsonSerializer.Deserialize<JsonElement>(jsonData);
+                yield return element;
+            }
+        }
+    }
+
+    // Knowledge Base methods
+    public async Task<object> create_knowledge_base(string name, string description = "", string language = "")
+    {
+        var url = $"{_baseUrl}knowledge-bases/";
+        var payload = new
+        {
+            name = name,
+            description = description,
+            language = language
+        };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> list_knowledge_bases()
+    {
+        var url = $"{_baseUrl}knowledge-bases/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> get_knowledge_base(string knowledgeBaseId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task delete_knowledge_file(string chatbotId, string fileId)
+    {
+        await DeleteKnowledgeFileAsync(chatbotId, fileId);
+    }
+
+    public async Task<object> create_knowledge_base_label(string knowledgeBaseId, string name, string color)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/";
+        var payload = new { name = name, color = color };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> list_knowledge_base_labels(string knowledgeBaseId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> get_knowledge_base_label(string knowledgeBaseId, string labelId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/{labelId}/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> update_knowledge_base_label(string knowledgeBaseId, string labelId, string name, string color)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/labels/{labelId}/";
+        var payload = new { name = name, color = color };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PutAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> create_knowledge_base_faq(string knowledgeBaseId, string question, string answer)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/";
+        var payload = new { question = question, answer = answer };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> list_knowledge_base_faqs(string knowledgeBaseId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> get_knowledge_base_faq(string knowledgeBaseId, string faqId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/{faqId}/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> update_knowledge_base_faq(string knowledgeBaseId, string faqId, string question, string answer)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/faqs/{faqId}/";
+        var payload = new { question = question, answer = answer };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PutAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> list_knowledge_base_files(string knowledgeBaseId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> get_knowledge_base_file(string knowledgeBaseId, string fileId)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/{fileId}/";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> update_knowledge_base_file_metadata(string knowledgeBaseId, string fileId, List<string> labels)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/{fileId}/";
+        var payload = new { labels = labels };
+
+        try
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(payload),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PatchAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> search_knowledge_base(string knowledgeBaseId, string query)
+    {
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/search/?query={Uri.EscapeDataString(query)}";
+        try
+        {
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<JsonElement>(responseString);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<object> upload_knowledge_file(string chatbotId, string filePath)
+    {
+        return await UploadKnowledgeFileAsync(chatbotId, filePath);
     }
     }
 }

@@ -278,3 +278,6 @@ whizchat/media/
 
 # IDE
 .idea/
+
+# claude 
+.claude/

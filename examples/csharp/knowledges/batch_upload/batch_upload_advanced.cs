@@ -262,8 +262,8 @@ public static class batch_upload_advanced {
                     {"pending_files", tasks_queue.Select(t => t.file_path).ToList()}
                 };
 
-                var jsonString = JsonSerializer.Serialize(checkpoint_data, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(checkpoint_file, jsonString);
+                var checkpointJson = JsonSerializer.Serialize(checkpoint_data, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(checkpoint_file, checkpointJson);
 
                 int total_completed = existing_completed.Count;
                 // 只在整百時顯示日誌，減少輸出

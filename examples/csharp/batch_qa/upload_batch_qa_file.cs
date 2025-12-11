@@ -1,41 +1,40 @@
-
-using os;
-
+using System;
+using System.IO;
+using System.Diagnostics;
 using Utils;
 
-using System.Diagnostics;
+namespace MaiAgentExamples.BatchQA
+{
+    public static class UploadBatchQAFile
+    {
+        public static string API_KEY = "<your-api-key>";
+        public static string WEB_CHAT_ID = "<your-web-chat-id>";
+        public static string FILE_PATH = "<your-file-path>";
 
-public static class upload_batch_qa_file {
-    
-    public static string API_KEY = "<your-api-key>";
-    
-    public static string WEB_CHAT_ID = "<your-web-chat-id>";
-    
-    public static string FILE_PATH = "<your-file-path>";
-    
-    public static void main() {
-        var maiagent_helper = MaiAgentHelper(API_KEY);
-        var original_filename = os.path.basename(FILE_PATH);
-        var upload_info = maiagent_helper.get_upload_url(file_path: FILE_PATH, model_name: "batch-qa", field_name: "file");
-        var file_key = maiagent_helper.upload_file_to_s3(FILE_PATH, upload_info);
-        var batch_qa_response = maiagent_helper.upload_batch_qa_file(web_chat_id: WEB_CHAT_ID, file_key: file_key, original_filename: original_filename);
-        if (batch_qa_response && batch_qa_response.Contains("id")) {
-            Console.WriteLine($"Batch QA File ID: {batch_qa_response[\"id\"]}");
-        }
-    }
-    
-    static upload_batch_qa_file() {
-        main();
-    }
-    
-    static upload_batch_qa_file() {
-        Debug.Assert(API_KEY != "<your-api-key>");
-        Debug.Assert("Please set your API key");
-        Debug.Assert(WEB_CHAT_ID != "<your-web-chat-id>");
-        Debug.Assert("Please set your web-chat id");
-        Debug.Assert(FILE_PATH != "<your-file-path>");
-        Debug.Assert("Please set your file path");
-        if (@__name__ == "__main__") {
+        public static async Task Main(string[] args)
+        {
+            Debug.Assert(API_KEY != "<your-api-key>", "Please set your API key");
+            Debug.Assert(WEB_CHAT_ID != "<your-web-chat-id>", "Please set your web-chat id");
+            Debug.Assert(FILE_PATH != "<your-file-path>", "Please set your file path");
+
+            var maiagentHelper = new MaiAgentHelper(API_KEY);
+            var originalFilename = Path.GetFileName(FILE_PATH);
+
+            var uploadInfo = await maiagentHelper.GetUploadUrlAsync(FILE_PATH, "batch-qa", "file");
+            if (!uploadInfo.HasValue)
+            {
+                Console.WriteLine("Failed to get upload URL");
+                return;
+            }
+
+            var fileKey = await maiagentHelper.UploadFileToS3Async(FILE_PATH, uploadInfo.Value);
+            var batchQaResponse = await maiagentHelper.UploadBatchQAFileAsync(WEB_CHAT_ID, fileKey, originalFilename);
+
+            if (batchQaResponse.ValueKind == System.Text.Json.JsonValueKind.Object &&
+                batchQaResponse.TryGetProperty("id", out var idProperty))
+            {
+                Console.WriteLine($"Batch QA File ID: {idProperty.GetString()}");
+            }
         }
     }
 }
