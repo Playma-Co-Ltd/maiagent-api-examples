@@ -16,7 +16,7 @@
 - **進度持久化**：定期儲存進度，確保資料不遺失
 
 ### 📊 視覺化進度追蹤
-- **tqdm 進度條**：美觀的進度條顯示上傳進度
+- **進度條顯示**：美觀的進度條顯示上傳進度
 - **即時統計資訊**：顯示成功/失敗數量、上傳速率
 - **完整日誌記錄**：記錄所有上傳過程和錯誤訊息
 - **詳細報告生成**：產生包含統計資訊的 JSON 報告
@@ -42,7 +42,7 @@
 ### 🚀 批量上傳工具
 - **`batch_upload_advanced.cs`** - 高效能批量檔案上傳主程式
 
-### 🔍 檔案狀態管理工具  
+### 🔍 檔案狀態管理工具
 - **`scan_file_status.cs`** - 掃描知識庫檔案狀態，識別問題檔案
 - **`delete_duplicate_files.cs`** - 刪除重複檔案，清理知識庫
 - **`fix_failed_files.cs`** - 修復失敗檔案，自動重新上傳
@@ -79,103 +79,190 @@ batch_upload/
 在 `batch_upload_advanced.cs` 中修改以下參數：
 
 ```csharp
-API_KEY = 'your-api-key-here'                    # MaiAgent API 金鑰
-KNOWLEDGE_BASE_ID = 'your-knowledge-base-id'     # 目標知識庫 ID
-FILES_DIRECTORY = '/path/to/your/files'          # 要上傳的檔案目錄
+public static string API_KEY = "<your-api-key>";                    // MaiAgent API 金鑰
+public static string KNOWLEDGE_BASE_ID = "<your-knowledge-base-id>"; // 目標知識庫 ID
+public static string FILES_DIRECTORY = "C:\\path\\to\\your\\files";  // 要上傳的檔案目錄
 ```
 
 ### 進階設定
 可調整 `UploadConfig` 參數：
 
 ```csharp
-config = UploadConfig(
-    max_concurrent_uploads=10,   # 最大並發上傳數
-    max_retries=3,              # 失敗重試次數
-    retry_delay=2.0,            # 重試間隔（秒）
-    timeout_seconds=300,        # 請求超時時間
-)
+var config = new UploadConfig
+{
+    MaxConcurrentUploads = 10,   // 最大並發上傳數
+    MaxRetries = 3,              // 失敗重試次數
+    RetryDelay = 2.0,            // 重試間隔（秒）
+    TimeoutSeconds = 300,        // 請求超時時間
+};
 ```
 
 ## 使用方法
 
-### 1. 安裝依賴套件
+### 1. 確認相依套件已安裝
+
+本專案需要的 NuGet 套件已在 [MaiAgentExamples.csproj](../../MaiAgentExamples.csproj) 中包含：
+
+```xml
+<PackageReference Include="RestSharp" Version="112.1.0" />
+<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+<PackageReference Include="System.Net.ServerSentEvents" Version="9.0.0" />
+```
+
+確認套件已還原：
+
 ```bash
-pip install aiohttp aiofiles tqdm requests
+cd examples/csharp
+dotnet restore
 ```
 
 ### 2. 設定參數
-編輯 `batch_upload_advanced.cs`，填入你的 API 金鑰、知識庫 ID 和檔案目錄路徑。
+
+編輯 `batch_upload_advanced.cs`，填入您的 API 金鑰、知識庫 ID 和檔案目錄路徑。
 
 ### 3. 執行上傳
+
+**方法 1：修改 Program.cs**
+
+編輯 [../../Program.cs](../../Program.cs)：
+
+```csharp
+static async Task Main(string[] args)
+{
+    await MaiAgentExamples.Knowledges.BatchUpload.BatchUploadAdvanced.Main(args);
+}
+```
+
+然後執行：
+
 ```bash
-cd /path/to/batch_upload/
-csharp batch_upload_advanced.cs
+cd examples/csharp
+dotnet run
+```
+
+**方法 2：使用 dotnet script（需安裝 dotnet-script）**
+
+```bash
+# 安裝 dotnet-script
+dotnet tool install -g dotnet-script
+
+# 執行批量上傳
+cd examples/csharp/knowledges/batch_upload
+dotnet script batch_upload_advanced.cs
 ```
 
 ### 4. 監控進度
-程式會顯示 tqdm 進度條：
+
+程式會顯示進度資訊：
+
 ```
-Uploading files: 1500/10000 15% |████▊                     | [02:30<14:10, 8.5files/s]
+Uploading files: 1500/10000 15% [02:30<14:10, 8.5files/s]
 ```
 
 ### 5. 處理中斷
+
 如果程式被中斷（Ctrl+C 或其他原因），再次執行即可從斷點繼續：
+
 ```bash
-csharp batch_upload_advanced.cs
+dotnet run
 ```
+
 程式會自動載入 checkpoint 並跳過已完成的檔案。
 
 ### 6. 檔案狀態管理（可選）
 
 #### 掃描檔案狀態
-```bash
-csharp scan_file_status.cs
+
+修改 Program.cs：
+
+```csharp
+await MaiAgentExamples.Knowledges.BatchUpload.ScanFileStatus.Main(args);
 ```
+
+執行：
+
+```bash
+dotnet run
+```
+
 掃描知識庫中所有檔案的狀態，識別 initial、processing、failed 狀態的檔案。
 
 #### 修復失敗檔案
-```bash
-csharp fix_failed_files.cs
+
+修改 Program.cs：
+
+```csharp
+await MaiAgentExamples.Knowledges.BatchUpload.FixFailedFiles.Main(args);
 ```
+
+執行：
+
+```bash
+dotnet run
+```
+
 自動刪除失敗狀態的檔案並重新上傳。需要先執行狀態掃描生成報告。
 
 #### 清理重複檔案
-```bash
-csharp delete_duplicate_files.cs
+
+修改 Program.cs：
+
+```csharp
+await MaiAgentExamples.Knowledges.BatchUpload.DeleteDuplicateFiles.Main(args);
 ```
+
+執行：
+
+```bash
+dotnet run
+```
+
 基於完整性檢查報告刪除重複檔案。需要先完成批量上傳生成完整性報告。
 
 #### 補充缺失檔案
-```bash
-csharp upload_missing_files.cs
+
+修改 Program.cs：
+
+```csharp
+await MaiAgentExamples.Knowledges.BatchUpload.UploadMissingFiles.Main(args);
 ```
+
+執行：
+
+```bash
+dotnet run
+```
+
 上傳在完整性檢查中發現的缺失檔案。
 
 ## 輸出檔案說明
 
 ### Checkpoint 檔案 (`upload_checkpoint.json`)
+
 記錄上傳進度和檔案 ID 映射，格式如下：
+
 ```json
 {
   "timestamp": "2025-07-25T12:00:00.000000",
   "completed_files": [
-    "/path/to/file1.json",
-    "/path/to/file2.json"
+    "C:\\path\\to\\file1.json",
+    "C:\\path\\to\\file2.json"
   ],
   "file_id_mapping": {
-    "/path/to/file1.json": "knowledge-file-id-1",
-    "/path/to/file2.json": "knowledge-file-id-2"
+    "C:\\path\\to\\file1.json": "knowledge-file-id-1",
+    "C:\\path\\to\\file2.json": "knowledge-file-id-2"
   },
   "failed_files": [
-    ["/path/to/failed_file.json", "Connection timeout"]
+    ["C:\\path\\to\\failed_file.json", "Connection timeout"]
   ],
   "pending_files": [
-    "/path/to/pending_file.json"
+    "C:\\path\\to\\pending_file.json"
   ]
 }
 ```
 
 ### 日誌檔案 (`upload_log_*.log`)
+
 詳細記錄所有操作過程，包括：
 - 程式啟動和設定資訊
 - 檔案掃描結果
@@ -185,7 +272,9 @@ csharp upload_missing_files.cs
 - 最終統計結果
 
 ### 上傳報告檔案 (`upload_report_*.json`)
+
 完整的上傳統計報告：
+
 ```json
 {
   "summary": {
@@ -196,14 +285,14 @@ csharp upload_missing_files.cs
   },
   "successful_files": [
     {
-      "file_path": "/path/to/file.json",
+      "file_path": "C:\\path\\to\\file.json",
       "file_size": 2048,
       "upload_time": 1.2
     }
   ],
   "failed_files": [
     {
-      "file_path": "/path/to/failed.json",
+      "file_path": "C:\\path\\to\\failed.json",
       "error": "Connection timeout",
       "retry_count": 3
     }
@@ -212,7 +301,9 @@ csharp upload_missing_files.cs
 ```
 
 ### 完整性檢查報告 (`integrity_check_*.json`)
+
 上傳完成後的完整性驗證報告：
+
 ```json
 {
   "timestamp": "2025-07-25T12:00:00.000000",
@@ -226,7 +317,7 @@ csharp upload_missing_files.cs
   "missing_files": [
     {
       "filename": "missing_file.json",
-      "filepath": "/path/to/missing_file.json",
+      "filepath": "C:\\path\\to\\missing_file.json",
       "knowledge_file_id": "missing-id-123"
     }
   ],
@@ -240,75 +331,42 @@ csharp upload_missing_files.cs
 }
 ```
 
-## 上傳流程詳解
-
-### 1. 初始化階段
-- 建立輸出目錄結構
-- 設定日誌系統
-- 註冊中斷信號處理器
-
-### 2. 檔案掃描
-- 遞迴掃描指定目錄
-- 過濾隱藏檔案
-- 建立上傳任務列表
-
-### 3. 斷點恢復
-- 檢查是否存在 checkpoint
-- 載入已完成檔案列表和 ID 映射
-- 排除已上傳的檔案
-
-### 4. 批量上傳
-每個檔案的上傳包含三個步驟：
-1. **獲取上傳 URL**：向 API 請求預簽名上傳 URL
-2. **上傳到 S3**：使用 multipart/form-data 格式上傳檔案
-3. **註冊到知識庫**：將檔案關聯到指定知識庫並記錄 Knowledge File ID
-
-### 5. 進度管理
-- tqdm 進度條即時顯示
-- 定期儲存 checkpoint 和 ID 映射
-- 記錄成功和失敗的檔案
-
-### 6. 完整性檢查
-- 獲取知識庫中所有檔案
-- 比對 checkpoint 記錄的 Knowledge File ID
-- 識別漏傳和多餘檔案
-- 生成詳細分析報告
-
-### 7. 完成處理
-- 生成最終統計報告
-- 清理暫存資源
-- 顯示完整結果
-
 ## 效能調優建議
 
 ### 網路環境良好
+
 ```csharp
-config = UploadConfig(
-    max_concurrent_uploads=20,
-    max_retries=3,
-    retry_delay=1.0,
-    timeout_seconds=180,
-)
+var config = new UploadConfig
+{
+    MaxConcurrentUploads = 20,
+    MaxRetries = 3,
+    RetryDelay = 1.0,
+    TimeoutSeconds = 180,
+};
 ```
 
 ### 網路環境一般
+
 ```csharp
-config = UploadConfig(
-    max_concurrent_uploads=10,
-    max_retries=5,
-    retry_delay=2.0,
-    timeout_seconds=300,
-)
+var config = new UploadConfig
+{
+    MaxConcurrentUploads = 10,
+    MaxRetries = 5,
+    RetryDelay = 2.0,
+    TimeoutSeconds = 300,
+};
 ```
 
 ### 網路環境較差
+
 ```csharp
-config = UploadConfig(
-    max_concurrent_uploads=5,
-    max_retries=5,
-    retry_delay=5.0,
-    timeout_seconds=600,
-)
+var config = new UploadConfig
+{
+    MaxConcurrentUploads = 5,
+    MaxRetries = 5,
+    RetryDelay = 5.0,
+    TimeoutSeconds = 600,
+};
 ```
 
 ## 常見問題
@@ -336,14 +394,14 @@ A: 檢查 `logs/` 目錄下的日誌檔案，包含所有詳細的錯誤訊息�
 
 ### Q: 批量上傳後發現有失敗檔案，如何處理？
 A: 使用以下流程：
-1. 先執行 `csharp scan_file_status.cs` 掃描檔案狀態
-2. 再執行 `csharp fix_failed_files.cs` 自動修復失敗檔案
+1. 先執行 `scan_file_status.cs` 掃描檔案狀態
+2. 再執行 `fix_failed_files.cs` 自動修復失敗檔案
 
 ### Q: 完整性檢查發現重複檔案，如何清理？
-A: 執行 `csharp delete_duplicate_files.cs`，程式會基於完整性檢查報告安全地刪除重複檔案。
+A: 執行 `delete_duplicate_files.cs`，程式會基於完整性檢查報告安全地刪除重複檔案。
 
 ### Q: 需要補充上傳一些遺漏的檔案，如何操作？
-A: 執行 `csharp upload_missing_files.cs`，程式會根據完整性檢查報告上傳缺失的檔案。
+A: 執行 `upload_missing_files.cs`，程式會根據完整性檢查報告上傳缺失的檔案。
 
 ### Q: 檔案狀態管理工具的執行順序？
 A: 建議順序：
@@ -354,11 +412,17 @@ A: 建議順序：
 
 ## 技術規格
 
-- **C# 版本**：3.7+
-- **主要依賴**：aiohttp, aiofiles, tqdm, requests
-- **並發模型**：異步 I/O (asyncio)
+- **.NET 版本**：.NET 8.0+
+- **主要套件**：RestSharp, System.Net.Http, System.Text.Json
+- **並發模型**：異步 I/O (async/await)
 - **記憶體使用**：低記憶體佔用，適合處理大量檔案
 - **平台支援**：跨平台 (Windows, macOS, Linux)
+
+## 相關文檔
+
+- [MaiAgentHelper 使用文檔](../../utils/maiagent.md)
+- [知識庫 API 說明](../README.md)
+- [MaiAgent API 官方文檔](https://docs.maiagent.ai/)
 
 ---
 

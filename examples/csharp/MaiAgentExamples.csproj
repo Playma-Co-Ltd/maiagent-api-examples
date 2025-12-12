@@ -6,25 +6,28 @@
     <RootNamespace>MaiAgentExamples</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Specify the startup object to resolve multiple Main methods -->
+    <StartupObject>MaiAgentExamples.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- HTTP Client Library (equivalent to requests) -->
-    <PackageReference Include="RestSharp" Version="111.4.1" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
 
     <!-- Alternative: Use built-in HttpClient with helper extensions -->
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
-
-    <!-- Web Framework (equivalent to Flask) -->
-    <PackageReference Include="Microsoft.AspNetCore.App" />
 
     <!-- Configuration and Environment Variables (equivalent to python-dotenv) -->
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
 
-    <!-- Server-Sent Events (equivalent to sseclient-py) -->
-    <PackageReference Include="Sse.Client" Version="3.0.7" />
+    <!-- Server-Sent Events - Using LazyCache.AspNetCore for SSE support -->
+    <!-- Note: For SSE, consider using HttpClient directly or System.Net.ServerSentEvents (preview) -->
+    <PackageReference Include="System.Net.ServerSentEvents" Version="9.0.0" />
+
+    <!-- ASP.NET Core for webhook server -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
 
     <!-- Dependency Injection -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />

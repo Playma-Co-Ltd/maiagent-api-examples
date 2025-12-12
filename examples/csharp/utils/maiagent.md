@@ -1,23 +1,23 @@
 # MaiAgentHelper 類別文檔
 
-`MaiAgentHelper` 是一個用於與 MaiAgent API 互動的輔助類別，提供了一系列方便的方法來處理對話、訊息、檔案上傳和知識庫管理等功能。
+`MaiAgentHelper` 是一個用於與 MaiAgent API 互動的 C# 輔助類別，提供了一系列方便的方法來處理對話、訊息、檔案上傳和知識庫管理等功能。
 
 ## 類別初始化
 
-```python
-from utils.maiagent import MaiAgentHelper
+```csharp
+using Utils;
 
-helper = MaiAgentHelper(
-    api_key='your_api_key_here',
-    base_url='https://api.maiagent.ai/api/v1/',  # 選填
-    storage_url='{storage_url}/{bucket_name}'  # 選填，請務必替換 {storage_url} 和 {bucket_name}
-)
+var helper = new MaiAgentHelper(
+    apiKey: "your_api_key_here",
+    baseUrl: "https://api.maiagent.ai/api/v1/",  // 選填
+    storageUrl: "{storage_url}/{bucket_name}"  // 選填，請務必替換 {storage_url} 和 {bucket_name}
+);
 ```
 
 ### 參數說明
-- `api_key` (str): MaiAgent API 金鑰
-- `base_url` (str, 選填): API 基礎 URL，預設為 'https://api.maiagent.ai/api/v1/'
-- `storage_url` (str, 選填): 儲存服務的 URL，用於檔案上傳和存取
+- `apiKey` (string): MaiAgent API 金鑰
+- `baseUrl` (string, 選填): API 基礎 URL，預設為 'https://api.maiagent.ai/api/v1/'
+- `storageUrl` (string, 選填): 儲存服務的 URL，用於檔案上傳和存取
   - 格式: `{storage_url}/{bucket_name}`
   - `{storage_url}`: 儲存服務的基礎 URL (例如: https://s3.ap-northeast-1.amazonaws.com)
   - `{bucket_name}`: 儲存桶名稱
@@ -27,216 +27,391 @@ helper = MaiAgentHelper(
 
 ### 對話管理
 
-#### create_conversation
+#### CreateConversationAsync
 建立新的對話。
 
-```python
-conversation = helper.create_conversation(web_chat_id='your_web_chat_id')
+```csharp
+var conversation = await helper.CreateConversationAsync("your_web_chat_id");
 ```
 
 **參數：**
-- `web_chat_id` (str): 網頁聊天 ID
+- `webChatId` (string): 網頁聊天 ID
 
 **回傳：**
-- dict: 包含新建對話資訊的字典
+- `Task<JsonElement>`: 包含新建對話資訊的 JSON 元素
 
 ### 訊息處理
 
-#### send_message
+#### SendMessageAsync
 發送訊息到指定對話。
 
-```python
-message = helper.send_message(
-    conversation_id='your_conversation_id',
-    content='Hello, world!',
-    attachments=None  # 選填
-)
+```csharp
+var message = await helper.SendMessageAsync(
+    conversationId: "your_conversation_id",
+    content: "Hello, world!",
+    attachments: null  // 選填
+);
 ```
 
 **參數：**
-- `conversation_id` (str): 對話 ID
-- `content` (str): 訊息內容
-- `attachments` (list, 選填): 附件列表
+- `conversationId` (string): 對話 ID
+- `content` (string): 訊息內容
+- `attachments` (List<string>, 選填): 附件 ID 列表
 
 **回傳：**
-- dict: 包含已發送訊息資訊的字典
+- `Task<JsonElement>`: 包含已發送訊息資訊的 JSON 元素
 
 ### 檔案上傳
 
-#### get_upload_url
+#### GetUploadUrlAsync
 獲取檔案上傳的預簽署 URL。
 
-```python
-upload_url = helper.get_upload_url(
-    file_path='path/to/file',
-    model_name='model_name',
-    field_name='file'  # 選填
-)
+```csharp
+var uploadUrl = await helper.GetUploadUrlAsync(
+    filePath: "path/to/file",
+    modelName: "model_name",
+    fieldName: "file"  // 選填
+);
 ```
 
 **參數：**
-- `file_path` (str): 檔案路徑
-- `model_name` (str): 模型名稱
-- `field_name` (str, 選填): 欄位名稱，預設為 'file'
+- `filePath` (string): 檔案路徑
+- `modelName` (string): 模型名稱
+- `fieldName` (string, 選填): 欄位名稱，預設為 'file'
 
-#### upload_file_to_s3
+**回傳：**
+- `Task<JsonElement?>`: 上傳 URL 資訊
+
+#### UploadFileToS3Async
 將檔案上傳到 S3 儲存空間。
 
-```python
-file_key = helper.upload_file_to_s3(
-    file_path='path/to/file',
-    upload_data=upload_url
-)
+```csharp
+if (uploadUrl.HasValue)
+{
+    var fileKey = await helper.UploadFileToS3Async(
+        filePath: "path/to/file",
+        uploadData: uploadUrl.Value
+    );
+}
 ```
 
 **參數：**
-- `file_path` (str): 檔案路徑
-- `upload_data` (dict): 上傳資料（從 get_upload_url 獲得）
+- `filePath` (string): 檔案路徑
+- `uploadData` (JsonElement): 上傳資料（從 GetUploadUrlAsync 獲得）
+
+**回傳：**
+- `Task<string>`: 檔案金鑰
 
 ### 附件管理
 
-#### update_attachment
+#### UpdateAttachmentAsync
 更新對話中的附件資訊。
 
-```python
-attachment = helper.update_attachment(
-    conversation_id='your_conversation_id',
-    file_id='file_key',
-    original_filename='filename.jpg'
-)
+```csharp
+var attachment = await helper.UpdateAttachmentAsync(
+    conversationId: "your_conversation_id",
+    fileId: "file_key",
+    originalFilename: "filename.jpg"
+);
 ```
 
 **參數：**
-- `conversation_id` (str): 對話 ID
-- `file_id` (str): 檔案 ID
-- `original_filename` (str): 原始檔案名稱
+- `conversationId` (string): 對話 ID
+- `fileId` (string): 檔案 ID
+- `originalFilename` (string): 原始檔案名稱
 
-#### update_attachment_without_conversation
-不需要對話 ID 的附件更新。
+#### UploadAttachmentAsync
+上傳附件（包含獲取 URL、上傳到 S3 和更新附件資訊）。
 
-```python
-attachment = helper.update_attachment_without_conversation(
-    file_id='file_key',
-    original_filename='filename.jpg',
-    type='image'
-)
+```csharp
+var attachment = await helper.UploadAttachmentAsync(
+    conversationId: "your_conversation_id",
+    filePath: "path/to/image.jpg"
+);
 ```
+
+#### UploadAttachmentWithoutConversationAsync
+不需要對話 ID 的附件上傳。
+
+```csharp
+var attachment = await helper.UploadAttachmentWithoutConversationAsync(
+    filePath: "path/to/image.jpg",
+    type: "image"
+);
+```
+
+**參數：**
+- `filePath` (string): 檔案路徑
+- `type` (string, 選填): 附件類型，預設為 "image"
 
 ### 知識庫管理
 
-#### upload_knowledge_file
+#### UploadKnowledgeFileAsync
 上傳知識庫檔案。
 
-```python
-knowledge_file = helper.upload_knowledge_file(
-    chatbot_id='your_chatbot_id',
-    file_path='path/to/knowledge.pdf'
-)
+```csharp
+var knowledgeFile = await helper.UploadKnowledgeFileAsync(
+    chatbotId: "your_chatbot_id",
+    filePath: "path/to/knowledge.pdf"
+);
 ```
 
 **參數：**
-- `chatbot_id` (str): 聊天機器人 ID
-- `file_path` (str): 檔案路徑
+- `chatbotId` (string): 聊天機器人 ID
+- `filePath` (string): 檔案路徑
 
-#### delete_knowledge_file
+#### DeleteKnowledgeFileAsync
 刪除知識庫檔案。
 
-```python
-helper.delete_knowledge_file(
-    chatbot_id='your_chatbot_id',
-    file_id='your_file_id'
-)
+```csharp
+await helper.DeleteKnowledgeFileAsync(
+    chatbotId: "your_chatbot_id",
+    fileId: "your_file_id"
+);
+```
+
+#### 知識庫 CRUD 方法
+
+```csharp
+// 建立知識庫
+var kb = await helper.create_knowledge_base("知識庫名稱", "描述", "zh-TW");
+
+// 列出所有知識庫
+var kbList = await helper.list_knowledge_bases();
+
+// 獲取特定知識庫
+var kbDetail = await helper.get_knowledge_base("knowledge_base_id");
+
+// 搜尋知識庫
+var searchResults = await helper.search_knowledge_base("knowledge_base_id", "查詢關鍵字");
+
+// 上傳檔案到知識庫
+var file = await helper.upload_knowledge_file("chatbot_id", "path/to/file.pdf");
+
+// 列出知識庫檔案
+var files = await helper.list_knowledge_base_files("knowledge_base_id");
+
+// 獲取特定檔案
+var fileDetail = await helper.get_knowledge_base_file("knowledge_base_id", "file_id");
+
+// 更新檔案元資料
+await helper.update_knowledge_base_file_metadata("knowledge_base_id", "file_id", new List<string> { "label1", "label2" });
+
+// 刪除檔案
+await helper.delete_knowledge_file("chatbot_id", "file_id");
+```
+
+#### 知識庫標籤管理
+
+```csharp
+// 建立標籤
+var label = await helper.create_knowledge_base_label("knowledge_base_id", "標籤名稱", "#FF5733");
+
+// 列出所有標籤
+var labels = await helper.list_knowledge_base_labels("knowledge_base_id");
+
+// 獲取特定標籤
+var labelDetail = await helper.get_knowledge_base_label("knowledge_base_id", "label_id");
+
+// 更新標籤
+await helper.update_knowledge_base_label("knowledge_base_id", "label_id", "新名稱", "#00FF00");
+```
+
+#### 知識庫 FAQ 管理
+
+```csharp
+// 建立 FAQ
+var faq = await helper.create_knowledge_base_faq("knowledge_base_id", "問題", "答案");
+
+// 列出所有 FAQ
+var faqs = await helper.list_knowledge_base_faqs("knowledge_base_id");
+
+// 獲取特定 FAQ
+var faqDetail = await helper.get_knowledge_base_faq("knowledge_base_id", "faq_id");
+
+// 更新 FAQ
+await helper.update_knowledge_base_faq("knowledge_base_id", "faq_id", "新問題", "新答案");
 ```
 
 ### 批次問答管理
 
-#### upload_batch_qa_file
+#### UploadBatchQAFileAsync
 上傳批次問答檔案。
 
-```python
-batch_qa = helper.upload_batch_qa_file(
-    web_chat_id='your_web_chat_id',
-    file_key='your_file_key',
-    original_filename='qa_file.xlsx'
-)
+```csharp
+var batchQa = await helper.UploadBatchQAFileAsync(
+    webChatId: "your_web_chat_id",
+    fileKey: "your_file_key",
+    originalFilename: "qa_file.xlsx"
+);
 ```
 
 **參數：**
-- `web_chat_id` (str): 網頁聊天 ID
-- `file_key` (str): 檔案金鑰
-- `original_filename` (str): 原始檔案名稱
+- `webChatId` (string): 網頁聊天 ID
+- `fileKey` (string): 檔案金鑰
+- `originalFilename` (string): 原始檔案名稱
 
-#### download_batch_qa_excel
+#### DownloadBatchQAExcelAsync
 下載批次問答 Excel 檔案。
 
-```python
-filename = helper.download_batch_qa_excel(
-    webchat_id='your_web_chat_id',
-    batch_qa_file_id='your_batch_qa_file_id'
-)
+```csharp
+var filename = await helper.DownloadBatchQAExcelAsync(
+    webChatId: "your_web_chat_id",
+    batchQaFileId: "your_batch_qa_file_id"
+);
 ```
 
 ### 收件匣管理
 
-#### get_inbox_items
+#### GetInboxItemsAsync
 獲取所有收件匣項目。
 
-```python
-inbox_items = helper.get_inbox_items()
+```csharp
+var inboxItems = await helper.GetInboxItemsAsync();
 ```
 
-#### display_inbox_items
+**回傳：**
+- `Task<JsonElement[]>`: 收件匣項目陣列
+
+#### DisplayInboxItems
 顯示收件匣項目資訊。
 
-```python
-helper.display_inbox_items(inbox_items)
+```csharp
+helper.DisplayInboxItems(inboxItems);
 ```
 
 ### 聊天機器人對話
 
-#### create_chatbot_completion
-建立聊天機器人回應，支援一般和串流模式。
+#### CreateChatbotCompletionAsync
+建立聊天機器人回應（非串流模式）。
 
-```python
-# 一般模式
-response = helper.create_chatbot_completion(
-    chatbot_id='your_chatbot_id',
-    content='What is the weather today?',
-    attachments=None,  # 選填
-    conversation_id=None,  # 選填
-    is_streaming=False  # 選填
-)
-
-# 串流模式
-for chunk in helper.create_chatbot_completion(
-    chatbot_id='your_chatbot_id',
-    content='Tell me a long story',
-    is_streaming=True
-):
-    print(chunk['content'], end='')
+```csharp
+var response = await helper.CreateChatbotCompletionAsync(
+    chatbotId: "your_chatbot_id",
+    message: "What is the weather today?",
+    conversationId: null,  // 選填
+    attachments: null  // 選填
+);
 ```
 
 **參數：**
-- `chatbot_id` (str): 聊天機器人 ID
-- `content` (str): 訊息內容
-- `attachments` (list, 選填): 附件列表
-- `conversation_id` (str, 選填): 對話 ID
-- `is_streaming` (bool, 選填): 是否使用串流模式
+- `chatbotId` (string): 聊天機器人 ID
+- `message` (string): 訊息內容
+- `conversationId` (string?, 選填): 對話 ID
+- `attachments` (List<Dictionary<string, string>>?, 選填): 附件列表
 
 **回傳：**
-- 一般模式：dict，包含回應內容
-- 串流模式：Generator，產生串流回應
+- `Task<JsonElement>`: 包含回應內容的 JSON 元素
+
+#### CreateChatbotCompletionStreamAsync
+建立聊天機器人回應（串流模式）。
+
+```csharp
+await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+    chatbotId: "your_chatbot_id",
+    message: "Tell me a long story",
+    conversationId: null,
+    attachments: null
+))
+{
+    if (chunk.TryGetProperty("content", out var content))
+    {
+        Console.Write(content.GetString());
+    }
+}
+```
+
+**參數：**
+- `chatbotId` (string): 聊天機器人 ID
+- `message` (string): 訊息內容
+- `conversationId` (string?, 選填): 對話 ID
+- `attachments` (List<Dictionary<string, string>>?, 選填): 附件列表
+
+**回傳：**
+- `IAsyncEnumerable<JsonElement>`: 非同步串流，產生串流回應
 
 ## 錯誤處理
 
-所有方法都包含基本的錯誤處理機制：
-- 檢查 HTTP 回應狀態
-- 處理請求異常
-- 提供錯誤訊息和詳細資訊
+所有非同步方法都包含基本的錯誤處理機制：
+- 使用 `try-catch` 捕獲異常
+- 檢查 HTTP 回應狀態（使用 `EnsureSuccessStatusCode()`）
+- 處理請求異常並輸出錯誤訊息
+- 適當地重新拋出異常以便上層處理
+
+## 使用範例
+
+### 完整工作流程範例
+
+```csharp
+using System;
+using System.Threading.Tasks;
+using Utils;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        var helper = new MaiAgentHelper("your_api_key");
+
+        try
+        {
+            // 1. 建立對話
+            var conversation = await helper.CreateConversationAsync("web_chat_id");
+            var conversationId = conversation.GetProperty("id").GetString();
+
+            // 2. 上傳附件
+            var attachment = await helper.UploadAttachmentAsync(conversationId!, "path/to/image.jpg");
+            var attachmentId = attachment.GetProperty("id").GetString();
+
+            // 3. 發送訊息
+            var message = await helper.SendMessageAsync(
+                conversationId!,
+                "請看這張圖片",
+                new List<string> { attachmentId! }
+            );
+
+            Console.WriteLine("訊息已發送！");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"錯誤: {ex.Message}");
+        }
+    }
+}
+```
+
+### 串流模式範例
+
+```csharp
+var helper = new MaiAgentHelper("your_api_key");
+
+await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+    "chatbot_id",
+    "講一個故事"))
+{
+    if (chunk.TryGetProperty("content", out var content) &&
+        chunk.TryGetProperty("done", out var done) &&
+        !done.GetBoolean())
+    {
+        Console.Write(content.GetString());
+    }
+}
+Console.WriteLine();
+```
 
 ## 注意事項
 
 1. 使用前請確保已設定正確的 API 金鑰
-2. 檔案上傳時請確認檔案存在且可讀取
-3. 串流模式回應需要適當的處理機制
-4. 所有 API 呼叫都需要網路連線
+2. 所有檔案操作方法都是非同步的，請使用 `await` 關鍵字
+3. 檔案上傳時請確認檔案存在且可讀取
+4. 串流模式回應需要使用 `await foreach` 來處理
+5. 所有 API 呼叫都需要網路連線
+6. JsonElement 類型的回傳值需要使用適當的方法（如 `GetProperty()`, `GetString()` 等）來存取資料
+7. 建議在 production 環境中實作更完善的錯誤處理和重試機制
+
+## 命名慣例
+
+- **C# 風格方法**（PascalCase）：新增的方法，如 `CreateConversationAsync`, `SendMessageAsync`
+- **Python 風格方法**（snake_case）：為了相容性保留的方法，如 `create_knowledge_base`, `list_knowledge_bases`
+
+建議使用 C# 風格的方法（PascalCase），Python 風格的方法主要是為了向後相容。

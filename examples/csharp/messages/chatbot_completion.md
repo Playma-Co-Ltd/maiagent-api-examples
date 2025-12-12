@@ -8,33 +8,52 @@
 
 使用串流模式即時獲取聊天機器人的回應。
 
-```python
-# Request
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": null,
-    "message": {
-        "content": "使用串流模式測試：請給我一個笑話",
-        "attachments": []
-    },
-    "isStreaming": true
-}
+```csharp
+// C# 範例 - 串流模式
+using Utils;
 
-# Response Stream
+var helper = new MaiAgentHelper("your-api-key");
+
+await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+    chatbotId: "your-chatbot-id",
+    message: "使用串流模式測試：請給我一個笑話",
+    conversationId: null,
+    attachments: null
+))
+{
+    if (chunk.TryGetProperty("conversationId", out var convId))
+    {
+        Console.WriteLine($"Conversation ID: {convId.GetString()}");
+    }
+
+    if (chunk.TryGetProperty("content", out var content))
+    {
+        Console.Write(content.GetString());  // 逐步輸出內容
+    }
+
+    if (chunk.TryGetProperty("done", out var done) && done.GetBoolean())
+    {
+        Console.WriteLine("\n對話結束");
+    }
+}
+```
+
+**回應格式**：
+```json
 {
     "conversationId": "conv_xxx",
-    "content": "從前有一隻",     # 第一部分內容
+    "content": "從前有一隻",
     "done": false
 }
 {
     "conversationId": "conv_xxx",
-    "content": "小狗在玩球",     # 第二部分內容
+    "content": "小狗在玩球",
     "done": false
 }
 {
     "conversationId": "conv_xxx",
-    "content": "",              
-    "done": true               # 結束標記
+    "content": "",
+    "done": true
 }
 ```
 
@@ -42,23 +61,34 @@ POST /chatbots/{chatbot_id}/completions/
 
 一次性獲取完整的回應內容。
 
-```python
-# Request
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": null,
-    "message": {
-        "content": "不使用串流模式測試：請給我一個笑話",
-        "attachments": []
-    },
-    "isStreaming": false
-}
+```csharp
+// C# 範例 - 非串流模式
+using Utils;
 
-# Response
+var helper = new MaiAgentHelper("your-api-key");
+
+var response = await helper.CreateChatbotCompletionAsync(
+    chatbotId: "your-chatbot-id",
+    message: "不使用串流模式測試：請給我一個笑話",
+    conversationId: null,
+    attachments: null
+);
+
+var conversationId = response.GetProperty("conversationId").GetString();
+var content = response.GetProperty("content").GetString();
+var done = response.GetProperty("done").GetBoolean();
+
+Console.WriteLine($"Conversation ID: {conversationId}");
+Console.WriteLine($"Content: {content}");
+Console.WriteLine($"Done: {done}");  // 非串流模式下永遠為 true
+```
+
+**回應格式**：
+```json
 {
     "conversationId": "conv_xxx",
     "content": "從前有一隻小狗在玩球...",
-    "done": true               # 非串流模式下永遠為 true
+    "done": true
 }
 ```
 
@@ -66,50 +96,52 @@ POST /chatbots/{chatbot_id}/completions/
 
 使用 conversationId 維持對話上下文。
 
-```python
-# 第一次請求
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": null,
-    "message": {
-        "content": "你好，請記住我說我叫小明",
-        "attachments": []
-    },
-    "isStreaming": false
-}
+```csharp
+// C# 範例 - 多輪對話
+using Utils;
 
-# 第一次響應
+var helper = new MaiAgentHelper("your-api-key");
+var chatbotId = "your-chatbot-id";
+
+// 第一輪對話
+Console.WriteLine("=== 第一輪對話 ===");
+var response1 = await helper.CreateChatbotCompletionAsync(
+    chatbotId: chatbotId,
+    message: "你好，請記住我說我叫小明",
+    conversationId: null
+);
+
+var conversationId = response1.GetProperty("conversationId").GetString();
+var content1 = response1.GetProperty("content").GetString();
+Console.WriteLine($"回應: {content1}");
+Console.WriteLine($"Conversation ID: {conversationId}");
+
+// 第二輪對話 - 使用相同的 conversationId
+Console.WriteLine("\n=== 第二輪對話 ===");
+var response2 = await helper.CreateChatbotCompletionAsync(
+    chatbotId: chatbotId,
+    message: "我剛才說我叫什麼名字？",
+    conversationId: conversationId  // 延續對話需附上 conversationId
+);
+
+var content2 = response2.GetProperty("content").GetString();
+Console.WriteLine($"回應: {content2}");  // 應該回答 "小明"
+```
+
+**第一次回應**：
+```json
 {
     "conversationId": "conv_xxx",
     "content": "好的，我記住了，你叫小明",
     "done": true
 }
-{
-    "conversationId": "conv_xxx",
-    "content": "",
-    "done": true
-}
+```
 
-# 第二次請求
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": "conv_xxx", # 延續對話需附上 conversationId
-    "message": {
-        "content": "我剛才說我叫什麼名字？",
-        "attachments": []
-    },
-    "isStreaming": true
-}
-
-# 第二次響應
+**第二次回應**：
+```json
 {
     "conversationId": "conv_xxx",
     "content": "你剛才說你叫小明",
-    "done": false
-}
-{
-    "conversationId": "conv_xxx",
-    "content": "",
     "done": true
 }
 ```
@@ -118,85 +150,75 @@ POST /chatbots/{chatbot_id}/completions/
 
 上傳圖片並進行分析。
 
-#### 4.1 請求預簽名上傳 URL
-```python
-# Request
-POST /upload-presigned-url/
-{
-    "filename": "Cat03.jpg",
-    "modelName": "attachment",
-    "fieldName": "file",
-    "fileSize": 123456
-}
+#### 4.1 上傳並註冊附件
 
-# Response
+```csharp
+// C# 範例 - 上傳附件
+using Utils;
+
+var helper = new MaiAgentHelper("your-api-key");
+var imagePath = "path/to/Cat03.jpg";
+
+// 方法 1: 使用 UploadAttachmentWithoutConversationAsync (不需要對話 ID)
+var attachment = await helper.UploadAttachmentWithoutConversationAsync(
+    filePath: imagePath,
+    type: "image"
+);
+
+var attachmentId = attachment.GetProperty("id").GetString();
+var attachmentType = attachment.GetProperty("type").GetString();
+var filename = attachment.GetProperty("filename").GetString();
+var fileUrl = attachment.GetProperty("file").GetString();
+
+Console.WriteLine($"附件 ID: {attachmentId}");
+Console.WriteLine($"類型: {attachmentType}");
+Console.WriteLine($"檔名: {filename}");
+Console.WriteLine($"URL: {fileUrl}");
+```
+
+#### 4.2 發送帶附件的訊息
+
+```csharp
+// C# 範例 - 發送帶附件的訊息
+using Utils;
+using System.Collections.Generic;
+
+var helper = new MaiAgentHelper("your-api-key");
+var chatbotId = "your-chatbot-id";
+
+// 準備附件列表
+var attachments = new List<Dictionary<string, string>>
 {
-    "url": "https://s3.ap-northeast-1.amazonaws.com/...",
-    "fields": {
-        "key": "xxx",
-        "x-amz-algorithm": "AWS4-HMAC-SHA256",
-        "x-amz-credential": "xxx",
-        "x-amz-date": "20240101T000000Z",
-        "policy": "xxx",
-        "x-amz-signature": "xxx"
+    new Dictionary<string, string>
+    {
+        { "id", attachmentId },
+        { "type", "image" },
+        { "filename", filename },
+        { "file", fileUrl }
+    }
+};
+
+// 串流模式發送
+Console.WriteLine("正在分析圖片...");
+await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+    chatbotId: chatbotId,
+    message: "請描述這張圖片的內容",
+    conversationId: null,
+    attachments: attachments
+))
+{
+    if (chunk.TryGetProperty("content", out var content) &&
+        chunk.TryGetProperty("done", out var done) &&
+        !done.GetBoolean())
+    {
+        Console.Write(content.GetString());
     }
 }
+Console.WriteLine();
 ```
 
-#### 4.2 上傳圖片到 S3
-```python
-# Request
-POST https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app
-Form Data:
-{
-    "key": "<file_key>",
-    "x-amz-algorithm": "AWS4-HMAC-SHA256",
-    "x-amz-credential": "<aws_credential>",
-    "x-amz-date": "<timestamp>",
-    "policy": "<base64_encoded_policy>",
-    "x-amz-signature": "<signature>",
-    "file": "<file_content>"
-}
-```
-
-#### 4.3 註冊附件
-```python
-# Request
-POST /attachments/
-{
-    "file": "<file_key>",
-    "filename": "<filename>",
-    "type": "image"
-}
-
-# Response
-{
-    "id": "<attachment_id>",
-    "file": "<file_url>",
-    "filename": "<filename>",
-    "type": "<type>"
-}
-```
-
-#### 4.4 發送帶附件的訊息
-```python
-# Request
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": null,
-    "message": {
-        "content": "請描述這張圖片的內容",
-        "attachments": [{
-            "id": "<attachment_id>",
-            "type": "image",
-            "filename": "<filename>",
-            "file": "<file_url>"
-        }]
-    },
-    "isStreaming": true
-}
-
-# Response Stream
+**回應流**：
+```json
 {
     "conversationId": "conv_xxx",
     "content": "這張圖片顯示了一隻",
@@ -214,52 +236,213 @@ POST /chatbots/{chatbot_id}/completions/
 }
 ```
 
-### 使用須知
+## 完整範例程式碼
 
-1. 對話模式選擇
-   - 串流模式 (isStreaming=True): 適合需要即時顯示回應的場景
-   - 非串流模式 (isStreaming=False): 適合需要一次性獲取完整回應的場景，這是預設模式
-   - isStreaming 參數需要在請求主體中設置，而不是作為 URL 參數
+### 範例 1：串流模式多輪對話
 
-```python
-# 串流模式請求範例
-POST /chatbots/{chatbot_id}/completions/
+```csharp
+using System;
+using System.Threading.Tasks;
+using Utils;
+
+namespace MaiAgentExamples.Messages
 {
-    "conversation": null,
-    "message": {
-        "content": "使用串流模式測試：請給我一個笑話",
-        "attachments": []
-    },
-    "isStreaming": true
-}
+    class ChatbotStreamExample
+    {
+        static async Task Main(string[] args)
+        {
+            var helper = new MaiAgentHelper("your-api-key");
+            var chatbotId = "your-chatbot-id";
+            string? conversationId = null;
 
-# 非串流模式請求範例（預設模式）
-POST /chatbots/{chatbot_id}/completions/
-{
-    "conversation": null,
-    "message": {
-        "content": "不使用串流模式測試：請給我一個笑話",
-        "attachments": []
-    },
-    "isStreaming": false  # 可以省略，因為這是預設值
+            while (true)
+            {
+                Console.Write("\n你: ");
+                var userMessage = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(userMessage) || userMessage.ToLower() == "exit")
+                    break;
+
+                Console.Write("AI: ");
+
+                await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+                    chatbotId: chatbotId,
+                    message: userMessage,
+                    conversationId: conversationId
+                ))
+                {
+                    if (chunk.TryGetProperty("conversationId", out var convId))
+                    {
+                        conversationId = convId.GetString();
+                    }
+
+                    if (chunk.TryGetProperty("content", out var content))
+                    {
+                        Console.Write(content.GetString());
+                    }
+                }
+
+                Console.WriteLine();
+            }
+        }
+    }
 }
 ```
 
-2. 多輪對話
-   - 使用 conversationId 維持對話上下文
-   - 不帶 conversation 或 conversation=null 皆會開啟新對話
-   - 延續對話需附上 conversationId
+### 範例 2：圖片分析
 
-3. 附件上傳流程
-   1. 獲取預簽名 URL
-   2. 上傳檔案至 S3
-   3. 註冊附件
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Utils;
 
-4. 響應狀態說明
-   - done=true: 對話結束,content 為空字符串
-   - done=false: 對話進行中,content 不為空
+namespace MaiAgentExamples.Messages
+{
+    class ImageAnalysisExample
+    {
+        static async Task Main(string[] args)
+        {
+            var helper = new MaiAgentHelper("your-api-key");
+            var chatbotId = "your-chatbot-id";
+            var imagePath = "path/to/image.jpg";
 
-5. isStreaming 參數說明
-   - 可以不帶此參數,預設為 false
-   - 設為 true 時啟用串流模式
-   - 設為 false 時使用非串流模式
+            // 1. 上傳圖片
+            Console.WriteLine("正在上傳圖片...");
+            var attachment = await helper.UploadAttachmentWithoutConversationAsync(
+                filePath: imagePath,
+                type: "image"
+            );
+
+            var attachmentId = attachment.GetProperty("id").GetString();
+            var filename = attachment.GetProperty("filename").GetString();
+            var fileUrl = attachment.GetProperty("file").GetString();
+
+            Console.WriteLine($"圖片上傳成功！ID: {attachmentId}");
+
+            // 2. 發送帶附件的訊息
+            var attachments = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "id", attachmentId! },
+                    { "type", "image" },
+                    { "filename", filename! },
+                    { "file", fileUrl! }
+                }
+            };
+
+            Console.WriteLine("\n正在分析圖片...");
+            Console.Write("AI: ");
+
+            await foreach (var chunk in helper.CreateChatbotCompletionStreamAsync(
+                chatbotId: chatbotId,
+                message: "請詳細描述這張圖片的內容",
+                conversationId: null,
+                attachments: attachments
+            ))
+            {
+                if (chunk.TryGetProperty("content", out var content))
+                {
+                    Console.Write(content.GetString());
+                }
+            }
+
+            Console.WriteLine();
+        }
+    }
+}
+```
+
+## 使用須知
+
+### 1. 對話模式選擇
+
+- **串流模式 (Streaming)**：適合需要即時顯示回應的場景
+  - 使用 `CreateChatbotCompletionStreamAsync()`
+  - 逐步接收內容，使用 `await foreach` 處理
+  - 適合長文本生成
+
+- **非串流模式 (Non-streaming)**：適合需要一次性獲取完整回應的場景
+  - 使用 `CreateChatbotCompletionAsync()`
+  - 一次性接收完整內容
+  - 適合短文本或需要等待完整結果的場景
+
+### 2. 多輪對話
+
+- 使用 `conversationId` 維持對話上下文
+- `conversationId` 為 `null` 時會開啟新對話
+- 延續對話需附上相同的 `conversationId`
+
+### 3. 附件上傳流程
+
+1. 使用 `UploadAttachmentWithoutConversationAsync()` 上傳檔案
+2. 獲取附件資訊（id, type, filename, file）
+3. 將附件資訊組成 `List<Dictionary<string, string>>` 格式
+4. 在訊息中包含 `attachments` 參數
+
+### 4. 響應狀態說明
+
+- `done=true`: 對話結束，content 可能為空字符串
+- `done=false`: 對話進行中，content 包含部分內容
+
+### 5. 錯誤處理
+
+```csharp
+try
+{
+    var response = await helper.CreateChatbotCompletionAsync(
+        chatbotId: chatbotId,
+        message: message
+    );
+
+    // 處理回應
+}
+catch (HttpRequestException e)
+{
+    Console.WriteLine($"網路錯誤: {e.Message}");
+}
+catch (Exception e)
+{
+    Console.WriteLine($"發生錯誤: {e.Message}");
+}
+```
+
+## API 端點
+
+- **POST** `/chatbots/{chatbot_id}/completions/`
+
+## 請求格式
+
+```json
+{
+    "conversation": "conv_xxx",  // 可選，null 表示新對話
+    "message": {
+        "content": "訊息內容",
+        "attachments": [         // 可選
+            {
+                "id": "att_xxx",
+                "type": "image",
+                "filename": "image.jpg",
+                "file": "https://..."
+            }
+        ]
+    },
+    "isStreaming": true          // 在請求主體中設置，不是 URL 參數
+}
+```
+
+## 注意事項
+
+1. **API 金鑰**：請確保已正確設定 API 金鑰
+2. **Chatbot ID**：使用有效的聊天機器人 ID
+3. **串流處理**：使用 `await foreach` 處理串流回應
+4. **對話 ID**：保存 conversationId 以維持對話上下文
+5. **附件格式**：附件必須先上傳並獲取 ID 才能在訊息中使用
+6. **錯誤處理**：建議加入適當的錯誤處理機制
+
+## 相關文檔
+
+- [MaiAgentHelper 使用文檔](../utils/maiagent.md)
+- [檔案上傳功能說明](upload_attachment.md)
+- [MaiAgent API 官方文檔](https://docs.maiagent.ai/)

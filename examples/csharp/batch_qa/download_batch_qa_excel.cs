@@ -1,38 +1,29 @@
-
-using os;
-
+using System;
+using System.IO;
+using System.Diagnostics;
 using Utils;
 
-using System.Diagnostics;
+namespace MaiAgentExamples.BatchQA
+{
+    public static class DownloadBatchQAExcel
+    {
+        public static string API_KEY = "<your-api-key>";
+        public static string WEB_CHAT_ID = "<your-web-chat-id>";
+        public static string BATCH_QA_FILE_ID = "<your-batch-qa-file-id>";
 
-public static class download_batch_qa_excel {
-    
-    public static string API_KEY = "<your-api-key>";
-    
-    public static string WEB_CHAT_ID = "<your-web-chat-id>";
-    
-    public static string BATCH_QA_FILE_ID = "<your-batch-qa-file-id>";
-    
-    public static void main() {
-        var maiagent_helper = MaiAgentHelper(API_KEY);
-        var downloaded_file = maiagent_helper.download_batch_qa_excel(WEB_CHAT_ID, BATCH_QA_FILE_ID);
-        if (downloaded_file) {
-            Console.WriteLine($"File saved as: {os.path.abspath(downloaded_file)}");
-        }
-    }
-    
-    static download_batch_qa_excel() {
-        main();
-    }
-    
-    static download_batch_qa_excel() {
-        Debug.Assert(API_KEY != "<your-api-key>");
-        Debug.Assert("Please set your API key");
-        Debug.Assert(WEB_CHAT_ID != "<your-web-chat-id>");
-        Debug.Assert("Please set your web-chat id");
-        Debug.Assert(BATCH_QA_FILE_ID != "<your-batch-qa-file-id>");
-        Debug.Assert("Please set your batch qa file id");
-        if (@__name__ == "__main__") {
+        public static async Task Main(string[] args)
+        {
+            Debug.Assert(API_KEY != "<your-api-key>", "Please set your API key");
+            Debug.Assert(WEB_CHAT_ID != "<your-web-chat-id>", "Please set your web-chat id");
+            Debug.Assert(BATCH_QA_FILE_ID != "<your-batch-qa-file-id>", "Please set your batch qa file id");
+
+            var maiagentHelper = new MaiAgentHelper(API_KEY);
+            var downloadedFile = await maiagentHelper.DownloadBatchQAExcelAsync(WEB_CHAT_ID, BATCH_QA_FILE_ID);
+
+            if (!string.IsNullOrEmpty(downloadedFile))
+            {
+                Console.WriteLine($"File saved as: {Path.GetFullPath(downloadedFile)}");
+            }
         }
     }
 }
