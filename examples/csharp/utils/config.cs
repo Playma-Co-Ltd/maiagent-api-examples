@@ -22,6 +22,5 @@ namespace Utils
         public static string WEB_CHAT_ID = Environment.GetEnvironmentVariable("MAIAGENT_WEB_CHAT_ID") ?? "<Please set your webchat id>";
 
         // Storage Configuration
-        public static string STORAGE_URL = Environment.GetEnvironmentVariable("MAIAGENT_STORAGE_URL") ?? "<Please set your storage url>";
     }
 }
