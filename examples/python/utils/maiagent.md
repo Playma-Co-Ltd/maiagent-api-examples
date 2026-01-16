@@ -9,19 +9,15 @@ from utils.maiagent import MaiAgentHelper
 
 helper = MaiAgentHelper(
     api_key='your_api_key_here',
-    base_url='https://api.maiagent.ai/api/v1/',  # 選填
-    storage_url='{storage_url}/{bucket_name}'  # 選填，請務必替換 {storage_url} 和 {bucket_name}
+    base_url='https://api.maiagent.ai/api/v1/'  # 選填
 )
 ```
 
 ### 參數說明
 - `api_key` (str): MaiAgent API 金鑰
 - `base_url` (str, 選填): API 基礎 URL，預設為 'https://api.maiagent.ai/api/v1/'
-- `storage_url` (str, 選填): 儲存服務的 URL，用於檔案上傳和存取
-  - 格式: `{storage_url}/{bucket_name}`
-  - `{storage_url}`: 儲存服務的基礎 URL (例如: https://s3.ap-northeast-1.amazonaws.com)
-  - `{bucket_name}`: 儲存桶名稱
-  - 預設值: 'https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app'
+
+> **注意**: 檔案上傳 URL 會自動從 API 回應中取得，無需手動設定。
 
 ## 主要方法
 
