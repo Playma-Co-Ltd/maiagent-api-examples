@@ -11,12 +11,10 @@ class MaiAgentHelper:
     def __init__(
         self,
         api_key,
-        base_url='https://api.maiagent.ai/api/v1/',
-        storage_url='https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app'
+        base_url='https://api.maiagent.ai/api/v1/'
     ):
         self.api_key = api_key
         self.base_url = base_url
-        self.storage_url = storage_url
 
     def create_conversation(self, web_chat_id):
         try:
@@ -84,18 +82,23 @@ class MaiAgentHelper:
 
 
     def upload_file_to_s3(self, file_path, upload_data):
-        with open(file_path, 'rb') as file:
-            files = {'file': (os.path.basename(file_path), file)}
-            data = {
-                'key': upload_data['fields']['key'],
-                'x-amz-algorithm': upload_data['fields']['x-amz-algorithm'],
-                'x-amz-credential': upload_data['fields']['x-amz-credential'],
-                'x-amz-date': upload_data['fields']['x-amz-date'],
-                'policy': upload_data['fields']['policy'],
-                'x-amz-signature': upload_data['fields']['x-amz-signature'],
-            }
+        # 從 API response 取得上傳 URL（不再使用寫死的 storage_url）
+        upload_url = upload_data['url']
 
-            response = requests.post(self.storage_url, data=data, files=files)
+        with open(file_path, 'rb') as file:
+            # 使用 tuple list 明確控制順序
+            # AWS S3 / MinIO 要求 file 必須是最後一個欄位
+            fields = [
+                ('key', (None, upload_data['fields']['key'])),
+                ('x-amz-algorithm', (None, upload_data['fields']['x-amz-algorithm'])),
+                ('x-amz-credential', (None, upload_data['fields']['x-amz-credential'])),
+                ('x-amz-date', (None, upload_data['fields']['x-amz-date'])),
+                ('policy', (None, upload_data['fields']['policy'])),
+                ('x-amz-signature', (None, upload_data['fields']['x-amz-signature'])),
+                ('file', (os.path.basename(file_path), file)),  # file 必須在最後
+            ]
+
+            response = requests.post(upload_url, files=fields)
 
             if response.status_code == 204:
                 print('File uploaded successfully')

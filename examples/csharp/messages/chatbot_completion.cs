@@ -36,7 +36,8 @@ namespace MaiAgentExamples.Messages
         // 獲取 MaiAgent 幫助器實例
         private static MaiAgentHelper GetMaiAgentHelper()
         {
-            return new MaiAgentHelper(Config.API_KEY, Config.BASE_URL, Config.STORAGE_URL);
+            // storageUrl 不再需要，上傳 URL 會從 API response 自動取得
+            return new MaiAgentHelper(Config.API_KEY, Config.BASE_URL);
         }
 
         // 打印分隔線和標題

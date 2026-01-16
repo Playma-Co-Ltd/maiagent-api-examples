@@ -13,17 +13,14 @@ namespace Utils
     {
     private readonly string _apiKey;
     private readonly string _baseUrl;
-    private readonly string _storageUrl;
     private readonly HttpClient _httpClient;
 
     public MaiAgentHelper(
         string apiKey,
-        string baseUrl = "https://api.maiagent.ai/api/v1/",
-        string storageUrl = "https://s3.ap-northeast-1.amazonaws.com/whizchat-media-prod-django.playma.app")
+        string baseUrl = "https://api.maiagent.ai/api/v1/")
     {
         _apiKey = apiKey;
         _baseUrl = baseUrl;
-        _storageUrl = storageUrl;
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Api-Key {_apiKey}");
     }
@@ -211,13 +208,13 @@ namespace Utils
     public async Task<string> UploadFileToS3Async(string filePath, JsonElement uploadData)
     {
         using var form = new MultipartFormDataContent();
-        using var fileStream = File.OpenRead(filePath);
-        using var fileContent = new StreamContent(fileStream);
-        
-        var fileName = Path.GetFileName(filePath);
-        form.Add(fileContent, "file", fileName);
 
+        // 從 API Response 取得上傳 URL (不再使用寫死的 storageUrl)
+        var uploadUrl = uploadData.GetProperty("url").GetString();
         var fields = uploadData.GetProperty("fields");
+
+        // 重要：fields 必須在 file 之前加入 form data
+        // AWS S3 / MinIO 要求 file 必須是最後一個欄位
         form.Add(new StringContent(fields.GetProperty("key").GetString()), "key");
         form.Add(new StringContent(fields.GetProperty("x-amz-algorithm").GetString()), "x-amz-algorithm");
         form.Add(new StringContent(fields.GetProperty("x-amz-credential").GetString()), "x-amz-credential");
@@ -225,7 +222,13 @@ namespace Utils
         form.Add(new StringContent(fields.GetProperty("policy").GetString()), "policy");
         form.Add(new StringContent(fields.GetProperty("x-amz-signature").GetString()), "x-amz-signature");
 
-        var response = await _httpClient.PostAsync(_storageUrl, form);
+        // 檔案必須放在最後
+        using var fileStream = File.OpenRead(filePath);
+        using var fileContent = new StreamContent(fileStream);
+        var fileName = Path.GetFileName(filePath);
+        form.Add(fileContent, "file", fileName);
+
+        var response = await _httpClient.PostAsync(uploadUrl, form);
 
         if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
         {
