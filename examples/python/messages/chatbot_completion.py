@@ -1,5 +1,5 @@
 from utils import MaiAgentHelper
-from utils.config import API_KEY, BASE_URL, CHATBOT_ID, STORAGE_URL
+from utils.config import API_KEY, BASE_URL, CHATBOT_ID
 import sys
 import os
 
@@ -28,10 +28,10 @@ SEPARATOR_LINE = "=" * 50
 
 def get_maiagent_helper() -> MaiAgentHelper:
     """獲取 MaiAgent 幫助器實例"""
+    # storage_url 不再需要，上傳 URL 會從 API response 自動取得
     return MaiAgentHelper(
         api_key=API_KEY,
-        base_url=BASE_URL,
-        storage_url=STORAGE_URL
+        base_url=BASE_URL
     )
 
 def print_separator(title: str):
