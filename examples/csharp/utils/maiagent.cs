@@ -179,12 +179,31 @@ namespace Utils
         return await UpdateAttachmentAsync(conversationId, fileKey, Path.GetFileName(filePath));
     }
 
-    public async Task<JsonElement> UploadKnowledgeFileAsync(string chatbotId, string filePath)
+    public async Task<JsonElement> UploadKnowledgeFileAsync(string knowledgeBaseId, string filePath)
     {
         var uploadUrl = await GetUploadUrlAsync(filePath, "chatbot-file");
         var fileKey = await UploadFileToS3Async(filePath, uploadUrl.Value);
 
-        return await UpdateChatbotFilesAsync(chatbotId, fileKey, Path.GetFileName(filePath));
+        // 使用 knowledge-bases API 端點（不是 chatbots）
+        var url = $"{_baseUrl}knowledge-bases/{knowledgeBaseId}/files/";
+        var payload = new
+        {
+            files = new[]
+            {
+                new { file = fileKey, filename = Path.GetFileName(filePath) }
+            }
+        };
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await _httpClient.PostAsync(url, content);
+        response.EnsureSuccessStatusCode();
+
+        var responseString = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<JsonElement>(responseString);
     }
 
     public async Task DeleteKnowledgeFileAsync(string chatbotId, string fileId)
@@ -228,7 +247,9 @@ namespace Utils
         var fileName = Path.GetFileName(filePath);
         form.Add(fileContent, "file", fileName);
 
-        var response = await _httpClient.PostAsync(uploadUrl, form);
+        // 使用新的 HttpClient，不帶 Authorization header（S3 presigned POST 不需要）
+        using var s3Client = new HttpClient();
+        var response = await s3Client.PostAsync(uploadUrl, form);
 
         if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
         {
