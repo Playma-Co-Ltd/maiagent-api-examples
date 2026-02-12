@@ -11,6 +11,7 @@
   - send_image_message.py: 發送圖片訊息範例
   - webhook_server.py: Webhook 伺服器範例
 - [knowledges](knowledges/): 管理知識庫的範例
+- [contacts](contacts/): 管理聯絡人的範例
 - [faqs](faqs/): 管理常見問題的範例
 - [batch_qa](batch_qa/): 發送批次問答的範例
 - [others](others/): 其他有用的範例
