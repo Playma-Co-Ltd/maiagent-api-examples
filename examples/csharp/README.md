@@ -11,6 +11,7 @@
   - [send_image_message.cs](messages/send_image_message.cs): 發送圖片訊息範例
   - [webhook_server.cs](messages/webhook_server.cs): Webhook 伺服器範例
 - [knowledges](knowledges/): 管理知識庫的範例
+- [contacts](contacts/): 管理聯絡人的範例
 - [faqs](faqs/): 管理常見問題的範例
 - [batch_qa](batch_qa/): 發送批次問答的範例
 - [others](others/): 其他有用的範例
@@ -145,6 +146,13 @@ csharp/
 │       ├── delete_duplicate_files.cs
 │       ├── fix_failed_files.cs
 │       └── upload_missing_files.cs
+├── contacts/                          # 聯絡人管理範例
+│   ├── list_contacts.cs
+│   ├── create_contact.cs
+│   ├── update_contact.cs
+│   ├── delete_contact.cs
+│   ├── get_contact_conversations.cs
+│   └── broadcast_message.cs
 ├── faqs/                              # FAQ 管理範例
 │   └── add_faq.cs
 ├── assistants/                        # 助手管理範例
