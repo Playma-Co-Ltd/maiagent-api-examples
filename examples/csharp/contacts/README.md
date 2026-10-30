@@ -37,7 +37,7 @@
 
 | 參數 | 說明 |
 |------|------|
-| `query` | 依聯絡人 ID、名稱或 source_id 搜尋（模糊比對） |
+| `query` | 依名稱或 Email 搜尋（模糊比對）；聯絡人 ID 或 source_id 須整串相符 |
 | `inboxes` | 依 inbox ID 篩選 |
 | `limit` | 每頁筆數（預設 20） |
 | `offset` | 分頁偏移量 |
