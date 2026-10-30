@@ -22,7 +22,7 @@ def main():
         print(f"  - {contact['name']} (ID: {contact['id']})")
 
     # 使用篩選參數查詢
-    # query: 依名稱、ID 或 source_id 搜尋（模糊比對）
+    # query: 依名稱或 Email 搜尋（模糊比對）；ID 或 source_id 須整串相符
     # inboxes: 依 inbox ID 篩選
     response = requests.get(
         url=f'{BASE_URL}contacts/',
